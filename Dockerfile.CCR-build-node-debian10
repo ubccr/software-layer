@@ -1,0 +1,22 @@
+ARG cvmfsversion=2.9.2
+
+FROM debian:10.11
+ARG cvmfsversion
+
+RUN apt-get update
+RUN apt-get install -y sudo wget kitty-terminfo vim openssh-client gawk autofs curl attr uuid fuse3 libfuse2 psmisc gdb uuid-dev lsof fuse-overlayfs
+
+RUN cd /root && wget http://mirrors.ccr.buffalo.edu/ccr/cvmfs/cvmfs-config-ccr-latest.all.deb \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default_latest_all.deb \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs_${cvmfsversion}~1+debian10_$(dpkg --print-architecture).deb \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs-fuse3_${cvmfsversion}~1+debian10_$(dpkg --print-architecture).deb
+
+RUN dpkg -i /root/cvmfs_${cvmfsversion}~1+debian10_$(dpkg --print-architecture).deb \
+            /root/cvmfs-fuse3_${cvmfsversion}~1+debian10_$(dpkg --print-architecture).deb \
+            /root/cvmfs-config-default_latest_all.deb \
+            /root/cvmfs-config-ccr-latest.all.deb
+
+RUN echo 'CVMFS_QUOTA_LIMIT=10000' > /etc/cvmfs/default.local \
+  && echo 'CVMFS_CLIENT_PROFILE="single"' >> /etc/cvmfs/default.local
+
+RUN mkdir -p /cvmfs/soft.ccr.buffalo.edu
