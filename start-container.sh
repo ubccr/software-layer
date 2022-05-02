@@ -56,7 +56,7 @@ mkdir -p $CCR_TMPDIR/{var-lib-cvmfs,var-run-cvmfs}
 
 # configure Singularity
 export SINGULARITY_CACHEDIR=$CCR_TMPDIR/singularity_cache
-export SINGULARITY_BIND="$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
+export SINGULARITY_BIND="/opt/software/slurm:/opt/software/slurm:ro,$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
 export SINGULARITY_HOME="$CCR_TMPDIR/home:/home/$USER"
 
 # set environment variables for fuse mounts in Singularity container
