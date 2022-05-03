@@ -59,7 +59,7 @@ then
     error "the version in the filename (${version}) does not match the top-level directory in the tarball (${tar_top_level_dir})."
 fi
 
-# Check if the second-level dir in the tarball is compat, software, or config
+# Check if the second-level dir in the tarball is compat, easybuild, or config
 if [ "${tar_contents_type_dir}" != "compat" ] && [ "${tar_contents_type_dir}" != "easybuild" ] && [ "${tar_contents_type_dir}" != "config" ]
 then
     error "the second directory level of the tarball contents should be either compat, software, or init."
