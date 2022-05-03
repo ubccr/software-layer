@@ -3,7 +3,8 @@
 # Ingest a tarball containing easybuild modules/software, compatibility layer
 # files, or config files to the CCR CVMFS software repository.
 #
-# This script has to be run on a CVMFS publisher node.
+# This script can be run on a CVMFS publisher node or from within a singularity
+# container for testing software.
 
 # This script assumes that the given tarball follows the naming convention:
 #  ccr-<version>-{compat,easybuild,config}-[some tag]-<timestamp>.tar.gz
@@ -31,6 +32,10 @@ function error() {
     echo_red "ERROR: $1" >&2
     exit 1
 }
+
+if [ $# -ne 1 ]; then
+    error "Usage: $0 </path/to/tar.gz>"
+fi
 
 tar_file="$1"
 
@@ -73,7 +78,15 @@ fi
 
 # Ingest the tarball to the repository, use "versions" as base dir for the ingestion
 echo "Ingesting tarball ${tar_file} to ${repo}..."
-${decompress} "${tar_file}" | cvmfs_server ingest -t - -b "${basedir}" "${repo}"
+
+
+if command -v cvmfs_server &> /dev/null
+then
+    ${decompress} "${tar_file}" | cvmfs_server ingest -t - -b "${basedir}" "${repo}"
+else
+    tar -xzf "${tar_file}" -C "/cvmfs/${repo}/${basedir}"
+fi
+
 ec=$?
 if [ $ec -eq 0 ]
 then
