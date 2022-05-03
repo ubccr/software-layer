@@ -41,3 +41,9 @@ and [Compute Canada](https://github.com/ComputeCanada). You can check out their 
 
 - https://github.com/EESSI/software-layer
 - https://github.com/ComputeCanada/easybuild-computecanada-config
+
+
+## License
+
+The software in this repository is distributed under the terms of the GNU
+General Public License v2.0. See the LICENSE file.
