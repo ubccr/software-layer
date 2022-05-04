@@ -37,9 +37,22 @@ user@container$ ./fetch-dev-tarballs.sh
 user@container$ source config/profile/bash.sh
 user@container$ source config/easybuild/init.sh
 user@container$ module load easybuild
+
+# Show easybuild config
 user@container$ eb --show-config
+
+# Search for package showing short names
+user@container$ eb -S OpenMPI
+
+# Search for package showing full path to eb file
 user@container$ eb --search OpenMPI
+
+# Show the deps that will be built without actually building
+user@container$ eb OpenBLAS-0.3.9-GCC-9.3.0.eb -M
+
+# Build package and all deps
 user@container$ eb OpenBLAS-0.3.9-GCC-9.3.0.eb --robot
+
 user@container$ module load openblas
 user@container$ exit
 
