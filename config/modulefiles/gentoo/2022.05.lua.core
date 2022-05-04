@@ -1,0 +1,23 @@
+local arch, vendor_id, interconnect, cuda_driver_version=...
+
+help([[Gentoo prefix is Gentoo Linux installed in a prefix - Homepage: https://wiki.gentoo.org/wiki/Project:Prefix]])
+whatis("Gentoo prefix is Gentoo Linux installed in a prefix - Homepage: https://wiki.gentoo.org/wiki/Project:Prefix")
+
+add_property(   "lmod", "sticky")
+
+local root = os.getenv("EPREFIX")
+local ccr_soft_path = os.getenv("CCR_SOFTWARE_PATH")
+
+prepend_path("PATH", pathJoin(root, "bin"))
+prepend_path("PATH", pathJoin(root, "sbin"))
+prepend_path("PATH", pathJoin(root, "usr/bin"))
+prepend_path("PATH", pathJoin(root, "usr/sbin"))
+prepend_path("INFOPATH", pathJoin(root, "usr/share/binutils-data/x86_64-pc-linux-gnu/2.33.1/info:"))
+prepend_path("MANPATH", pathJoin(root, "usr/share/man"))
+prepend_path("MANPATH", pathJoin(root, "usr/share/binutils-data/x86_64-pc-linux-gnu/2.33.1/man"))
+prepend_path("MANPATH", pathJoin(root, "usr/share/gcc-data/x86_64-pc-linux-gnu/9.3.0/man"))
+
+if (mode() ~= "spider") then
+        prepend_path("MODULEPATH", pathJoin(ccr_soft_path, "modules/Core"))
+        prepend_path("MODULEPATH", pathJoin(ccr_soft_path, "modules", arch, "Core"))
+end

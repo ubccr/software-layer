@@ -14,7 +14,7 @@ if [[ -z "$__Init_Default_Modules" ]]; then
         fi
         export MODULERCFILE=${MODULERCFILE:+:$MODULERCFILE}:${NEWMODULERCFILE}
         unset NEWMODULERCFILE
-        export MODULEPATH=/cvmfs/soft.ccr.buffalo.edu/modulefiles
+        export MODULEPATH=${CCR_INIT_DIR}/modulefiles
         __Init_Default_Modules=1; export __Init_Default_Modules;
         if [[ -z "$LMOD_SYSTEM_DEFAULT_MODULES" ]]; then
                 export LMOD_SYSTEM_DEFAULT_MODULES="StdEnv"
