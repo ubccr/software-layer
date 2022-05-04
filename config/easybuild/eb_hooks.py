@@ -9,7 +9,10 @@ from easybuild.tools.systemtools import get_cpu_architecture
 CCR_RPATH_OVERRIDE_ATTR = 'orig_rpath_override_dirs'
 
 COMPILER_MODLUAFOOTER = """
-prepend_path("MODULEPATH", pathJoin("{software_path}/modules", "{ccr_arch}", "{sub_path}"))
+prepend_path("MODULEPATH", pathJoin("{software_path}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/{ccr_version}/easybuild/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+end
 add_property("type_","tools")
 """
 
@@ -30,7 +33,7 @@ def get_ccr_envvar(ccr_envvar):
 
 def set_modluafooter(ec):
     software_path = get_ccr_envvar('CCR_SOFTWARE_PATH')
-    ccr_arch = get_ccr_envvar('CCR_ARCH')
+    ccr_version = get_ccr_envvar('CCR_VERSION')
     moduleclass = ec.get('moduleclass','')
     name = ec['name'].lower()
 
@@ -41,10 +44,10 @@ def set_modluafooter(ec):
         if name in ['iccifort', 'intel-compilers']:
             name = 'intel'
         comp = os.path.join('Compiler', name + ec['version'][:ec['version'].find('.')])
-        ec['modluafooter'] += (COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_arch=ccr_arch, sub_path=comp) + 'family("compiler")\n')
+        ec['modluafooter'] += (COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp) + 'family("compiler")\n')
     if ec['name'] == 'CUDAcore':
         comp = os.path.join('CUDA', 'cuda' + '.'.join(ec['version'].split('.')[:2]))
-        ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_arch=ccr_arch, sub_path=comp)
+        ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
 
 def pre_module_hook(self, *args, **kwargs):
     "Modify module footer (here is more efficient than parse_hook since only called once)"
@@ -138,12 +141,21 @@ def fontconfig_add_fonts(ec, eprefix):
 def openmpi_config_opts(ec, prefix):
     """Inject configure options for openmpi."""
     if ec.name == 'OpenMPI':
-        opts = '--with-slurm --with-pmi=/opt/software/slurm'
+        opts = '--with-slurm --with-pmi=/opt/software/slurm --with-hwloc=external '
         ec.update('configopts', opts)
         print_msg("Added '%s' configure option for %s", opts, ec.name)
     else:
         raise EasyBuildError("openmpi-specific hook triggered for non-openpmi easyconfig?!")
 
+def pmix_config_opts(ec, eprefix):
+    """Inject configure options for pmix."""
+    if ec.name == 'PMIx':
+        ec.update('configopts', '--with-sysroot=%s' % eprefix)
+        ec.update('configopts', '--with-hwloc=%s' % os.path.join(eprefix, 'usr'))
+        ec.update('configopts', '--with-zlib=%s' % os.path.join(eprefix, 'usr'))
+        print_msg("Using custom configure option for %s: %s", ec.name, ec['configopts'])
+    else:
+        raise EasyBuildError("pmix-specific hook triggered for non-pmix easyconfig?!")
 
 def openblas_config_opts(ec, prefix):
     """Inject configure options for openblas."""
@@ -157,7 +169,7 @@ def openblas_config_opts(ec, prefix):
         ec.update('testopts', opts)
         print_msg("Added '%s' configure/build/install options for %s", opts, ec.name)
     else:
-        raise EasyBuildError("openmpi-specific hook triggered for non-openpmi easyconfig?!")
+        raise EasyBuildError("openblas-specific hook triggered for non-openblas easyconfig?!")
 
 def ucx_eprefix(ec, eprefix):
     """Make UCX aware of compatibility layer via additional configuration options."""
@@ -181,6 +193,7 @@ PARSE_HOOKS = {
     'UCX': ucx_eprefix,
     'OpenMPI': openmpi_config_opts,
     'OpenBLAS': openblas_config_opts,
+    'PMIx': pmix_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {
