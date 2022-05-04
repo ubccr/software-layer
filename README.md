@@ -8,7 +8,7 @@ _NOTE: these docs are currently very much a WIP_
 
 All software at CCR is built using [easybuild](https://docs.easybuild.io/en/latest/),
 available via modules using [Lmod](https://lmod.readthedocs.io/en/latest/), and 
-distributed using [CernVM-FS](https://cvmfs.readthedocs.io/en/stable/).  This repositoryl 
+distributed using [CernVM-FS](https://cvmfs.readthedocs.io/en/stable/).  This repository 
 contains scripts to help build software with easybuild using containers. To ensure all
 software runs on any compute node regardless of the underlying Linux distro, we
 use [Gentoo Prefix](https://wiki.gentoo.org/wiki/Project:Prefix) as the
@@ -61,7 +61,7 @@ which takes an action as the first argument: `shell`, `run`, or `prefix`). The
 `prefix` action starts a singularity then runs $EPREFIX/startprefix which puts
 you in a gentoo prefix shell. The second argument is the path to a working
 directory where the writable-overlay will write your files. This should be
-somehwere in `/scratch`. It's recommended to follow a basic naming convention,
+somewhere in `/scratch`. It's recommended to follow a basic naming convention,
 for example if your building OpenMPI, then use `/scratch/username_OpenMPI`.
 
 ```
@@ -89,7 +89,7 @@ running the latest snapshot of what will be the production software:
 $ ./fetch-dev-tarballs.sh 
 ```
 
-5. Source CCR's init scripts to setup your enviroment. This will also setup
+5. Source CCR's init scripts to setup your environment. This will also setup
 lmod and the necessary easybuild config settings used at CCR:
 
 ```
@@ -139,7 +139,7 @@ $ ./create-tarball.sh easybuild /scratch/username_somepackage
 ```
 
 9. Copy the resulting tarball to mirrors so that others can test out your work
-before publishing to our productuion CernVM-FS stratum0 server.
+before publishing to our production CernVM-FS stratum0 server.
 
 ## Re-building the build-node container image
 
