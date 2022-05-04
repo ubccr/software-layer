@@ -6,10 +6,10 @@ _NOTE: these docs are currently very much a WIP_
 
 ## About
 
-All software at CCR is built using easybuild, available via modules using
-[Lmod](https://lmod.readthedocs.io/en/latest/), and distributed using
-[CernVM-FS](https://cvmfs.readthedocs.io/en/stable/).  This repository contains
-scripts to help build software with easybuild using containers. To ensure all
+All software at CCR is built using [easybuild](https://docs.easybuild.io/en/latest/),
+available via modules using [Lmod](https://lmod.readthedocs.io/en/latest/), and 
+distributed using [CernVM-FS](https://cvmfs.readthedocs.io/en/stable/).  This repositoryl 
+contains scripts to help build software with easybuild using containers. To ensure all
 software runs on any compute node regardless of the underlying Linux distro, we
 use [Gentoo Prefix](https://wiki.gentoo.org/wiki/Project:Prefix) as the
 compatibility layer. For more information on CCR's compatibility layer see our
