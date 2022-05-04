@@ -33,6 +33,7 @@ user@host$ ./start-container.sh prefix /scratch/username_somepackage
 
 # Inside container source init scripts and run easybuild
 user@container$ cd /srv/software-layer
+user@container$ ./fetch-dev-tarballs.sh 
 user@container$ source config/profile/bash.sh
 user@container$ source config/easybuild/init.sh
 user@container$ module load easybuild
