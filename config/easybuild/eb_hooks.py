@@ -5,6 +5,7 @@ import os
 from easybuild.tools.build_log import EasyBuildError, print_msg
 from easybuild.tools.config import build_option, update_build_option
 from easybuild.tools.systemtools import get_cpu_architecture
+from easybuild.tools.environment import setvar
 
 CCR_RPATH_OVERRIDE_ATTR = 'orig_rpath_override_dirs'
 
@@ -44,7 +45,7 @@ def set_modluafooter(ec):
         if name in ['iccifort', 'intel-compilers']:
             name = 'intel'
         comp = os.path.join('Compiler', name + ec['version'][:ec['version'].find('.')])
-        ec['modluafooter'] += (COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp) + 'family("compiler")\n')
+        ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
     if ec['name'] == 'CUDAcore':
         comp = os.path.join('CUDA', 'cuda' + '.'.join(ec['version'].split('.')[:2]))
         ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
@@ -84,6 +85,10 @@ def parse_hook(ec, *args, **kwargs):
 
     # determine path to Prefix installation in compat layer via $EPREFIX
     eprefix = get_ccr_envvar('EPREFIX')
+
+    # Intel needs to know where to find the license
+    if ec.name in ('iccifort', 'iimpi', 'imkl', 'impi', 'intel-compilers'):
+        setvar("LM_LICENSE_FILE", "28518@srv-m14-36.cbls.ccr.buffalo.edu")
 
     if ec.name in PARSE_HOOKS:
         PARSE_HOOKS[ec.name](ec, eprefix)
@@ -188,6 +193,85 @@ def pre_configure_hook(self, *args, **kwargs):
     if self.name in PRE_CONFIGURE_HOOKS:
         PRE_CONFIGURE_HOOKS[self.name](self, *args, **kwargs)
 
+def pre_postproc_hook(self, *args, **kwargs):
+    """Main pre-postproc hook: trigger custom functions based on software name."""
+    if self.name in PRE_POSTPROC_HOOKS:
+        PRE_POSTPROC_HOOKS[self.name](self, *args, **kwargs)
+
+def iccifort_postproc(ec, *args, **kwargs):
+    """Add post install cmds for iccifort. These were Adopted from ComputeCanada
+       https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_gentoo.py"""
+
+    if ec.name == 'iccifort':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compilers_and_libraries_%(version)s/linux/bin/intel64/icc.cfg',
+            'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compilers_and_libraries_%(version)s/linux/bin/intel64/icpc.cfg',
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s",
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/compilers_and_libraries_%(version)s/linux/compiler/lib --add_origin",
+            "patchelf --set-rpath '$ORIGIN/../lib:$ORIGIN/../compiler/lib/intel64' %(installdir)s/compilers_and_libraries_%(version)s/linux/lib/LLVMgold.so",
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("iccifort-specific hook triggered for non-iccifort easyconfig?!")
+
+def intel_postproc(ec, *args, **kwargs):
+    """Add post install cmds for intel-compilers. These were Adopted from ComputeCanada
+       https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_gentoo.py"""
+
+    if ec.name == 'intel-compilers':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icc.cfg',
+            'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
+            'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
+            'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icpx.cfg',
+            'echo "-L$EBROOTGCCCORE/lib64" >> %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
+            'echo "-L$EBROOTGCCCORE/lib64" >> %(installdir)s/compiler/%(version)s/linux/bin/icpx.cfg',
+            'echo "-Wl,-dynamic-linker $EPREFIX/lib64/ld-linux-x86-64.so.2" >> %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
+            'echo "-Wl,-dynamic-linker $EPREFIX/lib64/ld-linux-x86-64.so.2" >> %(installdir)s/compiler/%(version)s/linux/bin/icpx.cfg',
+            'echo "#!$EPREFIX/bin/sh" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/dpcpp',
+            'echo "exec %(installdir)s/compiler/%(version)s/linux/bin/dpcpp --sysroot=$EPREFIX -Wl,-dynamic-linker $EPREFIX/lib64/ld-linux-x86-64.so.2 -L$EBROOTGCCCORE/lib64 \${1+\\"\$@\\"}" >> %(installdir)s/compiler/%(version)s/linux/bin/intel64/dpcpp',
+            'chmod +x %(installdir)s/compiler/%(version)s/linux/bin/intel64/dpcpp',
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/compiler/%(version)s/linux/bin --add_origin --add_path=%(installdir)s/compiler/%(version)s/linux/compiler/lib/intel64_lin",
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s",
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/compiler/%(version)s/linux/compiler/lib --add_origin",
+            "patchelf --set-rpath '$ORIGIN/../lib:$ORIGIN/../compiler/lib/intel64' %(installdir)s/compiler/%(version)s/linux/lib/icx-lto.so",
+            "patchelf --set-rpath '$ORIGIN:$ORIGIN/../../../../../tbb/latest/lib/intel64/gcc4.8' %(installdir)s/compiler/%(version)s/linux/lib/x64/libintelocl.so",
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("intel-specific hook triggered for non-intel easyconfig?!")
+
+def impi_postproc(ec, *args, **kwargs):
+    """Add post install cmds for impi. These were Adopted from ComputeCanada
+       https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_gentoo.py"""
+
+    if ec.name == 'impi':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        # Paths differ between versions of intel
+        version_major = ec.version.split('.')[0]
+        if version_major == '2019':
+            ec.cfg['postinstallcmds'] = [
+                # Fix mpirun from IntelMPI to explicitly unset I_MPI_PMI_LIBRARY. it can only be used with srun.
+                "sed -i 's@\\(#!/bin/sh.*\\)$@\\1\\nunset I_MPI_PMI_LIBRARY@' %(installdir)s/intel64/bin/mpirun",
+                f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/intel64/bin --add_path='$ORIGIN/../lib/release'",
+                f"for dir in release release_mt debug debug_mt; do {ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/intel64/lib/$dir --add_path='$ORIGIN/../../libfabric/lib'; done",
+                "patchelf --set-rpath $EBROOTUCX/lib --force-rpath %(installdir)s/intel64/libfabric/lib/prov/libmlx-fi.so",
+            ]
+        elif version_major == '2021':
+            ec.cfg['postinstallcmds'] = [
+                # Fix mpirun from IntelMPI to explicitly unset I_MPI_PMI_LIBRARY. it can only be used with srun.
+                "sed -i 's@\\(#!/bin/sh.*\\)$@\\1\\nunset I_MPI_PMI_LIBRARY@' %(installdir)s/mpi/%(version)s/bin/mpirun",
+                f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/mpi/%(version)s/bin --add_path='$ORIGIN/../lib/release'",
+                f"for dir in release release_mt debug debug_mt; do {ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/mpi/%(version)s/lib/$dir --add_path='$ORIGIN/../../libfabric/lib'; done",
+                "patchelf --set-rpath $EBROOTUCX/lib --force-rpath %(installdir)s/mpi/%(version)s/libfabric/lib/prov/libmlx-fi.so",
+            ]
+
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("impi-specific hook triggered for non-impi easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -197,4 +281,10 @@ PARSE_HOOKS = {
 }
 
 PRE_CONFIGURE_HOOKS = {
+}
+
+PRE_POSTPROC_HOOKS = {
+    'iccifort': iccifort_postproc,
+    'impi': impi_postproc,
+    'intel-compilers': intel_postproc,
 }
