@@ -272,6 +272,19 @@ def impi_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("impi-specific hook triggered for non-impi easyconfig?!")
 
+def imkl_postproc(ec, *args, **kwargs):
+    """Add post install cmds for imkl."""
+
+    if ec.name == 'imkl':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s",
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/compiler/%(version)s/linux/compiler/lib --add_origin",
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("imkl-specific hook triggered for non-imkl easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -286,5 +299,6 @@ PRE_CONFIGURE_HOOKS = {
 PRE_POSTPROC_HOOKS = {
     'iccifort': iccifort_postproc,
     'impi': impi_postproc,
+    'imkl': imkl_postproc,
     'intel-compilers': intel_postproc,
 }
