@@ -224,6 +224,8 @@ def intel_postproc(ec, *args, **kwargs):
         ec.cfg['postinstallcmds'] = [
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icc.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
+            'echo "-Xlinker -rpath=%(installdir)s/compiler/%(version)s/linux/compiler/lib/intel64_lin" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/ifort.cfg',
+            'echo "-Xlinker -rpath=%(installdir)s/compiler/%(version)s/linux/compiler/lib/intel64_lin" > %(installdir)s/compiler/%(version)s/linux/bin/ifx.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icpx.cfg',
             'echo "-L$EBROOTGCCCORE/lib64" >> %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
