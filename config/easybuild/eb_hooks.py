@@ -219,13 +219,21 @@ def intel_postproc(ec, *args, **kwargs):
     """Add post install cmds for intel-compilers. These were Adopted from ComputeCanada
        https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_gentoo.py"""
 
-    if ec.name == 'intel-compilers':
+    if ec.name == 'intel':
+        ec.cfg['postinstallcmds'] = [
+            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/icc.cfg',
+            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/icpc.cfg',
+            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/ifort.cfg',
+            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/ifx.cfg',
+            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/icx.cfg',
+            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/icpx.cfg',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    elif ec.name == 'intel-compilers':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icc.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
-            'echo "-Xlinker -rpath=%(installdir)s/compiler/%(version)s/linux/compiler/lib/intel64_lin" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/ifort.cfg',
-            'echo "-Xlinker -rpath=%(installdir)s/compiler/%(version)s/linux/compiler/lib/intel64_lin" > %(installdir)s/compiler/%(version)s/linux/bin/ifx.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icpx.cfg',
             'echo "-L$EBROOTGCCCORE/lib64" >> %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
@@ -303,4 +311,5 @@ PRE_POSTPROC_HOOKS = {
     'impi': impi_postproc,
     'imkl': imkl_postproc,
     'intel-compilers': intel_postproc,
+    'intel': intel_postproc,
 }
