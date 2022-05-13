@@ -221,12 +221,12 @@ def intel_postproc(ec, *args, **kwargs):
 
     if ec.name == 'intel':
         ec.cfg['postinstallcmds'] = [
-            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/icc.cfg',
-            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/icpc.cfg',
-            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/ifort.cfg',
-            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/ifx.cfg',
-            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/icx.cfg',
-            'echo "-Xlinker -rpath=$LIBRARY_PATH" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/icpx.cfg',
+            'echo "-Xlinker -rpath=${LIBRARY_PATH}:${EBROOTGCCCORE}/lib64" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/icc.cfg',
+            'echo "-Xlinker -rpath=${LIBRARY_PATH}:${EBROOTGCCCORE}/lib64" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/icpc.cfg',
+            'echo "-Xlinker -rpath=${LIBRARY_PATH}:${EBROOTGCCCORE}/lib64" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/intel64/ifort.cfg',
+            'echo "-Xlinker -rpath=${LIBRARY_PATH}:${EBROOTGCCCORE}/lib64" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/ifx.cfg',
+            'echo "-Xlinker -rpath=${LIBRARY_PATH}:${EBROOTGCCCORE}/lib64" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/icx.cfg',
+            'echo "-Xlinker -rpath=${LIBRARY_PATH}:${EBROOTGCCCORE}/lib64" >> ${EBROOTINTELMINCOMPILERS}/compiler/${EBVERSIONINTELMINCOMPILERS}/linux/bin/icpx.cfg',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     elif ec.name == 'intel-compilers':
