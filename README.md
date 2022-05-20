@@ -108,7 +108,7 @@ lmod and the necessary easybuild config settings used at CCR:
 
 ```
 $ source config/profile/bash.sh
-$ source config/easybuild/init
+$ source config/easybuild/init.sh
 
 # This should now show the latest software modules
 $ module avail
