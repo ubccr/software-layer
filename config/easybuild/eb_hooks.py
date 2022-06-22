@@ -295,6 +295,19 @@ def imkl_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("imkl-specific hook triggered for non-imkl easyconfig?!")
 
+def matlab_postproc(ec, *args, **kwargs):
+    """Add post install cmds for matlab."""
+
+    if ec.name == 'MATLAB':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            'chmod -R u+w %(installdir)s',
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin",
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("matlab-specific hook triggered for non-matlab easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -312,4 +325,5 @@ PRE_POSTPROC_HOOKS = {
     'imkl': imkl_postproc,
     'intel-compilers': intel_postproc,
     'intel': intel_postproc,
+    'MATLAB': matlab_postproc,
 }
