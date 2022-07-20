@@ -55,9 +55,19 @@ mkdir -p $CCR_TMPDIR/{home,overlay-upper,overlay-work}
 mkdir -p $CCR_TMPDIR/{var-lib-cvmfs,var-run-cvmfs}
 
 # configure Singularity
-export SINGULARITY_CACHEDIR=$CCR_TMPDIR/singularity_cache
-export SINGULARITY_BIND="$PWD:/srv/software-layer,/opt/software/slurm:/opt/software/slurm:ro,$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
 export SINGULARITY_HOME="$CCR_TMPDIR/home:/home/$USER"
+export SINGULARITY_CACHEDIR=$CCR_TMPDIR/singularity_cache
+SINGULARITY_BIND="$PWD:/srv/software-layer,$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
+
+if [ -d "/opt/software/slurm" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/slurm:/opt/software/slurm:ro"
+fi
+
+if [ -d "/opt/software/nvidia" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/nvidia:/opt/software/nvidia:ro"
+fi
+
+export SINGULARITY_BIND
 
 # set environment variables for fuse mounts in Singularity container
 export CVMFS_CONFIG="container:cvmfs2 ${CVMFS_CONFIG_REPO} /cvmfs/${CVMFS_CONFIG_REPO}"

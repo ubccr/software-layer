@@ -142,6 +142,13 @@ def fontconfig_add_fonts(ec, eprefix):
     else:
         raise EasyBuildError("fontconfig-specific hook triggered for non-fontconfig easyconfig?!")
 
+def cuda_config_opts(ec, prefix):
+    """Inject configure options for cuda."""
+    if ec.name == 'CUDA':
+        ec.update('builddependencies', [('GCCcore', '11.2.0')])
+        print_msg("Using custom build deps for %s: %s", ec.name, ec['builddependencies'])
+    else:
+        raise EasyBuildError("cuda-specific hook triggered for non-cuda easyconfig?!")
 
 def openmpi_config_opts(ec, prefix):
     """Inject configure options for openmpi."""
@@ -308,12 +315,40 @@ def matlab_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("matlab-specific hook triggered for non-matlab easyconfig?!")
 
+def cuda_postproc(ec, *args, **kwargs):
+    """Add post install cmds for cuda."""
+
+    if ec.name == 'CUDA':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin",
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("cuda-specific hook triggered for non-cuda easyconfig?!")
+
+def nvhpc_postproc(ec, *args, **kwargs):
+    """Add post install cmds for nvhpc."""
+
+    if ec.name == 'NVHPC':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/Linux_x86_64/%(version)s",
+            f'echo "set DEFLIBDIR=$EPREFIX/lib;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+            f'echo "set DEFSTDOBJDIR=$EPREFIX/lib;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+            #f'echo "set NORPATH=YES;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("nvhpc-specific hook triggered for non-nvhpc easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
     'OpenMPI': openmpi_config_opts,
     'OpenBLAS': openblas_config_opts,
     'PMIx': pmix_config_opts,
+    'CUDA': cuda_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {
@@ -326,4 +361,6 @@ PRE_POSTPROC_HOOKS = {
     'intel-compilers': intel_postproc,
     'intel': intel_postproc,
     'MATLAB': matlab_postproc,
+    'CUDA': cuda_postproc,
+    'NVHPC': nvhpc_postproc,
 }
