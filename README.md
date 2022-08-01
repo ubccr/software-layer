@@ -155,26 +155,6 @@ $ ./create-tarball.sh easybuild /scratch/username_somepackage
 9. Copy the resulting tarball to mirrors so that others can test out your work
 before publishing to our production CernVM-FS stratum0 server.
 
-## Re-building the build-node container image
-
-The build-node docker container image is currently hosted on [docker hub](https://hub.docker.com/r/ubccr/build-node).
-To build a new container image run:
-
-1. Build container image:
-
-```
-$ docker build -t ubccr/build-node:debian10 -f Dockerfile.CCR-build-node-debian10 .
-```
-
-2. Push container up to docker hub:
-
-```
-# If you haven't previously authenticated, you need to do that first
-$ docker login -u USERNAME
-
-$ docker push ubccr/build-node:debian10
-```
-
 ## See Also
 
 The config files and scripts in this repo were heavily adopted from [EESSI](https://github.com/EESSI) 
