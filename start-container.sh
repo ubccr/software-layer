@@ -11,7 +11,7 @@
 # Modifications made by CCR are also released under GPLv2. 
 #
 
-BUILD_CONTAINER="docker://ubccr/build-node:debian10"
+BUILD_CONTAINER="docker://ubccr/build-node:flatcar"
 CVMFS_CONFIG_REPO="cvmfs-config.ccr.buffalo.edu"
 CVMFS_SOFT_REPO="soft.ccr.buffalo.edu"
 CCR_VERSION="2022.05"
@@ -61,6 +61,10 @@ SINGULARITY_BIND="$PWD:/srv/software-layer,$CCR_TMPDIR/var-run-cvmfs:/var/run/cv
 
 if [ -d "/opt/software/slurm" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/slurm:/opt/software/slurm:ro"
+fi
+
+if [ -d "/opt/software/syslibs" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/syslibs:/opt/software/syslibs:ro"
 fi
 
 if [ -d "/opt/software/nvidia" ]; then
