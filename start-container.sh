@@ -11,7 +11,17 @@
 # Modifications made by CCR are also released under GPLv2. 
 #
 
-BUILD_CONTAINER="docker://ubccr/build-node:flatcar"
+. /etc/os-release
+
+BUILD_TAG="${ID}${VERSION_ID}"
+
+# XXX Only run on supported distros for now..
+if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
+    echo "Unsupported linux distro: $BUILD_TAG" >&2
+    exit 1
+fi
+
+BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
 CVMFS_CONFIG_REPO="cvmfs-config.ccr.buffalo.edu"
 CVMFS_SOFT_REPO="soft.ccr.buffalo.edu"
 CCR_VERSION="2022.05"
