@@ -1,4 +1,4 @@
-ARG cvmfsversion=2.9.2
+ARG cvmfsversion=2.9.4
 
 FROM debian:10.11
 ARG cvmfsversion
