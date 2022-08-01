@@ -39,6 +39,8 @@ if [ "$ACTION" == "run" ] && [ $# -eq 0 ]; then
     exit 1
 fi
 
+echo "Running container: $BUILD_CONTAINER.."
+
 # make sure specified temporary directory exists
 mkdir -p $CCR_TMPDIR
 
