@@ -6,6 +6,7 @@ images are currently hosted on [docker hub](https://hub.docker.com/r/ubccr/build
 Currenty we support the following distros:
 
 - debian10
+- debian11
 - ubuntu22.04
 - ubuntu20.04
 - flatcar (ccr custom image)
