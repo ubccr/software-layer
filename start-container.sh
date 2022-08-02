@@ -13,7 +13,7 @@
 
 . /etc/os-release
 
-BUILD_TAG="${ID}${VERSION_ID}"
+BUILD_TAG="${BUILD_TAG:-$ID$VERSION_ID}"
 
 # XXX Only run on supported distros for now..
 if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
