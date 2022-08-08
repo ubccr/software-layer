@@ -79,8 +79,8 @@ if [ -d "/opt/software/syslibs" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/syslibs:/opt/software/syslibs:ro"
 fi
 
-if [ -d "/util/software/academic/licenses" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/util/software/academic/licenses:/util/software/academic/licenses:ro"
+if [ -d "/util/software/licenses" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/util/software/licenses:/util/software/licenses:ro"
 fi
 
 if [ -d "/opt/software/nvidia" ]; then
