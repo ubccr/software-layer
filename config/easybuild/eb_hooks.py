@@ -1,6 +1,7 @@
 # Hooks to customize how EasyBuild installs software in CCR
 # see https://docs.easybuild.io/en/latest/Hooks.html
 import os
+import hashlib
 
 from easybuild.tools.build_log import EasyBuildError, print_msg
 from easybuild.tools.config import build_option, update_build_option
@@ -23,6 +24,19 @@ add_property("type_","mpi")
 family("mpi")
 """
 
+MATLAB_MODLUAFOOTER = """
+
+require("SitePackage")
+local found = find_and_define_license_file("MLM_LICENSE_FILE","matlab")
+if (not found) then
+        local error_message = [[
+        We did not find a suitable license for Matlab. If you have access to one, you can create the file $HOME/.licenses/matlab.lic with the license information. If you think you should have access to one, please write to ccr-help@buffalo.edu.
+        ]]
+        LmodError(error_message)
+end
+setenv("MATLAB_LOG_DIR","/tmp")
+"""
+
 def get_ccr_envvar(ccr_envvar):
     """Get an CCR environment variable from the environment"""
 
@@ -40,6 +54,9 @@ def set_modluafooter(ec):
 
     if name == 'openmpi':
         ec['modluafooter'] += (MPI_MODLUAFOOTER)
+
+    if name == 'matlab':
+        ec['modluafooter'] += (MATLAB_MODLUAFOOTER)
 
     if moduleclass == 'compiler' and not name == 'gcccore' and not name == 'llvm':
         if name in ['iccifort', 'intel-compilers']:
@@ -149,6 +166,24 @@ def cuda_config_opts(ec, prefix):
         print_msg("Using custom build deps for %s: %s", ec.name, ec['builddependencies'])
     else:
         raise EasyBuildError("cuda-specific hook triggered for non-cuda easyconfig?!")
+
+def matlab_config_opts(ec, prefix):
+    """Custom config options for MATLAB."""
+    if ec.name != 'MATLAB':
+        raise EasyBuildError("matlab-specific hook triggered for non-matlab easyconfig?!")
+
+    print_msg(f"Checking for R{ec.version}_Linux.iso in current directory..")
+    try:
+        sha256_hash = hashlib.sha256()
+        with open(f"R{ec.version}_Linux.iso", "rb") as f:
+            print_msg("Found R%s_Linux.iso computing sha256 checksum..", ec.version)
+            for byte_block in iter(lambda: f.read(4096),b""):
+                sha256_hash.update(byte_block)
+            sha256sum = sha256_hash.hexdigest()
+            print_msg("Done. updating checksums with: %s", sha256sum)
+            ec['checksums'] = [sha256sum]
+    except FileNotFoundError:
+        raise EasyBuildError(f"Failed to find R{ec.version}_Linux.iso please download from Mathworks")
 
 def openmpi_config_opts(ec, prefix):
     """Inject configure options for openmpi."""
@@ -358,6 +393,7 @@ PARSE_HOOKS = {
     'OpenBLAS': openblas_config_opts,
     'PMIx': pmix_config_opts,
     'CUDA': cuda_config_opts,
+    'MATLAB': matlab_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {

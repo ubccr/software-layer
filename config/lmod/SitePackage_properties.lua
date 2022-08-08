@@ -1,3 +1,10 @@
+--------------------------------------------------------------------------
+-- This code was adopted from and originally written by ComputeCanada:
+-- https://github.com/ComputeCanada/software-stack-config/blob/main/lmod/SitePackage_properties.lua
+--
+-- Modified for use at CCR. 
+--------------------------------------------------------------------------
+
 function set_props(t)
    ------------------------------------------------------------
    -- table of properties for fullnames or sn

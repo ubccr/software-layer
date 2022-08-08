@@ -1,3 +1,10 @@
+--------------------------------------------------------------------------
+-- This code was adopted from and originally written by ComputeCanada:
+-- https://github.com/ComputeCanada/software-stack-config/blob/main/lmod/SitePackage_logging.lua
+--
+-- Modified for use at CCR. 
+--------------------------------------------------------------------------
+
 local getenv    = os.getenv
 local concatTbl = table.concat
 function getenv_logged(var,default)

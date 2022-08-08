@@ -1,4 +1,11 @@
 --------------------------------------------------------------------------
+-- This code was adopted from and originally written by ComputeCanada:
+-- https://github.com/ComputeCanada/software-stack-config/blob/main/lmod/SitePackage.lua
+--
+-- Modified for use at CCR. 
+--------------------------------------------------------------------------
+
+--------------------------------------------------------------------------
 -- This is a placeholder for site specific functions.
 -- @module SitePackage
 
@@ -116,9 +123,9 @@ local ccr_soft_path = os.getenv("CCR_SOFTWARE_PATH")
 local ccr_cvms_repo = os.getenv("CCR_CVMFS_REPO")
 local lmod_package_path = os.getenv("LMOD_PACKAGE_PATH")
 dofile(pathJoin(lmod_package_path,"SitePackage_logging.lua"))
+dofile(pathJoin(lmod_package_path,"SitePackage_licenses.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_families.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_properties.lua"))
---dofile(pathJoin(lmod_package_path,"SitePackage_visible.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_localpaths.lua"))
 
 sandbox_registration{ loadfile = loadfile, assert = assert, loaded_modules = loaded_modules, serializeTbl = serializeTbl, clearWarningFlag = clearWarningFlag  }
@@ -230,6 +237,7 @@ local function unload_hook(t)
 end
 
 local function load_hook(t)
+	local valid = validate_license(t)
         set_props(t)
         set_family(t)
 	log_module_load(t,true)

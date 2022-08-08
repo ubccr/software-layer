@@ -1,3 +1,9 @@
+--------------------------------------------------------------------------
+-- This code was adopted from and originally written by ComputeCanada:
+-- https://github.com/ComputeCanada/software-stack-config/blob/main/lmod/SitePackage_families.lua
+--
+-- Modified for use at CCR. 
+--------------------------------------------------------------------------
 
 function set_family(t)
    ------------------------------------------------------------

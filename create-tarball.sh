@@ -32,12 +32,11 @@ function fatal_error() {
 }
 
 if [[ $# -lt 2 ]]; then
-    fatal_error "Usage: $0 <compat|easybuild|config> </scratch/path/to/workdir> <optional regex>"
+    fatal_error "Usage: $0 <compat|easybuild|config> </scratch/path/to/workdir>"
 fi
 
 content_type=$1
 workdir=$2
-regex=$3
 
 # Check if the content-type is compat, easybuild, or config
 if [ "${content_type}" != "compat" ] && [ "${content_type}" != "easybuild" ] && [ "${content_type}" != "config" ]
@@ -70,13 +69,8 @@ cd ${overlay_upper_dir}/versions
 echo ">> Collecting list of files/directories to include in tarball via ${PWD}..."
 
 if [ -d ${CCR_VERSION}/${content_type} ]; then
-    if [ -z "$regex" ]; then
-        find ${CCR_VERSION}/${content_type} -type f >> ${files_list}
-        find ${CCR_VERSION}/${content_type} -type l >> ${files_list}
-    else
-        find ${CCR_VERSION}/${content_type} -type f -regex $regex >> ${files_list}
-        find ${CCR_VERSION}/${content_type} -type l -regex $regex >> ${files_list}
-    fi
+    find ${CCR_VERSION}/${content_type} -type f ! -path "*/.wh..wh..opq" >> ${files_list}
+    find ${CCR_VERSION}/${content_type} -type l >> ${files_list}
 fi
 
 if ! [ -s "${files_list}" ]; then
