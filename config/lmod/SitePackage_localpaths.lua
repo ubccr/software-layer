@@ -1,3 +1,10 @@
+--------------------------------------------------------------------------
+-- This code was adopted from and originally written by ComputeCanada:
+-- https://github.com/ComputeCanada/software-stack-config/blob/main/lmod/SitePackage_localpaths.lua
+--
+-- Modified for use at CCR. 
+--------------------------------------------------------------------------
+
 require("serializeTbl")
 require("string_utils")
 
