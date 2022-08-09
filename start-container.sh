@@ -16,7 +16,7 @@
 BUILD_TAG="${BUILD_TAG:-$ID$VERSION_ID}"
 
 # XXX Only run on supported distros for now..
-if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
+if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" && "$BUILD_TAG" != "centos7" ]]; then
     echo "Unsupported linux distro: $BUILD_TAG" >&2
     exit 1
 fi
