@@ -1,0 +1,30 @@
+ARG cvmfsversion=2.9.4
+ARG fuseoverlayfsversion=1.9
+
+FROM centos:7
+ARG cvmfsversion
+ARG fuseoverlayfsversion
+
+RUN yum update -y
+RUN yum install -y sudo wget vim openssh-clients gawk autofs curl attr uuid fuse3 fuse3-libs fuse3-devel psmisc gdb uuid-devel lsof epel-release
+
+RUN cd /root && wget http://mirrors.ccr.buffalo.edu/ccr/cvmfs/cvmfs-config-ccr-0.0.1-1.noarch.rpm \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default-latest.noarch.rpm \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs-${cvmfsversion}-1.el7.x86_64.rpm \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs-fuse3-${cvmfsversion}-1.el7.x86_64.rpm \
+    && wget https://github.com/kovidgoyal/kitty/raw/master/terminfo/x/xterm-kitty
+
+RUN yum install -y /root/cvmfs-${cvmfsversion}-1.el7.x86_64.rpm \
+            /root/cvmfs-fuse3-${cvmfsversion}-1.el7.x86_64.rpm \
+            /root/cvmfs-config-default-latest.noarch.rpm \
+            /root/cvmfs-config-ccr-0.0.1-1.noarch.rpm
+
+RUN cp /root/xterm-kitty /usr/share/terminfo/x/xterm-kitty
+
+RUN curl -L -o /usr/local/bin/fuse-overlayfs https://github.com/containers/fuse-overlayfs/releases/download/v${fuseoverlayfsversion}/fuse-overlayfs-$(uname -m) \
+  && chmod +x /usr/local/bin/fuse-overlayfs
+
+RUN echo 'CVMFS_QUOTA_LIMIT=10000' > /etc/cvmfs/default.local \
+  && echo 'CVMFS_CLIENT_PROFILE="single"' >> /etc/cvmfs/default.local
+
+RUN mkdir -p /cvmfs/soft.ccr.buffalo.edu
