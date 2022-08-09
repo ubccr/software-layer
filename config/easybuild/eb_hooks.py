@@ -353,6 +353,7 @@ def matlab_postproc(ec, *args, **kwargs):
         ec.cfg['postinstallcmds'] = [
             'chmod -R u+w %(installdir)s',
             f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin",
+            f"mv %(installdir)s/bin/ldd %(installdir)s/bin/ldd.bak",
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
