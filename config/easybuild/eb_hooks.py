@@ -25,8 +25,8 @@ family("mpi")
 """
 
 MATLAB_MODLUAFOOTER = """
-prepend_path("PATH", {eprefix}/usr/sbin)
-prepend_path("PATH", {eprefix}/usr/bin)
+prepend_path("PATH", "{eprefix}/usr/sbin")
+prepend_path("PATH", "{eprefix}/usr/bin")
 require("SitePackage")
 local found = find_and_define_license_file("MLM_LICENSE_FILE","matlab")
 if (not found) then
