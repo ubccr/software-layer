@@ -25,7 +25,8 @@ family("mpi")
 """
 
 MATLAB_MODLUAFOOTER = """
-
+prepend_path("PATH", {eprefix}/usr/sbin)
+prepend_path("PATH", {eprefix}/usr/bin)
 require("SitePackage")
 local found = find_and_define_license_file("MLM_LICENSE_FILE","matlab")
 if (not found) then
@@ -49,6 +50,7 @@ def get_ccr_envvar(ccr_envvar):
 def set_modluafooter(ec):
     software_path = get_ccr_envvar('CCR_SOFTWARE_PATH')
     ccr_version = get_ccr_envvar('CCR_VERSION')
+    eprefix = get_ccr_envvar('EPREFIX')
     moduleclass = ec.get('moduleclass','')
     name = ec['name'].lower()
 
@@ -56,7 +58,7 @@ def set_modluafooter(ec):
         ec['modluafooter'] += (MPI_MODLUAFOOTER)
 
     if name == 'matlab':
-        ec['modluafooter'] += (MATLAB_MODLUAFOOTER)
+        ec['modluafooter'] += MATLAB_MODLUAFOOTER.format(eprefix=eprefix)
 
     if moduleclass == 'compiler' and not name == 'gcccore' and not name == 'llvm':
         if name in ['iccifort', 'intel-compilers']:
@@ -353,7 +355,6 @@ def matlab_postproc(ec, *args, **kwargs):
         ec.cfg['postinstallcmds'] = [
             'chmod -R u+w %(installdir)s',
             f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin",
-            f"mv %(installdir)s/bin/ldd %(installdir)s/bin/ldd.bak",
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
