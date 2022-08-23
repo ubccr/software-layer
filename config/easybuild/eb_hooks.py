@@ -167,6 +167,14 @@ def cuda_config_opts(ec, prefix):
     else:
         raise EasyBuildError("cuda-specific hook triggered for non-cuda easyconfig?!")
 
+def perl_config_opts(ec, prefix):
+    """Custom config options for Perl."""
+    if ec.name != 'Perl':
+        raise EasyBuildError("perl-specific hook triggered for non-perl easyconfig?!")
+
+    print_msg(f"Set path to openssl in compat layer for Perl {ec.version}..")
+    setvar("EBROOTOPENSSL", f"{prefix}/usr")
+
 def matlab_config_opts(ec, prefix):
     """Custom config options for MATLAB."""
     if ec.name != 'MATLAB':
@@ -394,6 +402,7 @@ PARSE_HOOKS = {
     'PMIx': pmix_config_opts,
     'CUDA': cuda_config_opts,
     'MATLAB': matlab_config_opts,
+    'Perl': perl_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {
