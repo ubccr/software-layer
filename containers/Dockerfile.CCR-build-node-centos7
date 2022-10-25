@@ -6,7 +6,7 @@ ARG cvmfsversion
 ARG fuseoverlayfsversion
 
 RUN yum update -y
-RUN yum install -y sudo wget vim openssh-clients gawk autofs curl attr uuid fuse3 fuse3-libs fuse3-devel psmisc gdb uuid-devel lsof epel-release
+RUN yum install -y sudo wget vim openssh-clients gawk autofs curl attr uuid fuse3 fuse3-libs fuse3-devel psmisc gdb uuid-devel lsof epel-release autoconf automake gcc make tar
 
 RUN cd /root && wget http://mirrors.ccr.buffalo.edu/ccr/cvmfs/cvmfs-config-ccr-0.0.1-1.noarch.rpm \
     && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default-latest.noarch.rpm \
