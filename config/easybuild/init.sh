@@ -30,10 +30,10 @@ export EASYBUILD_CONFIGFILES=${CCR_INIT_DIR}/easybuild/config.cfg
 # Set custom Hierarchical module naming scheme. For details see here:
 # https://easybuilders.github.io/easybuild-tutorial/2021-lust/module_naming_schemes/
 # https://easybuild.io/files/hust14_paper.pdf
-export EASYBUILD_INCLUDE_MODULE_NAMING_SCHEMES=${CCR_INIT_DIR}/easybuild/SoftCCHierarchicalMNS.py
-export EASYBUILD_MODULE_NAMING_SCHEME=SoftCCHierarchicalMNS
+export EASYBUILD_INCLUDE_MODULE_NAMING_SCHEMES=${CCR_INIT_DIR}/easybuild/CCRHierarchicalMNS.py
+export EASYBUILD_MODULE_NAMING_SCHEME=CCRHierarchicalMNS
 
-export EASYBUILD_ALLOW_LOADED_MODULES=gentoo
+export EASYBUILD_ALLOW_LOADED_MODULES=StdEnv,gentoo,easybuild
 export EASYBUILD_PREFIX=${WORKDIR}/easybuild
 export EASYBUILD_INSTALLPATH=${CCR_SOFTWARE_PATH}
 export EASYBUILD_SUFFIX_MODULES_PATH=""

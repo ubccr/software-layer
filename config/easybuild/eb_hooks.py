@@ -60,10 +60,8 @@ def set_modluafooter(ec):
     if name == 'matlab':
         ec['modluafooter'] += MATLAB_MODLUAFOOTER.format(eprefix=eprefix)
 
-    if moduleclass == 'compiler' and not name == 'gcccore' and not name == 'llvm':
-        if name in ['iccifort', 'intel-compilers']:
-            name = 'intel'
-        comp = os.path.join('Compiler', name + ec['version'][:ec['version'].find('.')])
+    if moduleclass == 'compiler':
+        comp = os.path.join('Compiler', name, ec['version'])
         ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
     if ec['name'] == 'CUDAcore':
         comp = os.path.join('CUDA', 'cuda' + '.'.join(ec['version'].split('.')[:2]))
