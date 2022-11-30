@@ -167,14 +167,10 @@ class CCRHierarchicalMNS(ModuleNamingScheme):
             if tc_mpi is None:
                 # compiler-only toolchain => Compiler/<compiler_name>/<compiler_version> namespace
                 subdir = os.path.join(COMPILER, tc_comp_name, tc_comp_ver)
-                if ec['name'].lower() in ['intel', 'icc', 'ifort', 'iccifort', 'intel-compilers', 'impi', 'intelmpi']:
-                    subdir = os.path.join(COMPILER, tc_comp_name+tc_comp_ver[:tc_comp_ver.find('.')])
             else:
                 # compiler-MPI toolchain => MPI/<comp_name>/<comp_version>/<MPI_name>/<MPI_version> namespace
                 tc_mpi_fullver = self.det_full_version(tc_mpi)
                 subdir = os.path.join(MPI, tc_comp_name, tc_comp_ver, tc_mpi['name'].lower(), tc_mpi_fullver)
-                if ec['name'].lower() in ['imkl']:
-                    subdir = os.path.join(MPI, tc_comp_name+tc_comp_ver[:tc_comp_ver.find('.')], tc_mpi['name'].lower()+tc_mpi_fullver[:tc_mpi_fullver.find('.')])
 
         if os.getenv('CCR_ARCH') is None:
             raise EasyBuildError("Need to set architecture to determine module path in $CCR_ARCH")
