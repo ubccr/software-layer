@@ -60,10 +60,10 @@ def set_modluafooter(ec):
     if name == 'matlab':
         ec['modluafooter'] += MATLAB_MODLUAFOOTER.format(eprefix=eprefix)
 
-    if moduleclass == 'compiler' and not name == 'gcccore' and not name == 'llvm':
+    if moduleclass == 'compiler':
         if name in ['iccifort', 'intel-compilers']:
             name = 'intel'
-        comp = os.path.join('Compiler', name + ec['version'][:ec['version'].find('.')])
+        comp = os.path.join('Compiler', name, ec['version'])
         ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
     if ec['name'] == 'CUDAcore':
         comp = os.path.join('CUDA', 'cuda' + '.'.join(ec['version'].split('.')[:2]))
@@ -75,6 +75,7 @@ def pre_module_hook(self, *args, **kwargs):
     self.cfg.enable_templating = False
     set_modluafooter(self.cfg)
     self.cfg.enable_templating = orig_enable_templating
+    self.cfg.enhance_sanity_check = True
 
 def get_rpath_override_dirs(software_name):
     # determine path to installations in software layer via $CCR_SOFTWARE_PATH
@@ -318,6 +319,7 @@ def impi_postproc(ec, *args, **kwargs):
        https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_gentoo.py"""
 
     if ec.name == 'impi':
+        ec.cfg['set_mpi_wrappers_all'] = True
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         # Paths differ between versions of intel
         version_major = ec.version.split('.')[0]

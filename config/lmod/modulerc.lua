@@ -1,4 +1,5 @@
 -- CCR default versions
+module_version("StdEnv/2023.01","default")
 module_version("easybuild/4.6.0","default")
 module_version("gcc/9.3.0","default")
 module_version("gcccore/9.3.0","default")

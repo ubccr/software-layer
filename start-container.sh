@@ -24,7 +24,7 @@ fi
 BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
 CVMFS_CONFIG_REPO="cvmfs-config.ccr.buffalo.edu"
 CVMFS_SOFT_REPO="soft.ccr.buffalo.edu"
-CCR_VERSION="2022.05"
+CCR_VERSION=${CCR_VERSION:-2023.01}
 
 if [ $# -lt 2 ]; then
     echo "Usage: $0 <shell|run|prefix> <path to work directory>" >&2
