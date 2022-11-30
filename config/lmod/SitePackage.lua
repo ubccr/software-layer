@@ -120,7 +120,7 @@ function dofile (filename)
 end
 
 local ccr_soft_path = os.getenv("CCR_SOFTWARE_PATH")
-local ccr_cvms_repo = os.getenv("CCR_CVMFS_REPO")
+local ccr_prefix = os.getenv("CCR_PREFIX")
 local lmod_package_path = os.getenv("LMOD_PACKAGE_PATH")
 dofile(pathJoin(lmod_package_path,"SitePackage_logging.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_licenses.lua"))
@@ -271,7 +271,7 @@ local mapT =
       [ccr_soft_path .. '/modules/sse3/Core.*'] = "Core sse modules",
       [ccr_soft_path .. '/modules/sse3/Compiler.*'] = "Compiler-dependent sse3 modules",
       [ccr_soft_path .. '/modules/sse3/MPI.*'] = "MPI-dependent sse3 modules",
-      [ccr_cvms_repo .. '/config/modulefiles$'] = "Custom CCR modules",
+      [ccr_prefix .. '/config/modulefiles$'] = "Custom CCR modules",
       ['/srv/software.*layer/config/modulefiles$'] = "Custom CCR modules",
       ['/project/.*'] = "Your groups' modules",
       ['/user/.*'] = "Your personal modules",
