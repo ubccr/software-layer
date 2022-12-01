@@ -1,10 +1,3 @@
-# Defines base CCR environment variables. These will be used by everything
-  
-export CCR_CVMFS_REPO="/cvmfs/soft.ccr.buffalo.edu"
-export CCR_VERSION="2023.01"
-export CCR_PREFIX=$CCR_CVMFS_REPO/versions/$CCR_VERSION
-export CCR_SOFTWARE_PATH=$CCR_PREFIX/easybuild
-
 # Set custom prompt
 # export PS1="(CCRv${CCR_VERSION}) [\u@\h:\w]$ "
 

@@ -48,7 +48,7 @@ def get_ccr_envvar(ccr_envvar):
     return ccr_envvar_value
 
 def set_modluafooter(ec):
-    software_path = get_ccr_envvar('CCR_SOFTWARE_PATH')
+    software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
     ccr_version = get_ccr_envvar('CCR_VERSION')
     eprefix = get_ccr_envvar('EPREFIX')
     moduleclass = ec.get('moduleclass','')
@@ -78,8 +78,8 @@ def pre_module_hook(self, *args, **kwargs):
     self.cfg.enhance_sanity_check = True
 
 def get_rpath_override_dirs(software_name):
-    # determine path to installations in software layer via $CCR_SOFTWARE_PATH
-    ccr_software_path = get_ccr_envvar('CCR_SOFTWARE_PATH')
+    # determine path to installations in software layer via $CCR_EASYBUILD_PATH
+    ccr_software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
     ccr_version = get_ccr_envvar('CCR_VERSION')
 
     # construct the rpath override directory stub
