@@ -87,6 +87,10 @@ if [ -d "/opt/software/nvidia" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/nvidia:/opt/software/nvidia:ro"
 fi
 
+if [ -d "${HOME}/testsuite/sanitarium" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},${HOME}/testsuite:/home/${USER}/testsuite:rw"
+fi
+
 export SINGULARITY_BIND
 
 # set environment variables for fuse mounts in Singularity container
