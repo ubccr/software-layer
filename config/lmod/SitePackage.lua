@@ -119,14 +119,17 @@ function dofile (filename)
     return f()
 end
 
-local ccr_soft_path = os.getenv("CCR_SOFTWARE_PATH")
+local ccr_version =os.getenv("CCR_VERSION")
 local ccr_prefix = os.getenv("CCR_PREFIX")
+
+-- NOTE: this matches CCR_PREFIX/easybuild and CCR_PREFIX/banalbuild
+local ccr_soft_path = pathJoin(ccr_prefix, ".*build")
+
 local lmod_package_path = os.getenv("LMOD_PACKAGE_PATH")
 dofile(pathJoin(lmod_package_path,"SitePackage_logging.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_licenses.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_families.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_properties.lua"))
-dofile(pathJoin(lmod_package_path,"SitePackage_localpaths.lua"))
 
 sandbox_registration{ loadfile = loadfile, assert = assert, loaded_modules = loaded_modules, serializeTbl = serializeTbl, clearWarningFlag = clearWarningFlag  }
 
@@ -233,20 +236,17 @@ sandbox_registration{ get_installed_cuda_driver_version = get_installed_cuda_dri
 
 local function unload_hook(t)
         set_family(t)
-        set_local_paths(t)
 end
 
 local function load_hook(t)
 	local valid = validate_license(t)
         set_props(t)
         set_family(t)
-	log_module_load(t,true)
-        set_local_paths(t)
+        log_module_load(t,true)
 end
 
 local function spider_hook(t)
         set_props(t)
-        set_local_paths(t)
 end
 
 hook.register("unload",           unload_hook)
@@ -257,7 +257,7 @@ hook.register("load_spider",    spider_hook)
 local mapT =
 {
    grouped = {
-      [ccr_soft_path .. '/modules/Core.*']     = "Core Modules",
+      [ccr_soft_path .. '/modules/Core.*']     = "Core modules",
       [ccr_soft_path .. '/modules/CUDA.*'] = "Cuda-dependent modules",
       [ccr_soft_path .. '/modules/avx512/Core.*'] = "Core avx512 modules",
       [ccr_soft_path .. '/modules/avx512/Compiler.*'] = "Compiler-dependent avx512 modules",
@@ -271,10 +271,11 @@ local mapT =
       [ccr_soft_path .. '/modules/sse3/Core.*'] = "Core sse modules",
       [ccr_soft_path .. '/modules/sse3/Compiler.*'] = "Compiler-dependent sse3 modules",
       [ccr_soft_path .. '/modules/sse3/MPI.*'] = "MPI-dependent sse3 modules",
-      [ccr_prefix .. '/config/modulefiles$'] = "Custom CCR modules",
-      ['/srv/software.*layer/config/modulefiles$'] = "Custom CCR modules",
-      ['/project/.*'] = "Your groups' modules",
-      ['/user/.*'] = "Your personal modules",
+      [ccr_prefix .. '/config/modulefiles$'] = "Core modules",
+      ['/srv/software.*layer/config/modulefiles$'] = "Core modules",
+      ['/projects/.*'] = "Your groups' modules",
+      ['/user/.*/modules/.*'] = "Your personal modules",
+      ['/home/.*/modules/.*'] = "Your personal modules",
    },
 }
 
@@ -284,13 +285,24 @@ function avail_hook(t)
    if (not availStyle or availStyle == "system" or styleT == nil) then
       return
    end
-   local localModulePaths = os.getenv("CCR_LOCAL_MODULEPATHS") or nil
-   if localModulePaths ~= nil then
-    for localModulePathRoot in localModulePaths:split(":") do
-       styleT[localModulePathRoot .. "/.*/Core.*"] = "Cluster specific Core modules"
-       styleT[localModulePathRoot .. "/.*/CUDA.*"] = "Cluster specific Cuda-dependent modules"
-       styleT[localModulePathRoot .. "/.*/Compiler.*"] = "Cluster specific Compiler-dependent modules"
-       styleT[localModulePathRoot .. "/.*/MPI.*"] = "Cluster specific MPI-dependent modules"
+   local customBuildPaths = os.getenv("CCR_CUSTOM_BUILD_PATHS") or nil
+   if customBuildPaths ~= nil then
+    for customPath in customBuildPaths:split(":") do
+       local customModulePathRoot = pathJoin(customPath, ccr_version)
+       styleT[customModulePathRoot .. "/modules/Core.*"] = "Your Core modules"
+       styleT[customModulePathRoot .. "/modules/CUDA.*"] = "Your Cuda-dependent modules"
+       styleT[customModulePathRoot .. "/modules/avx512/Core.*"] = "Your avx512 modules"
+       styleT[customModulePathRoot .. "/modules/avx512/Compiler.*"] = "Your Compiler-dependent avx512 modules"
+       styleT[customModulePathRoot .. "/modules/avx512/MPI.*"] = "Your MPI-dependent avx512 modules"
+       styleT[customModulePathRoot .. "/modules/avx2/Core.*"] = "Your avx2 modules"
+       styleT[customModulePathRoot .. "/modules/avx2/Compiler.*"] = "Your Compiler-dependent avx2 modules"
+       styleT[customModulePathRoot .. "/modules/avx2/MPI.*"] = "Your MPI-dependent avx2 modules"
+       styleT[customModulePathRoot .. "/modules/avx/Core.*"] = "Your avx modules"
+       styleT[customModulePathRoot .. "/modules/avx/Compiler.*"] = "Your Compiler-dependent avx modules"
+       styleT[customModulePathRoot .. "/modules/avx/MPI.*"] = "Your MPI-dependent avx modules"
+       styleT[customModulePathRoot .. "/modules/sse3/Core.*"] = "Your sse3 modules"
+       styleT[customModulePathRoot .. "/modules/sse3/Compiler.*"] = "Your Compiler-dependent sse3 modules"
+       styleT[customModulePathRoot .. "/modules/sse3/MPI.*"] = "Your MPI-dependent sse3 modules"
     end
    end
    for k,v in pairs(t) do

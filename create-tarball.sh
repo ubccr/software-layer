@@ -32,16 +32,16 @@ function fatal_error() {
 }
 
 if [[ $# -lt 2 ]]; then
-    fatal_error "Usage: $0 <compat|easybuild|config> </scratch/path/to/workdir>"
+    fatal_error "Usage: $0 <compat|easybuild|banalbuild|config> </scratch/path/to/workdir>"
 fi
 
 content_type=$1
 workdir=$2
 
 # Check if the content-type is compat, easybuild, or config
-if [ "${content_type}" != "compat" ] && [ "${content_type}" != "easybuild" ] && [ "${content_type}" != "config" ]
+if [ "${content_type}" != "compat" ] && [ "${content_type}" != "easybuild" ] && [ "${content_type}" != "config" ] && [ "${content_type}" != "banalbuild" ]
 then
-    fatal_error "Content type should be either compat, easybuild, or config."
+    fatal_error "Content type should be either compat, easybuild, banalbuild or config."
 fi
 
 if [[ -z "$CCR_VERSION" ]]; then
