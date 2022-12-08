@@ -215,6 +215,14 @@ def pmix_config_opts(ec, eprefix):
     else:
         raise EasyBuildError("pmix-specific hook triggered for non-pmix easyconfig?!")
 
+def gdal_config_opts(ec, eprefix):
+    """Inject configure options for gdal."""
+    if ec.name == 'GDAL':
+        ec.update('configopts', '--with-libjson-c=%s' % os.path.join(eprefix, 'usr'))
+        print_msg("Using custom configure option for %s: %s", ec.name, ec['configopts'])
+    else:
+        raise EasyBuildError("gdal-specific hook triggered for non-gdal easyconfig?!")
+
 def openblas_config_opts(ec, prefix):
     """Inject configure options for openblas."""
     if ec.name == 'OpenBLAS':
@@ -407,6 +415,7 @@ PARSE_HOOKS = {
     'CUDA': cuda_config_opts,
     'MATLAB': matlab_config_opts,
     'Perl': perl_config_opts,
+    'GDAL': gdal_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {

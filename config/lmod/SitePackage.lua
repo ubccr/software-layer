@@ -130,6 +130,7 @@ dofile(pathJoin(lmod_package_path,"SitePackage_logging.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_licenses.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_families.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_properties.lua"))
+dofile(pathJoin(lmod_package_path,"SitePackage_hidden.lua"))
 
 sandbox_registration{ loadfile = loadfile, assert = assert, loaded_modules = loaded_modules, serializeTbl = serializeTbl, clearWarningFlag = clearWarningFlag  }
 
@@ -238,6 +239,10 @@ local function unload_hook(t)
         set_family(t)
 end
 
+local function visible_hook(modT)
+        set_hidden(modT)
+end
+
 local function load_hook(t)
 	local valid = validate_license(t)
         set_props(t)
@@ -249,9 +254,10 @@ local function spider_hook(t)
         set_props(t)
 end
 
-hook.register("unload",           unload_hook)
+hook.register("unload",         unload_hook)
 hook.register("load",           load_hook)
 hook.register("load_spider",    spider_hook)
+hook.register("isVisibleHook",  visible_hook)
 
 
 local mapT =
