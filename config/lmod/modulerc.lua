@@ -12,9 +12,5 @@ module_version("gcc/10.3.0","10")
 module_version("gcc/11.2.0","11")
 module_version("intel/2022.00","2022")
 
--- alias
-module_alias("R/4.2.0", "r/4.2.0")
-module_alias("R", "r/4.2.0")
-
 -- hidden modules
 hide_version("easybuild/4.6.1")

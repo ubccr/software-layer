@@ -74,6 +74,12 @@ function set_hidden(modT)
      "pango",
      "proj",
      "udunits",
+     "snappy",
+     "utf8proc",
+     "re2",
+     "rapidjson",
+     "pkg-config",
+     "harfbuzz",
    }
 
    for k,v in ipairs(hiddenT) do
