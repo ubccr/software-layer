@@ -248,6 +248,14 @@ def ucx_eprefix(ec, eprefix):
     else:
         raise EasyBuildError("UCX-specific hook triggered for non-UCX easyconfig?!")
 
+def povray_eprefix(ec, eprefix):
+    """Fix POV-Ray setting default system path to /usr for X11 via added configuration options."""
+    if ec.name == 'POV-Ray':
+        ec.update('configopts', '--x-includes=$EBROOTX11/include --x-libraries=$EBROOTX11/lib')
+        print_msg("Adding custom configure options for %s: %s", ec.name, ec['configopts'])
+    else:
+        raise EasyBuildError("POV-Ray specific hook to overcome hardcoded system /usr path for X11 ")
+
 def vtk_eprefix(ec, eprefix):
     """Fix VTK missing pthread library linking via added configuration options."""
     if ec.name == 'VTK':
@@ -408,6 +416,7 @@ def nvhpc_postproc(ec, *args, **kwargs):
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
+    'POV-Ray': povray_eprefix,
     'VTK': vtk_eprefix,
     'OpenMPI': openmpi_config_opts,
     'OpenBLAS': openblas_config_opts,
