@@ -33,9 +33,7 @@ user@host$ ./start-container.sh prefix /scratch/username_somepackage
 
 # Inside container source init scripts and run easybuild
 user@container$ cd /srv/software-layer
-user@container$ ./fetch-dev-tarballs.sh 
 user@container$ source config/profile/bash.sh
-user@container$ source config/easybuild/init.sh
 user@container$ module load easybuild
 
 # Show easybuild config
@@ -95,20 +93,10 @@ you ran the start-container.sh script) is bind mounted into
 $ cd /srv/software-layer
 ```
 
-4. Fetch the latest development builds for testing. These are tarballs of
-software that others have built and are ready for testing. This ensures you're
-running the latest snapshot of what will be the production software:
-
-```
-$ ./fetch-dev-tarballs.sh 
-```
-
-5. Source CCR's init scripts to setup your environment. This will also setup
-lmod and the necessary easybuild config settings used at CCR:
+4. Source CCR's init scripts to setup your environment:
 
 ```
 $ source config/profile/bash.sh
-$ source config/easybuild/init.sh
 
 # This should now show the latest software modules
 $ module avail
@@ -118,13 +106,13 @@ NOTE: You can make changes to the config/init scripts and test them inside the
 container. Then commit and submit a PR's etc.
 
 
-6. Load the easybuild module:
+5. Load the easybuild module:
 
 ```
 $ module load easybuild
 ```
 
-7. Build software, test software:
+6. Build software, test software:
 
 ```
 $ eb OpenBLAS-0.3.9-GCC-9.3.0.eb --robot
@@ -136,7 +124,7 @@ $ module load openblas
 $ exit
 ```
 
-8. Once you exit the container terminated and any easybuild files (modules,
+7. Once you exit the container terminated and any easybuild files (modules,
 software) that were written to `/cvmfs` were captured in your workdir in a
 directory named `overlay-upper`. We can now run a script to tar up these files
 for eventual importing into the CCR cvmfs repo. The tarball will be created
@@ -152,7 +140,7 @@ To create a tarball after building software with easybuild run:
 $ ./create-tarball.sh easybuild /scratch/username_somepackage
 ```
 
-9. Copy the resulting tarball to mirrors so that others can test out your work
+8. Copy the resulting tarball to mirrors so that others can test out your work
 before publishing to our production CernVM-FS stratum0 server.
 
 ## See Also

@@ -42,7 +42,8 @@ if (mode() ~= "spider") then
             end
         end
     end
-    if isDir(pathJoin(os.getenv("HOME"), "modules", ccr_version)) then
-        prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), "modules", ccr_version))
+    if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild", ccr_version, "modules")) then
+        prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild", ccr_version, "modules/Core"))
+        prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild", ccr_version, "modules", arch, "Core"))
     end
 end
