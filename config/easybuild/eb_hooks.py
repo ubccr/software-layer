@@ -13,9 +13,14 @@ CCR_RPATH_OVERRIDE_ATTR = 'orig_rpath_override_dirs'
 COMPILER_MODLUAFOOTER = """
 prepend_path("MODULEPATH", pathJoin("{software_path}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
 if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
-    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/{ccr_version}/easybuild/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
 end
 add_property("type_","tools")
+"""
+
+CUSTOMEB_MODLUAFOOTER  = """
+
+prepend_path("PATH", pathJoin(os.getenv("CCR_INIT_DIR"), "easybuild/bin"))
 """
 
 MPI_MODLUAFOOTER = """
@@ -53,6 +58,9 @@ def set_modluafooter(ec):
     eprefix = get_ccr_envvar('EPREFIX')
     moduleclass = ec.get('moduleclass','')
     name = ec['name'].lower()
+
+    if name == 'easybuild':
+        ec['modluafooter'] += (CUSTOMEB_MODLUAFOOTER)
 
     if name == 'openmpi':
         ec['modluafooter'] += (MPI_MODLUAFOOTER)
