@@ -1,4 +1,6 @@
 # -*- lua -*-
+
+-- Possible colors:  black, red, green, yellow, blue, magenta, cyan, and white
 propT = {
    lmod = {
       validT = { sticky = 1 },
@@ -7,7 +9,7 @@ propT = {
       },
    },
    type_ = {
-      validT = { tools = 1, mpi = 2, script = 3, math = 4, chem = 5, bio = 6, vis = 7, phys = 8, geo = 9, io = 10, ai = 11 },
+      validT = { tools = 1, mpi = 2, script = 3, math = 4, chem = 5, bio = 6, vis = 7, phys = 8, geo = 9, io = 10, ai = 11, os = 12 },
       displayT = {
          ["tools"]     = { short = "(t)",  long = "(tool)",   color = "blue", doc = "Tools for development", },
          ["mpi"]     = { short = "(m)",  long = "(mpi)",   color = "red", doc = "MPI implementations", },
@@ -20,6 +22,7 @@ propT = {
          ["vis"]     = { short = "(vis)",  long = "(vis)",   color = "blue", doc = "Visualisation software", },
          ["io"]     = { short = "(io)",  long = "(io)",   color = "yellow", doc = "Input/output software", },
          ["ai"]     = { short = "(ai)",  long = "(ai)",   color = "yellow", doc = "Artificial intelligence", },
+         ["os"]     = { short = "(os)",  long = "(os)",   color = "blue", doc = "Base OS", },
       },
    },
 }

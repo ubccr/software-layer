@@ -14,3 +14,11 @@ module_version("intel/2022.00","2022")
 
 -- hidden modules
 hide_version("easybuild/4.6.1")
+hide_version("gentoo/2022.05")
+hide_version("StdEnv/2022.05")
+hide_version("python/3.9.5-bare")
+hide_version("python/3.9.5")
+hide_version("rust/1.52.1")
+hide_version("cmake/3.20.1")
+hide_version("cmake/3.21.1")
+hide_version("sqlite/3.35.4")
