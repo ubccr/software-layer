@@ -279,7 +279,6 @@ local mapT =
       [ccr_soft_path .. '/modules/sse3/MPI.*'] = "MPI-dependent sse3 modules",
       [ccr_prefix .. '/config/modulefiles$'] = "Core modules",
       ['/srv/software.*layer/config/modulefiles$'] = "Core modules",
-      ['/projects/.*'] = "Your groups' modules",
       [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/Core.*'] = "Your personal Core modules",
       [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/Core.*'] = "Your personal Core avx512 modules",
       [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/Compiler.*'] = "Your personal Compiler-dependent avx512 modules",
@@ -300,13 +299,13 @@ function avail_hook(t)
    if customBuildPaths ~= nil then
     for customPath in customBuildPaths:split(":") do
        local customModulePathRoot = pathJoin(customPath, ccr_version)
-       styleT[customModulePathRoot .. "/modules/Core.*"] = "Your custom Core modules"
-       styleT[customModulePathRoot .. "/modules/avx512/Core.*"] = "Your custom avx512 modules"
-       styleT[customModulePathRoot .. "/modules/avx512/Compiler.*"] = "Your custom Compiler-dependent avx512 modules"
-       styleT[customModulePathRoot .. "/modules/avx512/MPI.*"] = "Your custom MPI-dependent avx512 modules"
-       styleT[customModulePathRoot .. "/modules/avx2/Core.*"] = "Your custom avx2 modules"
-       styleT[customModulePathRoot .. "/modules/avx2/Compiler.*"] = "Your custom Compiler-dependent avx2 modules"
-       styleT[customModulePathRoot .. "/modules/avx2/MPI.*"] = "Your custom MPI-dependent avx2 modules"
+       styleT[customModulePathRoot .. '/modules/Core.*'] = customPath .. " Core modules"
+       styleT[customModulePathRoot .. '/modules/avx512/Core.*'] = customPath .. " avx512 modules"
+       styleT[customModulePathRoot .. '/modules/avx512/Compiler.*'] = customPath .. " Compiler-dependent avx512 modules"
+       styleT[customModulePathRoot .. '/modules/avx512/MPI.*'] = customPath .. " MPI-dependent avx512 modules"
+       styleT[customModulePathRoot .. '/modules/avx2/Core.*'] = customPath .. " avx2 modules"
+       styleT[customModulePathRoot .. '/modules/avx2/Compiler.*'] = customPath .. " Compiler-dependent avx2 modules"
+       styleT[customModulePathRoot .. '/modules/avx2/MPI.*'] = customPath .. " MPI-dependent avx2 modules"
     end
    end
    for k,v in pairs(t) do
