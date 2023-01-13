@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ "$1" == "avx2" ]; then
+    export MODULEPATH=${MODULEPATH//$CCR_ARCH/avx2}
+    export CCR_ARCH=avx2
+    echo "CCR_ARCH changed to avx2"
+elif [ "$1" == "avx512" ]; then
+    export MODULEPATH=${MODULEPATH//$CCR_ARCH/avx512}
+    export CCR_ARCH=avx512
+    echo "CCR_ARCH changed to avx512"
+else
+    arch=$($EPREFIX/usr/bin/python3 ${CCR_INIT_DIR}/profile/ccr-arch.py) 
+    export MODULEPATH=${MODULEPATH//$CCR_ARCH/$arch}
+    export CCR_ARCH="$arch"
+    echo "CCR_ARCH changed to $arch"
+fi
