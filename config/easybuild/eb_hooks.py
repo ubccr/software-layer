@@ -32,6 +32,11 @@ CUSTOMEB_MODLUAFOOTER  = """
 prepend_path("PATH", pathJoin(os.getenv("CCR_INIT_DIR"), "easybuild/bin"))
 """
 
+ANACONDA_MODLUAFOOTER  = """
+
+setenv("TERMINFO", pathJoin(os.getenv("EPREFIX"), "usr/share/terminfo"))
+"""
+
 MPI_MODLUAFOOTER = """
 
 add_property("type_","mpi")
@@ -70,6 +75,9 @@ def set_modluafooter(ec):
 
     if name == 'easybuild':
         ec['modluafooter'] += (CUSTOMEB_MODLUAFOOTER)
+
+    if name == 'anaconda3':
+        ec['modluafooter'] += (ANACONDA_MODLUAFOOTER)
 
     if name == 'openmpi':
         ec['modluafooter'] += (MPI_MODLUAFOOTER)
