@@ -281,15 +281,6 @@ def povray_eprefix(ec, eprefix):
     else:
         raise EasyBuildError("POV-Ray specific hook to overcome hardcoded system /usr path for X11 ")
 
-def vtk_eprefix(ec, eprefix):
-    """Fix VTK missing pthread library linking via added configuration options."""
-    if ec.name == 'VTK':
-        ec.update('configopts', '--with-sysroot=%s' % eprefix)
-        ec.update('configopts', '-DVTK_REQUIRED_SHARED_LINKER_FLAGS=-lpthread')
-        print_msg("Using custom configure option for %s: %s", ec.name, ec['configopts'])
-    else:
-        raise EasyBuildError("VTK-specific hook for libpthread triggered for non-VTK easyconfig?!")
-
 def pre_configure_hook(self, *args, **kwargs):
     """Main pre-configure hook: trigger custom functions based on software name."""
     if self.name in PRE_CONFIGURE_HOOKS:
@@ -442,7 +433,6 @@ PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
     'POV-Ray': povray_eprefix,
-    'VTK': vtk_eprefix,
     'OpenMPI': openmpi_config_opts,
     'OpenBLAS': openblas_config_opts,
     'PMIx': pmix_config_opts,
