@@ -37,8 +37,12 @@ if [[ -d /srv/software-layer ]]; then
     export EASYBUILD_INSTALLPATH=${CCR_EASYBUILD_PATH}
 else
     # By default we assume user is building so set default install path to home
-    # directory. Users can override this by setting the EASYBUILD_PREFIX env var
-    export EASYBUILD_PREFIX=${EASYBUILD_PREFIX:-$HOME/.local/easybuild/$CCR_VERSION}
+    # directory. Users can override this by setting the CCR_BUILD_PREFIX env var
+    if [[ -z "$CCR_BUILD_PREFIX" ]]; then
+        export EASYBUILD_PREFIX=${HOME}/.local/easybuild/${CCR_VERSION}
+    else
+        export EASYBUILD_PREFIX=${CCR_BUILD_PREFIX}/${CCR_VERSION}
+    fi
 
     # This ensures existing modules get picked up and not rebuilt when
     # performing robot builds
