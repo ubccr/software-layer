@@ -16,32 +16,29 @@
 # For deatiled docs on configuring EasyBuild see:
 # https://docs.easybuild.io/en/latest/Configuration.html#available-configuration-settings
 
+# First create a temporary work directory for all easybuilds.
+# here we honor $TMPDIR if it is already defined, or /tmp otherwise
+if [ -z $TMPDIR ]; then
+    export WORKDIR=/tmp/$USER
+else
+    export WORKDIR=$TMPDIR/$USER
+fi
+
+# avoid that pyc files for EasyBuild are stored in EasyBuild installation directory
+export PYTHONPYCACHEPREFIX=${WORKDIR}/pycache
+export EASYBUILD_PREFIX=${WORKDIR}/easybuild
+export EASYBUILD_SOURCEPATH=${WORKDIR}/easybuild/sources:${CCR_SOURCEPATH}
+
 if [[ -d /srv/software-layer ]]; then
-    # Detect when building inside container and adjust config
-    # First create a temporary work directory for all easybuilds.
-    # here we honor $TMPDIR if it is already defined, or /tmp otherwise
-    if [ -z $TMPDIR ]; then
-        export WORKDIR=/tmp/$USER
-    else
-        export WORKDIR=$TMPDIR/$USER
-    fi
-
-    TMPDIR=$(mktemp -d)
-
-    # avoid that pyc files for EasyBuild are stored in EasyBuild installation directory
-    export PYTHONPYCACHEPREFIX=$TMPDIR/pycache
-    export EASYBUILD_PREFIX=${WORKDIR}/easybuild
-    export EASYBUILD_SOURCEPATH=${WORKDIR}/easybuild/sources:${CCR_SOURCEPATH}
-
-    # Set install path to CVMFS
+    # Detect when building inside container and set install path to CVMFS
     export EASYBUILD_INSTALLPATH=${CCR_EASYBUILD_PATH}
 else
     # By default we assume user is building so set default install path to home
     # directory. Users can override this by setting the CCR_BUILD_PREFIX env var
     if [[ -z "$CCR_BUILD_PREFIX" ]]; then
-        export EASYBUILD_PREFIX=${HOME}/.local/easybuild/${CCR_VERSION}
+        export EASYBUILD_INSTALLPATH=${HOME}/.local/easybuild/${CCR_VERSION}
     else
-        export EASYBUILD_PREFIX=${CCR_BUILD_PREFIX}/${CCR_VERSION}
+        export EASYBUILD_INSTALLPATH=${CCR_BUILD_PREFIX}/${CCR_VERSION}
     fi
 
     # This ensures existing modules get picked up and not rebuilt when
