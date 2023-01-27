@@ -1,5 +1,6 @@
 -- CCR default versions
 module_version("StdEnv/2023.01","default")
+module_version("ccrarch/avx512","default")
 module_version("easybuild/4.7.0","default")
 module_version("gcc/11.2.0","default")
 module_version("gcccore/11.2.0","default")
