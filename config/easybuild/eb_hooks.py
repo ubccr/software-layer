@@ -38,6 +38,18 @@ setenv("TERMINFO", pathJoin(os.getenv("EPREFIX"), "usr/share/terminfo"))
 """
 
 MPI_MODLUAFOOTER = """
+if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+end
+
+local customBuildPaths = os.getenv("CCR_CUSTOM_BUILD_PATHS") or nil
+if customBuildPaths ~= nil then
+ for customPath in customBuildPaths:split(":") do
+   if isDir(pathJoin(customPath, "{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+     prepend_path("MODULEPATH", pathJoin(customPath, "{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+   end
+ end
+end
 
 add_property("type_","mpi")
 family("mpi")
@@ -80,7 +92,9 @@ def set_modluafooter(ec):
         ec['modluafooter'] += (ANACONDA_MODLUAFOOTER)
 
     if name == 'openmpi':
-        ec['modluafooter'] += (MPI_MODLUAFOOTER)
+        gccver = get_ccr_envvar('EBVERSIONGCC')
+        comp = os.path.join('MPI', 'gcc', gccver, name, ec['version'])
+        ec['modluafooter'] += MPI_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
 
     if name == 'matlab':
         ec['modluafooter'] += MATLAB_MODLUAFOOTER.format(eprefix=eprefix)
