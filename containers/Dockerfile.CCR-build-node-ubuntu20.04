@@ -1,12 +1,12 @@
-ARG cvmfsversion=2.9.4
-ARG fuseoverlayfsversion=1.9
+ARG cvmfsversion=2.10.0
+ARG fuseoverlayfsversion=1.10
 
 FROM ubuntu:20.04
 ARG cvmfsversion
 ARG fuseoverlayfsversion
 
 RUN apt-get update
-RUN apt-get install -y sudo wget kitty-terminfo vim openssh-client gawk autofs curl attr uuid fuse3 libfuse2 psmisc gdb uuid-dev lsof
+RUN apt-get install -y sudo wget kitty-terminfo vim openssh-client gawk autofs curl attr uuid fuse3 libfuse2 psmisc gdb uuid-dev lsof csh tcsh
 
 RUN cd /root && wget http://mirrors.ccr.buffalo.edu/ccr/cvmfs/cvmfs-config-ccr-latest.all.deb \
     && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default_latest_all.deb \
