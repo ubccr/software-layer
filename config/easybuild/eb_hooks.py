@@ -443,6 +443,23 @@ def nvhpc_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("nvhpc-specific hook triggered for non-nvhpc easyconfig?!")
 
+def clang_preconfig(ec, *args, **kwargs):
+    """Add preconfig cmds for clang."""
+
+    if ec.name == 'Clang':
+        ec.cfg['preconfigopts'] = ("""pushd %(builddir)s/llvm-%(version)s.src/tools/clang || pushd %(builddir)s/llvm-project-%(version)s.src/clang; """ +
+            # Use ${EPREFIX} as default sysroot
+            """sed -i -e "s@DEFAULT_SYSROOT \\"\\"@DEFAULT_SYSROOT \\"${EPREFIX}\\"@" CMakeLists.txt ; """ +
+            """pushd lib/Driver/ToolChains ; """ +
+            # Use dynamic linker from ${EPREFIX}
+            """sed -i -e "/LibDir.*Loader/s@return \\"\/\\"@return \\"${EPREFIX%/}/\\"@" Linux.cpp ; """ +
+            # Remove --sysroot call on ld for native toolchain
+            """sed -i -e "$(grep -n -B1 sysroot= Gnu.cpp | sed -ne '{1s/-.*//;1p}'),+1 d" Gnu.cpp ; """ +
+            """popd; popd ; """)
+        print_msg("Using custom preconfig commands for %s: %s", ec.name, ec.cfg['preconfigopts'])
+    else:
+        raise EasyBuildError("clang-specific hook triggered for non-clang easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -457,6 +474,7 @@ PARSE_HOOKS = {
 }
 
 PRE_CONFIGURE_HOOKS = {
+    'Clang': clang_preconfig,
 }
 
 PRE_POSTPROC_HOOKS = {
