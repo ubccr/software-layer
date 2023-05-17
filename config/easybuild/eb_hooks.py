@@ -69,6 +69,17 @@ end
 setenv("MATLAB_LOG_DIR","/tmp")
 """
 
+GUROBI_MODLUAFOOTER = """
+require("SitePackage")
+local found = find_and_define_license_file("GRB_LICENSE_FILE","gurobi")
+if (not found) then
+        local error_message = [[
+        We did not find a suitable license for Gurobi. If you have access to one, you can create the file $HOME/.licenses/gurobi.lic with the license information. If you think you should have access to one, please write to ccr-help@buffalo.edu.
+        ]]
+        LmodError(error_message)
+end
+"""
+
 def get_ccr_envvar(ccr_envvar):
     """Get an CCR environment variable from the environment"""
 
@@ -98,6 +109,9 @@ def set_modluafooter(ec):
 
     if name == 'matlab':
         ec['modluafooter'] += MATLAB_MODLUAFOOTER.format(eprefix=eprefix)
+
+    if name == 'gurobi':
+        ec['modluafooter'] += GUROBI_MODLUAFOOTER.format()
 
     if moduleclass == 'compiler':
         if name in ['iccifort', 'intel-compilers']:
@@ -216,6 +230,13 @@ def perl_config_opts(ec, prefix):
 
     print_msg(f"Set path to openssl in compat layer for Perl {ec.version}..")
     setvar("EBROOTOPENSSL", f"{prefix}/usr")
+
+def gurobi_config_opts(ec, prefix):
+    """Custom config options for Gurobi."""
+    if ec.name != 'Gurobi':
+        raise EasyBuildError("gurobi-specific hook triggered for non-gurobi easyconfig?!")
+
+    ec['license_file'] = '/util/software/licenses/gurobi.lic'
 
 def matlab_config_opts(ec, prefix):
     """Custom config options for MATLAB."""
@@ -460,6 +481,19 @@ def clang_preconfig(ec, *args, **kwargs):
     else:
         raise EasyBuildError("clang-specific hook triggered for non-clang easyconfig?!")
 
+def gurobi_postproc(ec, *args, **kwargs):
+    """Add post install cmds for Gurobi."""
+
+    if ec.name == 'Gurobi':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/bin --add_path='$ORIGIN/../lib'",
+            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib/python3.9/site-packages/gurobipy --add_path='$ORIGIN/../../../../lib'",
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("cuda-specific hook triggered for non-Gurobi easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -471,6 +505,7 @@ PARSE_HOOKS = {
     'MATLAB': matlab_config_opts,
     'Perl': perl_config_opts,
     'GDAL': gdal_config_opts,
+    'Gurobi': gurobi_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {
@@ -486,4 +521,5 @@ PRE_POSTPROC_HOOKS = {
     'MATLAB': matlab_postproc,
     'CUDA': cuda_postproc,
     'NVHPC': nvhpc_postproc,
+    'Gurobi': gurobi_postproc,
 }
