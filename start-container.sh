@@ -64,7 +64,10 @@ echo "Using $CCR_TMPDIR as parent for temporary directories..."
 
 # create temporary directories
 mkdir -p $CCR_TMPDIR/{home,overlay-upper,overlay-work}
-mkdir -p $CCR_TMPDIR/{var-lib-cvmfs,var-run-cvmfs}
+mkdir -p $CCR_TMPDIR/{var-lib-cvmfs,var-run-cvmfs,tmp}
+
+# use tmp dir
+export TMPDIR=$CCR_TMPDIR/tmp
 
 # configure Singularity
 export SINGULARITY_HOME="$CCR_TMPDIR/home:/home/$USER"
@@ -85,6 +88,10 @@ fi
 
 if [ -d "/opt/software/nvidia" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/nvidia:/opt/software/nvidia:ro"
+fi
+
+if [ -d "/etc/glvnd" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/etc/glvnd:/etc/glvnd:rw"
 fi
 
 if [ -d "${HOME}/testsuite/sanitarium" ]; then
