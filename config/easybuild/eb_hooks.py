@@ -238,6 +238,15 @@ def gurobi_config_opts(ec, prefix):
 
     ec['license_file'] = '/util/software/licenses/gurobi.lic'
 
+def hdf5_config_opts(ec, prefix):
+    """Custom config options for HDF5."""
+    if ec.name != 'HDF5':
+        raise EasyBuildError("hdf5-specific hook triggered for non-hdf5 easyconfig?!")
+
+    if ec.toolchain.mpi_family():
+        # If building hdf5 with parallel mpi support we need to explicity set mpicxx here
+        ec.update('configopts', 'CXX=mpicxx ')
+
 def matlab_config_opts(ec, prefix):
     """Custom config options for MATLAB."""
     if ec.name != 'MATLAB':
@@ -362,6 +371,10 @@ def intel_postproc(ec, *args, **kwargs):
         ec.cfg['postinstallcmds'] = [
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icc.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
+            'echo "-nostdinc" >> %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
+            'echo "-I$EBROOTGCCCORE/lib/gcc/x86_64-pc-linux-gnu/$EBVERSIONGCCCORE/include" >> %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
+            'echo "-I$EBROOTGCCCORE/include/c++/$EBVERSIONGCCCORE" >> %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
+            'echo "-I$EBROOTGCCCORE/include/c++/$EBVERSIONGCCCORE/x86_64-pc-linux-gnu" >> %(installdir)s/compiler/%(version)s/linux/bin/intel64/icpc.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
             'echo "-isystem ${EPREFIX}/usr/include" > %(installdir)s/compiler/%(version)s/linux/bin/icpx.cfg',
             'echo "-L$EBROOTGCCCORE/lib64" >> %(installdir)s/compiler/%(version)s/linux/bin/icx.cfg',
@@ -506,6 +519,7 @@ PARSE_HOOKS = {
     'Perl': perl_config_opts,
     'GDAL': gdal_config_opts,
     'Gurobi': gurobi_config_opts,
+    'HDF5': hdf5_config_opts,
 }
 
 PRE_CONFIGURE_HOOKS = {
