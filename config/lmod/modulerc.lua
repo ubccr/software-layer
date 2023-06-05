@@ -1,7 +1,7 @@
 -- CCR default versions
 module_version("StdEnv/2023.01","default")
 module_version("ccrarch/avx512","default")
-module_version("easybuild/4.7.0","default")
+module_version("easybuild/4.7.2","default")
 module_version("gcc/11.2.0","default")
 module_version("gcccore/11.2.0","default")
 module_version("intel/2022.00","default")
@@ -16,6 +16,7 @@ module_version("intel/2022.00","2022")
 -- hidden modules
 hide_version("easybuild/4.6.1")
 hide_version("easybuild/4.6.2")
+hide_version("easybuild/4.7.0")
 hide_version("gentoo/2022.05")
 hide_version("StdEnv/2022.05")
 hide_version("python/3.9.5-bare")
