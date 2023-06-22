@@ -19,7 +19,7 @@
 # First create a temporary work directory for all easybuilds.
 # here we honor $TMPDIR if it is already defined, or /tmp otherwise
 if [ -z $TMPDIR ]; then
-    export WORKDIR=/tmp/$USER
+    export WORKDIR=/var/tmp/$USER
 else
     export WORKDIR=$TMPDIR/$USER
 fi
