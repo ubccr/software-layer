@@ -194,6 +194,10 @@ def pre_prepare_hook(self, *args, **kwargs):
         print_msg("Updated rpath_override_dirs (to allow overriding MPI family %s): %s",
                   mpi_family, rpath_override_dirs)
 
+    if 'cuda' in self.full_mod_name.lower():
+        print_msg("Module requires cuda so adding /opt/software/nvidia/lib64 to rpath")
+        update_build_option('rpath_override_dirs', '/opt/software/nvidia/lib64')
+
 
 def post_prepare_hook(self, *args, **kwargs):
     """Main post-prepare hook: trigger custom functions."""
@@ -246,6 +250,13 @@ def hdf5_config_opts(ec, prefix):
     if ec.toolchain.mpi_family():
         # If building hdf5 with parallel mpi support we need to explicity set mpicxx here
         ec.update('configopts', 'CXX=mpicxx ')
+
+def pillow_preconfig(ec, *args, **kwargs):
+    """Custom config options for Pillow."""
+    if ec.name != 'Pillow' and ec.name != 'Pillow-SIMD':
+        raise EasyBuildError("Pillow-specific hook triggered for non-Pillow easyconfig?!")
+
+    setvar("LDFLAGS", '-L/cvmfs/soft.ccr.buffalo.edu/versions/2023.01/compat/usr/lib64')
 
 def matlab_config_opts(ec, prefix):
     """Custom config options for MATLAB."""
@@ -524,6 +535,8 @@ PARSE_HOOKS = {
 
 PRE_CONFIGURE_HOOKS = {
     'Clang': clang_preconfig,
+    'Pillow': pillow_preconfig,
+    'Pillow-SIMD': pillow_preconfig,
 }
 
 PRE_POSTPROC_HOOKS = {
