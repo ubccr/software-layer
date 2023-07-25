@@ -80,6 +80,8 @@ function set_hidden(modT)
      "rapidjson",
      "pkg-config",
      "harfbuzz",
+     "zlib",
+     "unzip",
    }
 
    for k,v in ipairs(hiddenT) do
