@@ -1,0 +1,32 @@
+easyblock = 'PythonPackage'
+
+name = 'torchinfo'
+version = '1.8.0'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/TylerYep/torchinfo'
+description = """"
+Torchinfo provides information complementary to what is provided by print(your_model) in PyTorch, similar to
+Tensorflow's model.summary() API to view the visualization of the model, which is helpful while debugging your network.
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+github_account = 'TylerYep'
+source_urls = [GITHUB_SOURCE]
+sources = ['v%(version)s.tar.gz']
+checksums = ['169e525aada995accac0b723e3e215c24f8d49370c01e6c1a8bd3bed3bb6e679']
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('CUDA', '11.7.1', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('PyTorch', '1.12.1', '-CUDA-%(cudaver)s'),
+]
+
+use_pip = True
+download_dep_fail = True
+sanity_pip_check = True
+
+moduleclass = 'tools'
