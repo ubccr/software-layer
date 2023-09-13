@@ -233,6 +233,7 @@ def perl_config_opts(ec, prefix):
         raise EasyBuildError("perl-specific hook triggered for non-perl easyconfig?!")
 
     print_msg(f"Set path to openssl in compat layer for Perl {ec.version}..")
+    # XXX is this still necessary?
     setvar("EBROOTOPENSSL", f"{prefix}/usr")
 
 def gurobi_config_opts(ec, prefix):
@@ -289,8 +290,6 @@ def pmix_config_opts(ec, eprefix):
     """Inject configure options for pmix."""
     if ec.name == 'PMIx':
         ec.update('configopts', '--with-sysroot=%s' % eprefix)
-        ec.update('configopts', '--with-hwloc=%s' % os.path.join(eprefix, 'usr'))
-        ec.update('configopts', '--with-zlib=%s' % os.path.join(eprefix, 'usr'))
         print_msg("Using custom configure option for %s: %s", ec.name, ec['configopts'])
     else:
         raise EasyBuildError("pmix-specific hook triggered for non-pmix easyconfig?!")
