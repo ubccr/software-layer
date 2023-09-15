@@ -1,0 +1,36 @@
+easyblock = 'PythonBundle'
+
+name = 'torchdata'
+version = '0.4.1'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/pytorch/data'
+description = """
+TorchData is a prototype library of common modular data loading primitives for
+easily constructing flexible and performant data pipelines."
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('CUDA', '11.7.1', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('PyTorch', '1.12.1', '-CUDA-%(cudaver)s'),
+]
+
+exts_list = [
+    ('portalocker', '2.7.0', {
+        'checksums': ['032e81d534a88ec1736d03f780ba073f047a06c478b06e2937486f334e955c51'],
+    }),
+    ('torchdata', '0.4.1', {
+        'preinstallopts': "USE_SYSTEM_LIBS=1 ",
+        'source_urls': ['https://github.com/pytorch/data/archive'],
+        'sources': [{'download_filename': 'v%(version)s.tar.gz', 'filename': '%(name)s-%(version)s.tar.gz'}],
+        'checksums': ['71c0aa3aca3b04a986a2cd4cc2e0be114984ca836dc4def2c700bf1bd1ff087e'],
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+moduleclass = 'lib'

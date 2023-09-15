@@ -1,0 +1,25 @@
+name = 'OpenSSL'
+version = '3.0.10'
+
+homepage = 'https://www.openssl.org/'
+description = """The OpenSSL Project is a collaborative effort to develop a robust, commercial-grade, full-featured,
+ and Open Source toolchain implementing the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) 
+ protocols as well as a full-strength general purpose cryptography library. """
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://www.openssl.org/source/']
+sources = [SOURCELOWER_TAR_GZ]
+checksums = ['1761d4f5b13a1028b9b6f3d4b8e17feb0cedc9370f6afe61d7193d2cdce83323']
+
+dependencies = [('zlib', '1.2.11')]
+
+builddependencies = [
+    ('Perl', '5.34.0'),
+    ('binutils', '2.37'),
+]
+
+runtest = 'test'
+
+moduleclass = 'system'

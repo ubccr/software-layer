@@ -53,6 +53,9 @@ export EASYBUILD_ZIP_LOGS=${EASYBUILD_ZIP_LOGS:-bzip2}
 # Path to our custom EasyBuild config settings file
 export EASYBUILD_CONFIGFILES=${CCR_INIT_DIR}/easybuild/config.cfg
 
+# Path to CCR custom easyconfig recipe files
+export EASYBUILD_ROBOT_PATHS=${CCR_INIT_DIR}/easybuild/easyconfigs:$EASYBUILD_ROBOT_PATHS
+
 # Set custom Hierarchical module naming scheme. For details see here:
 # https://easybuilders.github.io/easybuild-tutorial/2021-lust/module_naming_schemes/
 # https://easybuild.io/files/hust14_paper.pdf
