@@ -53,3 +53,4 @@ sanity_check_commands = [('%(namelower)s', '-h')]
 options = {'modulename': '%(namelower)s'}
 
 moduleclass = 'bio'
+

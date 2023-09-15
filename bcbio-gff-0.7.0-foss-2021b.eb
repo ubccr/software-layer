@@ -40,3 +40,4 @@ sanity_check_paths = {
 options = {'modulename': 'BCBio.GFF'}
 
 moduleclass = 'bio'
+

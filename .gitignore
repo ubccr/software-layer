@@ -14,7 +14,6 @@ RepeatMasker-4.1.5-foss-2021b.eb
 RepeatMasker-4.1.5-foss-2022a.eb
 SMC++-1.15.2-foss-2021b.eb
 SMC++-1.15.4-foss-2021b.eb
-ccr-2023.01-easybuild-djm29-metaphlan-avx512-2023-09-14.175714.tar.gz
 config.py
 f/
 freeglut-3.0.0-foss-2021b.eb_orig
@@ -40,4 +39,3 @@ qt_test_cl/
 r/
 s/
 yaml-cpp-0.7.0-GCCcore-11.2.0.eb
-

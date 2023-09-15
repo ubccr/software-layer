@@ -46,3 +46,4 @@ sanity_check_commands = ["metaphlan -h"]
 sanity_pip_check = True
 
 moduleclass = 'bio'
+

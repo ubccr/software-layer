@@ -32,3 +32,4 @@ modloadmsg = "For improved speed, add 'usejni=t' to the command line of %(name)s
 modloadmsg += " compiled jni C code.\n"
 
 moduleclass = 'bio'
+
