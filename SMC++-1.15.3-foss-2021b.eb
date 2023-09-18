@@ -1,0 +1,55 @@
+easyblock = 'PythonBundle'
+
+name = 'SMC++'
+version = '1.15.3'
+
+homepage = 'https://github.com/popgenmethods/smcpp'
+description = "SMC++ is a program for estimating the size history of populations from whole genome sequence data."
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+    ('matplotlib', '3.5.2'),
+    ('tqdm', '4.62.3'),
+    ('Pysam', '0.18.0'),
+    ('scikit-learn', '1.0.2'),
+    ('GMP', '6.2.1'),
+    ('MPFR', '4.1.0'),
+    ('GSL', '2.7'),
+    ('msprime', '1.2.0'),
+]
+
+use_pip = True
+
+exts_list = [
+    (name, version, {
+        # git metadata is required by setup.py, so obtain source tarball via 'git clone'
+        'sources': [{
+            'filename': SOURCE_TAR_GZ,
+            'git_config': {
+                'url': 'https://github.com/popgenmethods',
+                'repo_name': 'smcpp',
+                'tag': 'v%(version)s',
+                'keep_git_dir': True,
+            },
+        }],
+        'checksums': [('md5', '910DD09F44C5106532CBBB4BD1D5ABB6')],
+        'modulename': 'smcpp',
+    }),
+]
+
+sanity_pip_check = True
+
+sanity_check_paths = {
+    'files': ['bin/smc++'],
+    'dirs': ['lib/python%(pyshortver)s/site-packages'],
+}
+
+sanity_check_commands = [
+    "smc++ version",
+    "smc++ -h",
+]
+
+moduleclass = 'bio'
