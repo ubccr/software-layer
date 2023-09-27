@@ -221,7 +221,7 @@ def fontconfig_add_fonts(ec, eprefix):
 
 def cuda_config_opts(ec, prefix):
     """Inject configure options for cuda."""
-    if ec.name == 'CUDA':
+    if ec.name == 'CUDA' or ec.name == 'cuDNN':
         ec.update('builddependencies', [('GCCcore', '11.2.0')])
         print_msg("Using custom build deps for %s: %s", ec.name, ec['builddependencies'])
     else:
@@ -234,7 +234,7 @@ def perl_config_opts(ec, prefix):
 
     print_msg(f"Set path to openssl in compat layer for Perl {ec.version}..")
     # XXX is this still necessary?
-    setvar("EBROOTOPENSSL", f"{prefix}/usr")
+#    setvar("EBROOTOPENSSL", f"{prefix}/usr")
 
 def gurobi_config_opts(ec, prefix):
     """Custom config options for Gurobi."""
@@ -463,14 +463,26 @@ def matlab_postproc(ec, *args, **kwargs):
 def cuda_postproc(ec, *args, **kwargs):
     """Add post install cmds for cuda."""
 
-    if ec.name == 'CUDA':
+    if ec.name == 'CUDA' or ec.name == 'cuDNN':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
-            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin",
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="/opt/software/nvidia/lib64:$EBROOTGCCCORE/lib64"',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
         raise EasyBuildError("cuda-specific hook triggered for non-cuda easyconfig?!")
+
+def tensorflow_postproc(ec, *args, **kwargs):
+    """Add post install cmds for TensorFlow."""
+
+    if ec.name == 'TensorFlow':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="/opt/software/nvidia/lib64:$EBROOTCUDA/lib64:$EBROOTNCCL/lib:$EBROOTCUDNN/lib"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("tensorflow-specific hook triggered for non-cuda easyconfig?!")
 
 def nvhpc_postproc(ec, *args, **kwargs):
     """Add post install cmds for nvhpc."""
@@ -515,7 +527,19 @@ def gurobi_postproc(ec, *args, **kwargs):
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
-        raise EasyBuildError("cuda-specific hook triggered for non-Gurobi easyconfig?!")
+        raise EasyBuildError("gurobi-specific hook triggered for non-Gurobi easyconfig?!")
+
+def vtune_postproc(ec, *args, **kwargs):
+    """Add post install cmds for VTune."""
+
+    if ec.name == 'VTune':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/vtune --add_origin --add_path="$EPREFIX/lib64"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("vtune-specific hook triggered for non-vtune easyconfig?!")
 
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
@@ -525,6 +549,7 @@ PARSE_HOOKS = {
     'OpenBLAS': openblas_config_opts,
     'PMIx': pmix_config_opts,
     'CUDA': cuda_config_opts,
+    'cuDNN': cuda_config_opts,
     'MATLAB': matlab_config_opts,
     'Perl': perl_config_opts,
     'GDAL': gdal_config_opts,
@@ -546,6 +571,9 @@ PRE_POSTPROC_HOOKS = {
     'intel': intel_postproc,
     'MATLAB': matlab_postproc,
     'CUDA': cuda_postproc,
+    'cuDNN': cuda_postproc,
     'NVHPC': nvhpc_postproc,
     'Gurobi': gurobi_postproc,
+    'VTune': vtune_postproc,
+    'TensorFlow': tensorflow_postproc,
 }
