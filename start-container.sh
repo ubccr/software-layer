@@ -21,7 +21,13 @@ if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_
     exit 1
 fi
 
-BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
+# Use pre-built CCR local container if available else fetch from dockerhub
+if [ -f "/util/software/containers/${BUILD_TAG}.sif" ]; then
+    BUILD_CONTAINER="/util/software/containers/${BUILD_TAG}.sif"
+else
+    BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
+fi
+
 CVMFS_CONFIG_REPO="cvmfs-config.ccr.buffalo.edu"
 CVMFS_SOFT_REPO="soft.ccr.buffalo.edu"
 CCR_VERSION=${CCR_VERSION:-2023.01}
@@ -74,20 +80,12 @@ export SINGULARITY_HOME="$CCR_TMPDIR/home:/home/$USER"
 export SINGULARITY_CACHEDIR=$CCR_TMPDIR/singularity_cache
 SINGULARITY_BIND="$PWD:/srv/software-layer,$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
 
-if [ -d "/opt/software/slurm" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/slurm:/opt/software/slurm:ro"
-fi
-
-if [ -d "/opt/software/syslibs" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/syslibs:/opt/software/syslibs:ro"
+if [ -d "/opt/software" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software:/opt/software:ro"
 fi
 
 if [ -d "/util/software/licenses" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/util/software/licenses:/util/software/licenses:ro"
-fi
-
-if [ -d "/opt/software/nvidia" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software/nvidia:/opt/software/nvidia:ro"
 fi
 
 if [ -d "/etc/glvnd" ]; then
