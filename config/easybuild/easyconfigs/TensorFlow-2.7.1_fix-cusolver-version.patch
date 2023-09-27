@@ -1,0 +1,11 @@
+--- a/third_party/gpus/cuda_configure.bzl	2023-02-15 21:04:51.849927975 -0500
++++ b/third_party/gpus/cuda_configure.bzl	2023-02-15 21:07:16.095476916 -0500
+@@ -587,7 +587,7 @@
+             "cusolver",
+             cpu_value,
+             cuda_config.config["cusolver_library_dir"],
+-            cuda_config.cusolver_version,
++            '11',
+             static = False,
+         ),
+         "curand": _check_cuda_lib_params(

@@ -1,0 +1,50 @@
+diff -ru pytorch-v1.13.1/cmake/Modules_CUDA_fix/upstream/FindCUDA/select_compute_arch.cmake pytorch-v1.13.1-fixed/cmake/Modules_CUDA_fix/upstream/FindCUDA/select_compute_arch.cmake
+--- pytorch-v1.13.1/cmake/Modules_CUDA_fix/upstream/FindCUDA/select_compute_arch.cmake	2023-09-20 07:38:52.659718503 -0400
++++ pytorch-v1.13.1-fixed/cmake/Modules_CUDA_fix/upstream/FindCUDA/select_compute_arch.cmake	2023-09-20 07:49:42.919368067 -0400
+@@ -94,12 +94,28 @@
+ endif()
+ 
+ if(NOT CUDA_VERSION VERSION_LESS "11.1")
+-  list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "8.6" "8.6+PTX")
++  list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "8.6")
+   list(APPEND CUDA_ALL_GPU_ARCHITECTURES "8.6")
+   set(CUDA_LIMIT_GPU_ARCHITECUTRE "8.6")
+ 
++  if(CUDA_VERSION VERSION_LESS "11.8")
++    set(CUDA_LIMIT_GPU_ARCHITECTURE "8.9")
++    list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "8.6+PTX")
++  endif()
++endif()
++
++if(NOT CUDA_VERSION VERSION_LESS "11.8")
++  list(APPEND CUDA_KNOWN_GPU_ARCHITECTURES "Ada")
++  list(APPEND CUDA_KNOWN_GPU_ARCHITECTURES "Hopper")
++  list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "8.9")
++  list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "9.0")
++  list(APPEND CUDA_ALL_GPU_ARCHITECTURES "8.9")
++  list(APPEND CUDA_ALL_GPU_ARCHITECTURES "9.0")
++
+   if(CUDA_VERSION VERSION_LESS "12.0")
+     set(CUDA_LIMIT_GPU_ARCHITECTURE "9.0")
++    list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "8.9+PTX")
++    list(APPEND CUDA_COMMON_GPU_ARCHITECTURES "9.0+PTX")
+   endif()
+ endif()
+ 
+diff -ru pytorch-v1.13.1/torch/utils/cpp_extension.py pytorch-v1.13.1-fixed/torch/utils/cpp_extension.py
+--- pytorch-v1.13.1/torch/utils/cpp_extension.py	2022-12-15 19:23:51.000000000 -0500
++++ pytorch-v1.13.1-fixed/torch/utils/cpp_extension.py	2023-09-20 07:42:25.786304377 -0400
+@@ -1746,10 +1746,12 @@
+         ('Volta', '7.0+PTX'),
+         ('Turing', '7.5+PTX'),
+         ('Ampere', '8.0;8.6+PTX'),
++        ('Ada', '8.9+PTX'),
++        ('Hopper', '9.0+PTX'),
+     ])
+ 
+     supported_arches = ['3.5', '3.7', '5.0', '5.2', '5.3', '6.0', '6.1', '6.2',
+-                        '7.0', '7.2', '7.5', '8.0', '8.6']
++                        '7.0', '7.2', '7.5', '8.0', '8.6', '8.9', '9.0']
+     valid_arch_strings = supported_arches + [s + "+PTX" for s in supported_arches]
+ 
+     # The default is sm_30 for CUDA 9.x and 10.x
