@@ -12,6 +12,7 @@ module_version("cuda/11.8.0","default")
 module_version("cudnn/8.6.0.163-CUDA-11.8.0","default")
 module_version("nccl/2.12.12-CUDA-11.8.0","default")
 module_version("ucx-cuda/1.11.2-CUDA-11.8.0","default")
+module_version("vtune/2022.3.0","default")
 
 -- shortcuts
 module_version("gcc/9.3.0","9")
@@ -58,3 +59,4 @@ hide_version("torchdata/0.4.1-CUDA-11.7.1")
 hide_version("torchinfo/1.8.0-CUDA-11.7.1")
 hide_version("torchtext/0.14.1-CUDA-11.7.1")
 hide_version("torchvision/0.13.1-CUDA-11.7.1")
+hide_version("vtune/2022.0.0")
