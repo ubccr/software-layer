@@ -1,0 +1,38 @@
+# Author: Jasper Grimm (UoY)
+
+easyblock = 'ConfigureMake'
+
+name = 'RepeatScout'
+version = '1.0.6'
+
+homepage = 'https://www.repeatmasker.org/'
+description = """De Novo Repeat Finder, Price A.L., Jones N.C. and Pevzner P.A. Developed and
+ tested with our multiple sequence version of RepeatScout ( 1.0.6 )"""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+
+source_urls = ['https://www.repeatmasker.org']
+sources = ['RepeatScout-%(version)s.tar.gz']
+checksums = ['d1d2c32d7343efae3735bc7769b56bc23dd8009c566b7d04f3c796083a7bdace']
+
+dependencies = [
+    ('Perl', '5.34.0'),
+    ('TRF', '4.09.1'),
+]
+
+skipsteps = ['configure']
+
+prebuildopts = "sed -i -e 's|mkdir|mkdir -p|g' -e 's|VERSION = .*|VERSION = %(version)s|g' Makefile &&"
+
+installopts = 'INSTDIR="%(installdir)s"'
+
+sanity_check_paths = {
+    'files': [name, 'build_lmer_table', 'README'],
+    'dirs': [],
+}
+
+sanity_check_commands = [("RepeatScout 2>&1 | grep 'Usage:\nRepeatScout'", '')]
+
+modextrapaths = {'PATH': ''}
+
+moduleclass = 'bio'
