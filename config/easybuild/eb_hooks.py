@@ -490,10 +490,10 @@ def nvhpc_postproc(ec, *args, **kwargs):
     if ec.name == 'NVHPC':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
-            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/Linux_x86_64/%(version)s",
-            f'echo "set DEFLIBDIR=$EPREFIX/lib;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
-            f'echo "set DEFSTDOBJDIR=$EPREFIX/lib;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
-            #f'echo "set NORPATH=YES;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/Linux_x86_64/%(version)s --add_path="/opt/software/nvidia/lib64:$EBROOTCUDA/lib64:$EPREFIX/lib64"',
+            f'echo "set DEFLIBDIR=$EBROOTGCCCORE/lib64;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+            f'echo "set DEFSTDOBJDIR=$EPREFIX/usr/lib64;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+            f'sed -i "\@^set LC=@s@-lgcc@-rpath=/opt/software/nvidia/lib64:$EBROOTGCCCORE/lib64:$EPREFIX/lib64 -lgcc@" %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
