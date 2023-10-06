@@ -15,6 +15,12 @@ use [Gentoo Prefix](https://wiki.gentoo.org/wiki/Project:Prefix) as the
 compatibility layer. For more information on CCR's compatibility layer see our
 [gentoo-overlay](https://github.com/ubccr/gentoo-overlay).
 
+## Submitting Software Build Requests and Bug Reports  
+
+CCR users should submit build requests for staff to install software using [GitHub issues](https://github.com/ubccr/software-layer/issues).  When creating a new issue you'll be prompted to select a template.  Requests for software builds require a link to the software website so we can ensure we're building the software you want.  We ask for a preferred software version.  We will do our best to build what you request but it may not always be possible.  Please enter a new request for each piece of software you'd like installed.  If you see a request for software already submitted that you would also like to use, please "like" the GitHub issue or comment on it.  This helps us to prioritize the build requests.
+
+If you experience an issue with an installed module on CCR's systems, please enter a bug report.  If you need assistance with using a particular software module, running jobs, or anything else related to CCR's systems, please submit a [help request](https://www.buffalo.edu/ccr/support.html) using our ticketing system.  Bug reports should only be submitted for problems with the software installation or Easybuild system itself.    
+
 ## Building Software
 
 Software at CCR is distributed via CernVM-FS, a read-only file system designed
