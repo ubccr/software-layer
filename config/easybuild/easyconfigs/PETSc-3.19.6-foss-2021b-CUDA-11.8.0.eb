@@ -1,0 +1,62 @@
+##
+# Author:    Robert Mijakovic <robert.mijakovic@lxp.lu>
+# Author:    Jasper Grimm (UoY)
+#  (mdj) updates to latest petsc 3.18.3
+##
+name = 'PETSc'
+version = '3.19.6'
+versionsuffix = '-CUDA-11.8.0'
+
+homepage = 'https://www.mcs.anl.gov/petsc'
+description = """PETSc, pronounced PET-see (the S is silent), is a suite of data structures and routines for the
+ scalable (parallel) solution of scientific applications modeled by partial differential equations."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'openmp': True, 'usempi': True, 'pic': True}
+
+source_urls = [
+    'https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/',
+    'ftp://ftp.mcs.anl.gov/pub/petsc/release-snapshots/',
+]
+sources = [SOURCELOWER_TAR_GZ]
+patches = [
+    'PETSc-3.19_ranlib-fix.patch',
+]
+checksums = [
+    '6045e379464e91bb2ef776f22a08a1bc1ff5796ffd6825f15270159cbb2464ae',  # petsc-3.19.6.tar.gz
+    'b289a7ddafd7f7c49a98f86c83a14a1e1ab9f51ade61eaed73c53790441df3d8',  # PETSc-3.19_ranlib-fix.patch
+]
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('CUDA', '11.8.0'),
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+    ('HDF5', '1.12.1'),
+    ('zlib', '1.2.11'),
+    ('Boost', '1.77.0'),
+    ('METIS', '5.1.0'),
+    ('SCOTCH', '7.0.2'),
+    ('MUMPS', '5.5.1', '-metis'),
+    ('SuiteSparse', '5.10.1', '-METIS-5.1.0'),
+    ('Hypre', '2.25.0'),
+    ('ParMETIS', '4.0.3'),
+    ('SuperLU_DIST', '8.1.2'),
+    ('libCEED', '0.11.0', '-CUDA-11.8.0'),
+]
+
+# enabling --with-mpi4py seems to be totally broken, leads to make errors like:
+# No rule to make target 'mpi4py-build'
+configopts = '--LIBS="$LIBS -lrt" --with-mpi4py=0 --with-cuda --with-hdf5=1 --with-hdf5-dir=$EBROOTHDF5 --with-zlib=1 --with-zlib-dir=$EBROOTZLIB --with-libceed=1 --with-libceed-dir=$EBROOTLIBCEED'
+
+shared_libs = 1
+
+download_deps = ['ctetgen', 'eigen', 'exodusii', 'metis', 'parmetis', 'pragmatic', 'triangle', 'netcdf', 'pnetcdf']
+sourceinstall = 1
+
+# only required when building PETSc in a SLURM job environment
+# configopts += '--with-batch=1 --known-mpi-shared-libraries=1 --known-64-bit-blas-indices=0 '
+# prebuildopts = "srun ./conftest-arch-linux2-c-opt && ./reconfigure-arch-linux2-c-opt.py && "
+
+moduleclass = 'numlib'
