@@ -1,0 +1,32 @@
+easyblock = 'CMakeMake'
+name = 'Candock'
+version = '3cc5fed'
+
+homepage = 'https://github.com/chopralab/candock'
+description = """software for protein-ligang binding"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/chopralab/candock/archive']
+sources = [{'download_filename': '%(version)s.tar.gz', 'filename': SOURCE_TAR_GZ}]
+patches = ['candock-3cc5fed_fix_gsl.patch']
+checksums = [
+    {SOURCE_TAR_GZ: 'd8e3880fa19518fa55462c9d52c2e7cb4810dd69d48619efe64052a03486872b'},
+    {'candock-3cc5fed_fix_gsl.patch': '588cd80d58962dab44e78a84071d66bda270fa7a2e47e49b740744cc083df574'},
+]
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('statchemlib', '600356b'),
+    ('GSL', '2.7'),
+    ('Boost', '1.77.0'),
+    ('OpenMM', '8.0.0', '-CUDA-11.8.0'),
+]
+
+modextrapaths = {
+    'MCANDOCK_MOD_PATH': 'modules',
+}
+
+moduleclass = 'bio'

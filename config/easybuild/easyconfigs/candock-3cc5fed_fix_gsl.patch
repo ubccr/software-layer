@@ -1,0 +1,19 @@
+diff -ruN candock-3cc5fed5dd621f0896ce8aa5942a3df5fa2a1f3e/CMakeLists.txt candock-3cc5fed5dd621f0896ce8aa5942a3df5fa2a1f3e-fixed/CMakeLists.txt
+--- candock-3cc5fed5dd621f0896ce8aa5942a3df5fa2a1f3e/CMakeLists.txt	2020-02-27 08:33:36.000000000 -0500
++++ candock-3cc5fed5dd621f0896ce8aa5942a3df5fa2a1f3e-fixed/CMakeLists.txt	2023-10-12 09:31:45.649762088 -0400
+@@ -41,6 +41,7 @@
+ find_package(Boost    REQUIRED  COMPONENTS filesystem system program_options)
+ find_package(Git      REQUIRED)
+ find_package(StatChem REQUIRED)
++find_package(GSL REQUIRED)
+ 
+ set(JSONCPP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/candock/external ${CMAKE_CURRENT_SOURCE_DIR}/lib/json )
+ 
+@@ -71,6 +72,7 @@
+ include_directories(${Boost_INCLUDE_DIRS})
+ include_directories(${JSONCPP_INCLUDE_DIR})
+ include_directories(${STATCHEM_INCLUDE_DIRS})
++include_directories(${GSL_INCLUDE_DIRS})
+ 
+ include_directories(BEFORE include)
+ 
