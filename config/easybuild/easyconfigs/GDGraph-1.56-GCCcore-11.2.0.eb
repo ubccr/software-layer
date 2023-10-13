@@ -39,10 +39,10 @@ exts_list = [
         'sources': ['GD-%(version)s.tar.gz'],
         'patches': ['GD-2.78_makfile.patch'],
         'checksums': [
-        '6831054bf5424b4f5c23d3627d3d1484480f6f9c2c66632222915f2851be6ee4',
-        'e332fce2f998968e9cf95397c42f80c4cb7cd702dadf907798355ff0128da5bb',
-    ],
-    'configopts': '--lib_gd_path=$EBROOTLIBGD/lib --lib_fontconfig_path=$EBROOTFONTCONFIG --lib_jpeg_path=$EBROOTLIBJPEGMINTURBO --lib_png_path=$EBROOTLIBPNG',
+            '6831054bf5424b4f5c23d3627d3d1484480f6f9c2c66632222915f2851be6ee4',
+            'e332fce2f998968e9cf95397c42f80c4cb7cd702dadf907798355ff0128da5bb',
+        ],
+        'configopts': '--lib_gd_path=$EBROOTLIBGD/lib --lib_fontconfig_path=$EBROOTFONTCONFIG --lib_jpeg_path=$EBROOTLIBJPEGMINTURBO --lib_png_path=$EBROOTLIBPNG',
     }),
     ('GD::Text', '0.86', {
         'source_urls': ['https://cpan.metacpan.org/authors/id/M/MV/MVERB/'],
