@@ -1,0 +1,57 @@
+easyblock = 'PythonBundle'
+
+name = 'cobaya'
+version = '3.4.1'
+
+homepage = 'https://github.com/CobayaSampler/cobaya'
+description = """
+Code for Bayesian Analysis
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('PyYAML', '5.4.1'),
+    ('matplotlib', '3.5.2'),
+    ('sympy', '1.9'),
+    ('CLASSY', '3.2.1'),
+    ('SciPy-bundle', '2021.10'),
+]
+
+exts_list = [
+    # Need newer version of setuptools to support pyproject.toml
+    ('setuptools', '68.2.2', {
+        'checksums': ['4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87'],
+    }),
+    ('portalocker', '2.7.0', {
+        'checksums': ['032e81d534a88ec1736d03f780ba073f047a06c478b06e2937486f334e955c51'],
+    }),
+    ('getdist', '1.4.5', {
+        'checksums': ['e65ae5019f7ea7b0c8eebfffb06e738a53f3b2242278d8d24925635633044500'],
+    }),
+    ('Py-BOBYQA', '1.4', {
+        'checksums': ['71090cad226e25192c797abd63cdba4c6f1c45114328b1a30619eb541d8e132a'],
+        'modulename': 'pybobyqa',
+    }),
+    ('fuzzywuzzy', '0.18.0', {
+        'checksums': ['45016e92264780e58972dca1b3d939ac864b78437422beecebb3095f8efd00e8'],
+    }),
+    ('tqdm', '4.64.1', {
+        'checksums': ['5f4f682a004951c1b450bc753c710e9280c5746ce6ffedee253ddbcbf54cf1e4'],
+    }),
+    ('dill', '0.3.7', {
+        'checksums': ['cc1c8b182eb3013e24bd475ff2e9295af86c1a38eb1aff128dac8962a9ce3c03'],
+    }),
+    ('camb', '1.5.2', {
+        'checksums': ['35095e306907237bc5c16a7dbd57895169a14b7b32864353348f391c240622d2'],
+    }),
+    ('cobaya', version, {
+        'checksums': ['e70fdd039342c2b671450b689ca4fe25155569274bb13d13133b0cf5819b435d'],
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+moduleclass = 'math'

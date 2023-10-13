@@ -1,0 +1,50 @@
+easyblock = 'MakeCp'
+
+name = 'CLASSY'
+version = '3.2.1'
+
+homepage = 'http://class-code.net/'
+description = """Cosmic Linear Anisotropy Solving System"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/lesgourg/class_public/archive/refs/tags/']
+sources = ['v%(version)s.tar.gz']
+checksums = ['994af689625b508f5e38aae70f8bb96cb60b82e270649296633b61b6d5323aa4']
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+]
+
+files_to_copy = [
+    (['class', 'CPU.py'], 'bin'),
+    (['libclass.a'], 'lib'),
+    (['base_2015_plikHM_TT_lowTEB_lensing.ini', 'base_2018_plikHM_TTTEEE_lowl_lowE_lensing.ini', 'default.ini', 'explanatory.ini'], 'ini'),
+    (['cl_permille.pre', 'cl_ref.pre', 'pk_ref.pre', 'myevolution.dat', 'myselection.dat', 'psd_FD_single.dat'], 'data'),
+    'notebooks',
+    'scripts',
+    'include',
+    'output',
+    'doc',
+]
+
+sanity_check_paths = {
+    'files': ['bin/class', 'lib/libclass.a'],
+    'dirs': [],
+}
+
+sanity_check_commands = [
+    'class',
+    'PYTHONPATH="%(installdir)s/lib/python%(pyshortver)s/site-packages:$PYTHONPATH" python -c "import classy"',
+]
+
+# required to install the python API
+postinstallcmds = ['cd %(builddir)s/class_public-%(version)s/python && python setup.py install --prefix=%(installdir)s']
+
+modextrapaths = {
+    'PYTHONPATH': 'lib/python%(pyshortver)s/site-packages',
+}
+
+moduleclass = 'numlib'
