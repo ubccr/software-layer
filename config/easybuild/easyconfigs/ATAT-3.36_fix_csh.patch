@@ -1,0 +1,588 @@
+Binary files atat/doc/manual.dvi and atat-fixed/doc/manual.dvi differ
+diff -ruN atat/examples/mc/emc2.in atat-fixed/examples/mc/emc2.in
+--- atat/examples/mc/emc2.in	2007-02-03 20:44:09.000000000 -0500
++++ atat-fixed/examples/mc/emc2.in	2023-10-17 14:04:04.134380738 -0400
+@@ -1,2 +1,2 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ emc2 -T0=50 -T1=700 -dT=25 -mu0=0.5 -mu1=1.5 -dmu=0.05 -er=40 -gs=0 -o=mc.out -k=8.617e-5 -dx=0.005
+diff -ruN atat/examples/mc/phb.in atat-fixed/examples/mc/phb.in
+--- atat/examples/mc/phb.in	2007-02-03 20:44:10.000000000 -0500
++++ atat-fixed/examples/mc/phb.in	2023-10-17 14:04:04.134380738 -0400
+@@ -1,2 +1,2 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ phb -dT=10 -dmu=0.001 -ltep=1e-3 -er=40 -gs1=0 -gs2=1 -o=phb.out -k=8.617e-5 -dx=1e-4
+diff -ruN atat/foolproof atat-fixed/foolproof
+--- atat/foolproof	2015-06-28 09:50:22.000000000 -0400
++++ atat-fixed/foolproof	2023-10-17 14:04:04.057381593 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ cat - <<EOF
+ I will now perform various checks to see if you have the appropriate software
+diff -ruN atat/foolproof.sh atat-fixed/foolproof.sh
+--- atat/foolproof.sh	2009-07-31 23:48:36.000000000 -0400
++++ atat-fixed/foolproof.sh	2023-10-17 14:11:09.897551481 -0400
+@@ -1,6 +1,7 @@
+ #!/bin/sh
+-if [ ! -e /bin/csh ]; then
+-  echo /bin/csh cannot be found. Please install it or create a symbolic link from /bin/csh to /usr/bin/tcsh , if installed.
++if ! command -v csh &> /dev/null; then
++  echo csh cannot be found. Please install it.
+   exit 1
+ fi
++
+ ./foolproof $*
+Binary files atat/.foolproof.swp and atat-fixed/.foolproof.swp differ
+diff -ruN atat/glue/abinit/extract_abinit atat-fixed/glue/abinit/extract_abinit
+--- atat/glue/abinit/extract_abinit	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/abinit/extract_abinit	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ source ~/.atat.rc
+ 
+ set outfile="$1"
+diff -ruN atat/glue/abinit/runstruct_abinit atat-fixed/glue/abinit/runstruct_abinit
+--- atat/glue/abinit/runstruct_abinit	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/abinit/runstruct_abinit	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ set wrapfilename="abinit.wrap"
+ 
+@@ -75,7 +75,7 @@
+   source ~/.ezabinit.rc
+ else
+   cat - >! ~/.ezabinit.rc <<EOF
+-#!/bin/csh
++#!/usr/bin/env csh
+ #enter name of abinit executable here
+ set ABINITCMD=~/bin/abinip
+ #enter the directory containing the pseudopotentials here
+diff -ruN atat/glue/castep/extract_castep atat-fixed/glue/castep/extract_castep
+--- atat/glue/castep/extract_castep	2012-01-26 11:59:40.000000000 -0500
++++ atat-fixed/glue/castep/extract_castep	2023-10-17 14:04:04.061381548 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ # This script should not be used on its own. It should be considered a part of the runstruct_castep script.
+ # It is called using "source" as we wish to pass variables between the two scripts.
+diff -ruN atat/glue/castep/runstruct_castep atat-fixed/glue/castep/runstruct_castep
+--- atat/glue/castep/runstruct_castep	2012-09-22 05:47:35.000000000 -0400
++++ atat-fixed/glue/castep/runstruct_castep	2023-10-17 14:04:04.061381548 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ # This script makes use of a wrap file (located in either the current directory
+ # or up to 3 directories up) as well as an "str.out" file (in the current directory)
+@@ -67,7 +67,7 @@
+   source ~/.runstruct_castep.rc
+ else
+   cat - >! ~/.runstruct_castep.rc <<EOF
+-#!/bin/csh
++#!/usr/bin/env csh
+ # Enter the name of the CASTEP executable here.
+ set CASTEPCMD = castep
+ EOF
+diff -ruN atat/glue/flapw/runstruct_flapw atat-fixed/glue/flapw/runstruct_flapw
+--- atat/glue/flapw/runstruct_flapw	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/flapw/runstruct_flapw	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ set strout="str_hint.out"
+ 
+diff -ruN atat/glue/gulp/runstruct_gulp atat-fixed/glue/gulp/runstruct_gulp
+--- atat/glue/gulp/runstruct_gulp	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/gulp/runstruct_gulp	2023-10-17 14:04:04.061381548 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ set wrap="gulp.wrap"
+ set strfile="str_hint.out"
+diff -ruN atat/glue/jobctrl/blanktonl atat-fixed/glue/jobctrl/blanktonl
+--- atat/glue/jobctrl/blanktonl	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/blanktonl	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x"$1" == "x-h" ) then
+   echo Converts each contiguous sequence of blanks to a newline character.
+   exit
+diff -ruN atat/glue/jobctrl/calc atat-fixed/glue/jobctrl/calc
+--- atat/glue/jobctrl/calc	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/calc	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   echo Syntax: calc \"mathematical expression\"
+   exit 1
+diff -ruN atat/glue/jobctrl/chl.csh atat-fixed/glue/jobctrl/chl.csh
+--- atat/glue/jobctrl/chl.csh	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/chl.csh	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( "x"$1 == "x-m" ) then
+   set machinefile=$2
+ else
+diff -ruN atat/glue/jobctrl/ezmpirun atat-fixed/glue/jobctrl/ezmpirun
+--- atat/glue/jobctrl/ezmpirun	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/ezmpirun	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   cat - <<EOF
+ Syntax: ezmpirun node1,node2,... command param
+diff -ruN atat/glue/jobctrl/fixeol atat-fixed/glue/jobctrl/fixeol
+--- atat/glue/jobctrl/fixeol	2016-06-12 11:30:00.000000000 -0400
++++ atat-fixed/glue/jobctrl/fixeol	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$1 == "x-u" ) then
+   shift
+   if ( "x"$1 == "x" ) then
+diff -ruN atat/glue/jobctrl/foreachfile atat-fixed/glue/jobctrl/foreachfile
+--- atat/glue/jobctrl/foreachfile	2017-07-03 15:35:11.000000000 -0400
++++ atat-fixed/glue/jobctrl/foreachfile	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   cat - <<EOF
+diff -ruN atat/glue/jobctrl/getlines atat-fixed/glue/jobctrl/getlines
+--- atat/glue/jobctrl/getlines	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/getlines	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   cat - <<EOF
+ Syntax: getlines [-h] [ -af | -bf | -bt | -jaf | -jbf | -bt ] string1 string2
+diff -ruN atat/glue/jobctrl/getvalue atat-fixed/glue/jobctrl/getvalue
+--- atat/glue/jobctrl/getvalue	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/getvalue	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   cat - <<EOF
+ Syntax: getvalue [label]
+diff -ruN atat/glue/jobctrl/minload atat-fixed/glue/jobctrl/minload
+--- atat/glue/jobctrl/minload	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/minload	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x"$1" == "x-h" ) then
+   cat - <<EOF
+ Syntax: minload [-m alternate_machine_config_file] [-w]
+diff -ruN atat/glue/jobctrl/nltoblank atat-fixed/glue/jobctrl/nltoblank
+--- atat/glue/jobctrl/nltoblank	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/nltoblank	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x"$1" == "x-h" ) then
+   echo Converts each newline character to a space.
+   exit
+diff -ruN atat/glue/jobctrl/node atat-fixed/glue/jobctrl/node
+--- atat/glue/jobctrl/node	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/node	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   cat - <<EOF
+diff -ruN atat/glue/jobctrl/pollmach atat-fixed/glue/jobctrl/pollmach
+--- atat/glue/jobctrl/pollmach	2016-05-25 10:17:12.000000000 -0400
++++ atat-fixed/glue/jobctrl/pollmach	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ if ( $#argv == 0 || x"$1" == "x-h" ) then
+   cat - <<EOF
+diff -ruN atat/glue/jobctrl/qit atat-fixed/glue/jobctrl/qit
+--- atat/glue/jobctrl/qit	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/qit	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( ! -e ../qit.wrap ) then
+   echo Cannot find qit.wrap
+   exit 1
+diff -ruN atat/glue/jobctrl/splitnodefile.pbs atat-fixed/glue/jobctrl/splitnodefile.pbs
+--- atat/glue/jobctrl/splitnodefile.pbs	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/splitnodefile.pbs	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$2 == "x" ) then
+   echo Usage: splitnodefile nodefile number_of_groups \[nodes_to_reserve_for_master\]
+   exit
+diff -ruN atat/glue/jobctrl/splitnodefile.sgi atat-fixed/glue/jobctrl/splitnodefile.sgi
+--- atat/glue/jobctrl/splitnodefile.sgi	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/jobctrl/splitnodefile.sgi	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$2 == "x" ) then
+   echo Usage: splitnodefile total_number_of_nodes number_of_groups \[nodes_to_reserve_for_master\]
+   exit
+diff -ruN atat/glue/jobctrl/sspp atat-fixed/glue/jobctrl/sspp
+--- atat/glue/jobctrl/sspp	2016-02-17 14:51:12.000000000 -0500
++++ atat-fixed/glue/jobctrl/sspp	2023-10-17 14:04:04.060381559 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x"$1" == "x-h" ) then
+ cat - <<EOF
+   Simple symbolic pre-processor
+diff -ruN atat/glue/pwscf/runstruct_pwscf atat-fixed/glue/pwscf/runstruct_pwscf
+--- atat/glue/pwscf/runstruct_pwscf	2016-04-29 19:44:32.000000000 -0400
++++ atat-fixed/glue/pwscf/runstruct_pwscf	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ #goto here
+ 
+diff -ruN atat/glue/tc/emc2tc atat-fixed/glue/tc/emc2tc
+--- atat/glue/tc/emc2tc	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/tc/emc2tc	2023-10-17 14:04:04.061381548 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ #if ( $#argv == 0 || x"$1" == "x-h" ) then
+ if ( x"$1" == "x-h" ) then
+   cat - <<EOF
+diff -ruN atat/glue/vasp/checkerr_vasp atat-fixed/glue/vasp/checkerr_vasp
+--- atat/glue/vasp/checkerr_vasp	2016-08-17 11:38:28.000000000 -0400
++++ atat-fixed/glue/vasp/checkerr_vasp	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ set thereiserr=0
+ 
+ if (-e vasp.out.static) then
+diff -ruN atat/glue/vasp/cleanvasp atat-fixed/glue/vasp/cleanvasp
+--- atat/glue/vasp/cleanvasp	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/vasp/cleanvasp	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ rm -f CHG CHGCAR WAVECAR POTCAR
+ rm -f EIGENVAL IBZKPT PCDAT XDATCAR
+ rm -f INCAR POSCAR KPOINTS
+diff -ruN atat/glue/vasp/doberryvasp atat-fixed/glue/vasp/doberryvasp
+--- atat/glue/vasp/doberryvasp	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/vasp/doberryvasp	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ if ( ! -e berry ) then
+   mkdir berry
+diff -ruN atat/glue/vasp/extract_vasp atat-fixed/glue/vasp/extract_vasp
+--- atat/glue/vasp/extract_vasp	2017-07-28 19:35:44.000000000 -0400
++++ atat-fixed/glue/vasp/extract_vasp	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ set oszicar=OSZICAR.static
+ if ( ! -e $oszicar ) then
+diff -ruN atat/glue/vasp/ezvasp atat-fixed/glue/vasp/ezvasp
+--- atat/glue/vasp/ezvasp	2017-07-03 12:29:06.000000000 -0400
++++ atat-fixed/glue/vasp/ezvasp	2023-10-17 14:04:04.059381571 -0400
+@@ -1,8 +1,8 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ if ( ! -e ~/.ezvasp.rc ) then
+ cat - >! ~/.ezvasp.rc <<EOF
+-#!/bin/csh
++#!/usr/bin/env csh
+ #enter name of vasp executable here
+ set VASPCMD="vasp"
+ #enter the directories containing the pseudopotentials here
+diff -ruN atat/glue/vasp/runstruct_vasp atat-fixed/glue/vasp/runstruct_vasp
+--- atat/glue/vasp/runstruct_vasp	2017-07-25 09:08:16.000000000 -0400
++++ atat-fixed/glue/vasp/runstruct_vasp	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ set wrapfilename="vasp.wrap"
+ set maxdepth=5
+diff -ruN atat/glue/vasp/xdat2str atat-fixed/glue/vasp/xdat2str
+--- atat/glue/vasp/xdat2str	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/glue/vasp/xdat2str	2023-10-17 14:04:04.059381571 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ awk '\
+ BEGIN {\
+   while (1) {getline; if ($0==" ") break;}\
+diff -ruN atat/patchtail atat-fixed/patchtail
+--- atat/patchtail	2008-04-09 15:47:48.000000000 -0400
++++ atat-fixed/patchtail	2023-10-17 14:04:04.134380738 -0400
+@@ -1,2 +1,2 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ perl -pi.bak -e 's/tail ([+-][0-9]*)/tail -n \1/g;' src/* glue/*/* >& /dev/null
+diff -ruN atat/safecp atat-fixed/safecp
+--- atat/safecp	2011-09-14 08:57:30.000000000 -0400
++++ atat-fixed/safecp	2023-10-17 14:04:04.061381548 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( "x$1" == "x" ) then
+   echo "Syntax: safecp file1 ... filen destdir"
+   exit 1
+diff -ruN atat/src/calcbulk atat-fixed/src/calcbulk
+--- atat/src/calcbulk	2012-02-07 09:46:43.000000000 -0500
++++ atat-fixed/src/calcbulk	2023-10-17 14:04:04.064381515 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$1 == "x-h" ) then
+   echo Calculates bulk modulus.
+   echo Syntax: calcbulk mins maxs ds runcommand
+diff -ruN atat/src/calcdE atat-fixed/src/calcdE
+--- atat/src/calcdE	2012-02-07 09:46:43.000000000 -0500
++++ atat-fixed/src/calcdE	2023-10-17 14:04:04.066381493 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ cellcvrt -c < str.out | tail -n +7 > strc.out
+ cellcvrt -c < str_unpert.out | tail -n +7 > strc_unpert.out
+ #paste strc.out strc_unpert.out force.out | awk '{print $1-$5,$2-$6,$3-$7,$9,$10,$11}'
+diff -ruN atat/src/checkrelax atat-fixed/src/checkrelax
+--- atat/src/checkrelax	2015-06-29 17:41:36.000000000 -0400
++++ atat-fixed/src/checkrelax	2023-10-17 14:04:04.065381504 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$1 == "x-h" ) then
+   cat <<EOF
+ Prints the amount of relaxation each structure in */str_relax.out has
+diff -ruN atat/src/clusterexpand atat-fixed/src/clusterexpand
+--- atat/src/clusterexpand	2016-01-01 16:57:17.000000000 -0500
++++ atat-fixed/src/clusterexpand	2023-10-17 14:04:04.076381382 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( $#argv == 0 || "xx$1" == "xx-h" ) then
+   echo Syntax: clusterexpand '[-e]' '[-pa]' '[-s "1,0,1, ..."]' filename
+   echo Cluster expands the quantity stored in '*/filename'
+diff -ruN atat/src/clusterpredict atat-fixed/src/clusterpredict
+--- atat/src/clusterpredict	2016-03-29 13:09:19.000000000 -0400
++++ atat-fixed/src/clusterpredict	2023-10-17 14:04:04.072381426 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( $#argv == 0 || x$1 == "x-h" ) then
+   cat - <<EOF
+ Syntax: clusterpredict [-pa] file
+diff -ruN atat/src/extractgaps atat-fixed/src/extractgaps
+--- atat/src/extractgaps	2012-02-07 09:46:43.000000000 -0500
++++ atat-fixed/src/extractgaps	2023-10-17 14:04:04.072381426 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ foreach file ( OUTCAR.static OUTCAR OUTCAR.relax )
+   if ( -e $file ) then
+diff -ruN atat/src/getclus atat-fixed/src/getclus
+--- atat/src/getclus	2012-02-07 09:46:43.000000000 -0500
++++ atat-fixed/src/getclus	2023-10-17 14:04:04.074381404 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$1 == "x-h" ) then
+   echo Syntax: getclus \[-e\] \[ecifile\]
+   echo extracts, from clusters.out, the cluster sizes, lengths and multiplicities
+diff -ruN atat/src/guesslatparam atat-fixed/src/guesslatparam
+--- atat/src/guesslatparam	2012-02-07 09:46:43.000000000 -0500
++++ atat-fixed/src/guesslatparam	2023-10-17 14:04:04.064381515 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ source ~/.atat.rc
+ nntouch -l=str.out -r ${atatdir}/data/radii.in > str_hint.out
+ $*
+diff -ruN atat/src/makehelp.csh atat-fixed/src/makehelp.csh
+--- atat/src/makehelp.csh	2015-06-28 09:50:42.000000000 -0400
++++ atat-fixed/src/makehelp.csh	2023-10-17 14:04:04.071381437 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ echo const char \*helpstring=\"\"
+ sed 's/^/\"/g' | sed 's/$/\\n\"/g'
+diff -ruN atat/src/makelat atat-fixed/src/makelat
+--- atat/src/makelat	2015-06-10 11:08:07.000000000 -0400
++++ atat-fixed/src/makelat	2023-10-17 14:04:04.068381471 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ source ~/.atat.rc
+ 
+ if ( $#argv == 0 || x$1 == "x-h" ) then
+diff -ruN atat/src/maps2cv atat-fixed/src/maps2cv
+--- atat/src/maps2cv	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/maps2cv	2023-10-17 14:04:04.075381393 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( ! -d cv ) then
+   mkdir cv
+ endif
+diff -ruN atat/src/mapshelp.c++ atat-fixed/src/mapshelp.c++
+--- atat/src/mapshelp.c++	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/mapshelp.c++	2023-10-17 14:04:04.074381404 -0400
+@@ -190,7 +190,7 @@
+ "Example of script\n"
+ "(portions in /* */ have to be filled in with the appropriate code):\n"
+ "\n"
+-"#!/bin/csh\n"
++"#!/usr/bin/env csh\n"
+ "\n"
+ "while (! -e stop)\n"
+ "  /* check machine load here */\n"
+diff -ruN atat/src/mapshelp.hlp atat-fixed/src/mapshelp.hlp
+--- atat/src/mapshelp.hlp	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/mapshelp.hlp	2023-10-17 14:04:04.072381426 -0400
+@@ -198,7 +198,7 @@
+ Example of script
+ (portions in /* */ have to be filled in with the appropriate code):
+ 
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ while (! -e stop)
+   /* check machine load here */
+diff -ruN atat/src/mapsrep atat-fixed/src/mapsrep
+--- atat/src/mapsrep	2014-08-06 22:15:23.000000000 -0400
++++ atat-fixed/src/mapsrep	2023-10-17 14:04:04.075381393 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( "x$1" == "x-h" ) then
+   echo Display the output of maps in graphical form.
+   echo "Syntax: mapsrep [-e]"
+diff -ruN atat/src/mapsrepold atat-fixed/src/mapsrepold
+--- atat/src/mapsrepold	2014-03-20 15:04:36.000000000 -0400
++++ atat-fixed/src/mapsrepold	2023-10-17 14:04:04.072381426 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( "x$1" == "x-h" ) then
+   echo Display the output of maps in graphical form.
+   echo "Syntax: mapsrep [-e]"
+diff -ruN atat/src/mcdroplast atat-fixed/src/mcdroplast
+--- atat/src/mcdroplast	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/mcdroplast	2023-10-17 14:04:04.069381460 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( x$1 == "x-h" ) then
+   echo This script reads the output file of a mc run and deletes
+   echo the last data point of each inner loop.
+diff -ruN atat/src/mkteci atat-fixed/src/mkteci
+--- atat/src/mkteci	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/mkteci	2023-10-17 14:04:04.070381448 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ if ( $#argv == 0 ) then
+   echo No T-dependent eci files specified: using T-independent file eci.out only.
+diff -ruN atat/src/mmapshelp.hlp atat-fixed/src/mmapshelp.hlp
+--- atat/src/mmapshelp.hlp	2013-07-08 17:57:49.000000000 -0400
++++ atat-fixed/src/mmapshelp.hlp	2023-10-17 14:04:04.062381537 -0400
+@@ -236,7 +236,7 @@
+ Example of script
+ (portions in /* */ have to be filled in with the appropriate code):
+ 
+-#!/bin/csh
++#!/usr/bin/env csh
+ 
+ while (! -e stop)
+   /* check machine load here */
+diff -ruN atat/src/mmapsrep atat-fixed/src/mmapsrep
+--- atat/src/mmapsrep	2016-12-18 19:17:45.000000000 -0500
++++ atat-fixed/src/mmapsrep	2023-10-17 14:04:04.073381415 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( "x$1" == "x-h" ) then
+   echo Display the output of mmaps in graphical form.
+   echo "Syntax: mmapsrep [-e] c1 c2 c3"
+diff -ruN atat/src/plotdisp atat-fixed/src/plotdisp
+--- atat/src/plotdisp	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/plotdisp	2023-10-17 14:04:04.075381393 -0400
+@@ -1,2 +1,2 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ awk '{i++; a[i]=$0;} END {ni=i; nj=split(a[1],h); for (j=1; j<=nj; j++) {for (i=1; i<=ni; i++) {split(a[i],b); print i-1,b[j]}; print ""}}'
+diff -ruN atat/src/sortatoms atat-fixed/src/sortatoms
+--- atat/src/sortatoms	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/sortatoms	2023-10-17 14:04:04.066381493 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ awk '{if (split($0,a)==4) {print $0 > "tosort.tmp"} else {print $0;}}'
+ sort -k 4 tosort.tmp
+ rm tosort.tmp
+diff -ruN atat/src/str2xyz atat-fixed/src/str2xyz
+--- atat/src/str2xyz	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/str2xyz	2023-10-17 14:04:04.071381437 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ if ( 'x'$3 == 'x' ) then
+   echo "Utility to convert structure files into xyz files suitable for viewing with rasmol"
+   echo "Syntax: str2xyz [-v] na nb nc [scale] infile"
+diff -ruN atat/src/undopatch atat-fixed/src/undopatch
+--- atat/src/undopatch	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/undopatch	2023-10-17 14:04:04.067381482 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ foreach file (*.bak)
+   set nobak=`echo $file | sed 's/.bak//g'`
+   cp -f $file $nobak
+diff -ruN atat/src/viewharm atat-fixed/src/viewharm
+--- atat/src/viewharm	2012-12-07 18:50:26.000000000 -0500
++++ atat-fixed/src/viewharm	2023-10-17 14:04:04.068381471 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ cat - > viewclus.gnu <<EOF
+ unset key
+ set term png
+diff -ruN atat/src/viewtensorclus atat-fixed/src/viewtensorclus
+--- atat/src/viewtensorclus	2012-02-07 09:46:44.000000000 -0500
++++ atat-fixed/src/viewtensorclus	2023-10-17 14:04:04.072381426 -0400
+@@ -1,4 +1,4 @@
+-#!/bin/csh
++#!/usr/bin/env csh
+ cat - > viewclus.gnu <<EOF
+ unset key
+ set term png
