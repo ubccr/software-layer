@@ -381,13 +381,12 @@ class EB_PETSc(ConfigureMake):
 
             cuda = get_software_root("CUDA")
             if cuda:
-                # Replace cuda stubs with path to nvidia driver API
+                # Add rpath to nvidia driver API to be searched first
                 petsc_arch_variables_path = os.path.join(petsc_root, self.petsc_arch, 'lib', 'petsc', 'conf', 'petscvariables')
                 fixes = [
-                    (r'%s/stubs/lib64' % cuda, r'/opt/software/nvidia/lib64'),
-                    (r'%s/stubs/lib' % cuda, r'/opt/software/nvidia/lib64'),
-                    (r'%s/lib64/stubs' % cuda, r'/opt/software/nvidia/lib64'),
-                    (r'%s/lib/stubs' % cuda, r'/opt/software/nvidia/lib64'),
+                    (r'^PETSC_WITH_EXTERNAL_LIB = ', r'PETSC_WITH_EXTERNAL_LIB = -Wl,-rpath,/opt/software/nvidia/lib64 '),
+                    (r'^PETSC_EXTERNAL_LIB_BASIC = ', r'PETSC_EXTERNAL_LIB_BASIC = -Wl,-rpath,/opt/software/nvidia/lib64 '),
+                    (r'^CUDA_LIB = ', r'CUDA_LIB = -Wl,-rpath,/opt/software/nvidia/lib64 '),
                 ]
                 apply_regex_substitutions(petsc_arch_variables_path, fixes)
 
