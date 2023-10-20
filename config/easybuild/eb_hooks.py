@@ -541,6 +541,19 @@ def vtune_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("vtune-specific hook triggered for non-vtune easyconfig?!")
 
+def jax_postproc(ec, *args, **kwargs):
+    """Add post install cmds for jax when install via pip wheels."""
+
+    # XXX note this should only be done when installing via binary pip wheels
+    if ec.name == 'jax':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_origin --add_path="/opt/software/nvidia/lib64:$EBROOTGCCCORE/lib64:$EPREFIX/lib64:$EBROOTCUDA/lib64:$EBROOTCUDNN/lib"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("jax-specific hook triggered for non-jax easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -576,4 +589,5 @@ PRE_POSTPROC_HOOKS = {
     'Gurobi': gurobi_postproc,
     'VTune': vtune_postproc,
     'TensorFlow': tensorflow_postproc,
+    'jax': jax_postproc,
 }

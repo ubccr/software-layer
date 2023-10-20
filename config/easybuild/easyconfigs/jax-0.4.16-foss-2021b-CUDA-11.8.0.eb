@@ -1,0 +1,72 @@
+easyblock = 'PythonBundle'
+
+name = 'jax'
+version = '0.4.16'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://pypi.python.org/pypi/jax'
+description = """Composable transformations of Python+NumPy programs:
+differentiate, vectorize, JIT to GPU/TPU, and more"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+builddependencies = [
+    ('Python', '3.9.6'),
+    ('hypothesis', '6.46.7'),
+    ('SciPy-bundle', '2021.10'),
+]
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('cuDNN', '8.6.0.163', versionsuffix, SYSTEM),
+    ('NCCL', '2.12.12', versionsuffix),
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+    ('flatbuffers-python', '2.0'),
+]
+
+use_pip = True
+sanity_pip_check = True
+
+exts_list = [
+    ('numpy', '1.22.3', {
+        'patches': [
+            'numpy-1.20.3_disable_fortran_callback_test.patch',
+            'numpy-1.22.3_disable-broken-override-test.patch',
+            '%(name)s-%(version)s_skip-ppc-long-complex-test.patch',
+        ],
+        'sources': ['%(name)s-%(version)s.zip'],
+        'checksums': [
+            'dbc7601a3b7472d559dc7b933b18b4b66f9aa7452c120e87dfb33d02008c8a18',  # numpy-1.22.3.zip
+            # numpy-1.20.3_disable_fortran_callback_test.patch
+            '44975a944544fd0e771b7e63c32590d257a3713070f8f7fdf60105dc516f1d75',
+            # numpy-1.22.3_disable-broken-override-test.patch
+            '9c589bb073b28b25ff45eb3c63c57966aa508dd8b318d0b885b6295271e4983c',
+            # numpy-1.22.3_skip-ppc-long-complex-test.patch
+            '058c8128b9f7158b4d5bedb2f52ccc7e1362b99c352c3d10335f98a6194c880e',
+        ],
+    }),
+    ('ml-dtypes', '0.3.1', {
+        'source_tmpl': 'ml_dtypes-%(version)s-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl',
+        'checksums': ['4d94b2d1bed77284694f7fd0479640fa7aa5d96433dca3cbcec407a5ef752e77'],
+    }),
+    ('opt-einsum', '3.3.0', {
+        'source_tmpl': 'opt_einsum-%(version)s-py3-none-any.whl',
+        'checksums': ['2455e59e3947d3c275477df7f5205b30635e266fe6dc300e3d9f9646bfcea147'],
+    }),
+    ('jax', version, {
+        'source_tmpl': 'jaxlib-%(version)s+cuda11.cudnn86-cp39-cp39-manylinux2014_x86_64.whl',
+        'source_urls': ['https://storage.googleapis.com/jax-releases/cuda11/'],
+        'checksums': ['d4b7a8b4f5f1c1db77aaec40cb1cd2d1d29ab9c0a0ace73fe2f6206dcb4d62b2'],
+    }),
+    ('jax', version, {
+        'source_tmpl': 'jax-%(version)s-py3-none-any.whl',
+        'checksums': ['c37d8eee6dec3763d9428fdf318a9351369f19ceaa174b11696b3d7960a43d5b'],
+    }),
+]
+
+sanity_check_commands = [
+    "python -c 'from jax import vmap'",
+]
+
+moduleclass = 'tools'
