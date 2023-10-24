@@ -84,8 +84,8 @@ if [ -d "/opt/software" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software:/opt/software:ro"
 fi
 
-if [ -d "/util/software/licenses" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/util/software/licenses:/util/software/licenses:ro"
+if [ -d "/util" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/util:/util:ro"
 fi
 
 if [ -d "/etc/glvnd" ]; then
