@@ -1,32 +1,41 @@
-local arch, vendor_id, interconnect, cuda_driver_version=...
+help([==[
 
-help([[Gentoo prefix is Gentoo Linux installed in a prefix - Homepage: https://wiki.gentoo.org/wiki/Project:Prefix]])
-whatis("Gentoo prefix is Gentoo Linux installed in a prefix - Homepage: https://wiki.gentoo.org/wiki/Project:Prefix")
+Description
+===========
+CCR 2023.01 Software release.
 
-add_property(   "lmod", "sticky")
 
-local ccr_version ="2022.05"
+More information
+================
+ - Homepage: https://docs.ccr.buffalo.edu/en/latest/software/releases/
+]==])
+
+whatis([==[Description: CCR 2023.01 Software release]==])
+whatis([==[Homepage: https://docs.ccr.buffalo.edu/en/latest/software/releases/]==])
+whatis([==[URL: https://docs.ccr.buffalo.edu/en/latest/software/releases/]==])
+
+local ccr_version ="2023.01"
+local arch = os.getenv("CCR_ARCH") or ""
 local ccr_repo_path = os.getenv("CCR_CVMFS_REPO")
 local ccr_prefix = pathJoin(ccr_repo_path, "versions", ccr_version)
 local ccr_easybuild_path = pathJoin(ccr_prefix, "easybuild")
 local ccr_banalbuild_path = pathJoin(ccr_prefix, "banalbuild")
-local root = pathJoin(ccr_prefix, "compat")
 
 setenv("CCR_VERSION", ccr_version)
 setenv("CCR_PREFIX", ccr_prefix)
 setenv("CCR_EASYBUILD_PATH", ccr_easybuild_path)
 setenv("CCR_BANALBUILD_PATH", ccr_banalbuild_path)
-setenv("EPREFIX", root)
 
-prepend_path("PATH", pathJoin(root, "bin"))
-prepend_path("PATH", pathJoin(root, "sbin"))
-prepend_path("PATH", pathJoin(root, "usr/bin"))
-prepend_path("PATH", pathJoin(root, "usr/sbin"))
-prepend_path("PATH", "/opt/software/bin")
-prepend_path("INFOPATH", pathJoin(root, "usr/share/binutils-data/x86_64-pc-linux-gnu/2.33.1/info:"))
-prepend_path("MANPATH", pathJoin(root, "usr/share/man"))
-prepend_path("MANPATH", pathJoin(root, "usr/share/binutils-data/x86_64-pc-linux-gnu/2.33.1/man"))
-prepend_path("MANPATH", pathJoin(root, "usr/share/gcc-data/x86_64-pc-linux-gnu/9.3.0/man"))
+if not arch or arch == "" then
+    arch = get_highest_supported_architecture()
+    setenv("CCR_ARCH", arch)
+end
+
+add_property("lmod", "sticky")
+require("os")
+require("SitePackage")
+load("ccrenv")
+load("gentoo/2023.01")
 
 if (mode() ~= "spider") then
     prepend_path("MODULEPATH", pathJoin(ccr_easybuild_path, "modules/Core"))
@@ -42,7 +51,8 @@ if (mode() ~= "spider") then
             end
         end
     end
-    if isDir(pathJoin(os.getenv("HOME"), "modules", ccr_version)) then
-        prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), "modules", ccr_version))
+    if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild", ccr_version, "modules")) then
+        prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild", ccr_version, "modules/Core"))
+        prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild", ccr_version, "modules", arch, "Core"))
     end
 end

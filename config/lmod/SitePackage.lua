@@ -119,8 +119,10 @@ function dofile (filename)
     return f()
 end
 
-local ccr_version =os.getenv("CCR_VERSION")
-local ccr_prefix = os.getenv("CCR_PREFIX")
+local ccr_repo_path = os.getenv("CCR_CVMFS_REPO")
+local ccr_version =os.getenv("CCR_VERSION") or "2023.01"
+local ccr_prefix = os.getenv("CCR_PREFIX") or pathJoin(ccr_repo_path, "versions", ccr_version)
+local ccr_init = os.getenv("CCR_INIT_DIR")
 
 -- NOTE: this matches CCR_PREFIX/easybuild and CCR_PREFIX/banalbuild
 local ccr_soft_path = pathJoin(ccr_prefix, ".*build")
@@ -277,8 +279,9 @@ local mapT =
       [ccr_soft_path .. '/modules/sse3/Core.*'] = "Core sse modules",
       [ccr_soft_path .. '/modules/sse3/Compiler.*'] = "Compiler-dependent sse3 modules",
       [ccr_soft_path .. '/modules/sse3/MPI.*'] = "MPI-dependent sse3 modules",
-      [ccr_prefix .. '/config/modulefiles$'] = "Core modules",
+      [ccr_init .. '/modulefiles$'] = "Core modules",
       ['/srv/software.*layer/config/modulefiles$'] = "Core modules",
+      ['/util/software/config.*/modulefiles$'] = "Core modules",
       [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/Core.*'] = "Your personal Core modules",
       [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/Core.*'] = "Your personal Core avx512 modules",
       [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/Compiler.*'] = "Your personal Compiler-dependent avx512 modules",

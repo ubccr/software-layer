@@ -17,7 +17,7 @@ if [[ -z "$__Init_Default_Modules" ]]; then
     export MODULEPATH=${CCR_INIT_DIR}/modulefiles
     __Init_Default_Modules=1; export __Init_Default_Modules;
     if [[ -z "$LMOD_SYSTEM_DEFAULT_MODULES" ]]; then
-        export LMOD_SYSTEM_DEFAULT_MODULES="StdEnv"
+        export LMOD_SYSTEM_DEFAULT_MODULES="ccrsoft"
     fi
     if [[ $- == *i* ]]; then
         module --initial_load restore
