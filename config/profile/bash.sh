@@ -3,22 +3,26 @@ CCR_COMPAT_VERSION="2023.01"
 CCR_INIT_DIR=$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")
 
 if [[ -z $FORCE_CCR_INIT ]]; then
-	FORCE_CCR_INIT=0
+    FORCE_CCR_INIT=0
 fi
 if [[ -z $FORCE_CCR_LEGACY ]]; then
-	FORCE_CCR_LEGACY=0
+    FORCE_CCR_LEGACY=0
 fi
 if [[ -f $HOME/.force_ccr_init ]]; then
-	FORCE_CCR_INIT=1
+    FORCE_CCR_INIT=1
 fi
 if [[ -f $HOME/.force_ccr_legacy ]]; then
-	FORCE_CCR_LEGACY=1
+    FORCE_CCR_LEGACY=1
 fi
 
 # XXX remove me soon. Migrate to use ~/.modulerc
 if [[ $UID -ge 1000 && -f ${HOME}/.ccr_new_modules ]]; then
     rm ${HOME}/.ccr_new_modules
-    echo "module-version ccrsoft/2023.01 default" >> $HOME/.modulerc
+    if [[ ! -f ${HOME}/.modulerc ]]; then
+        echo "module-version ccrsoft/2023.01 default" > $HOME/.modulerc
+    elif ! grep --quiet ccrsoft $HOME/.modulerc; then
+        echo "module-version ccrsoft/2023.01 default" >> $HOME/.modulerc
+    fi
 fi
 
 # Allow users to override CCR_COMPAT_VERSION
@@ -27,7 +31,7 @@ if [ -f ${HOME}/.ccr/compat ]; then
 
     if echo "${ccrver}" | egrep -q '^20[0-9][0-9]\.(0[0-9]|1[0-2])$'; then
         if [ -d $CCR_CVMFS_REPO/compat/gentoo/$ccrver ]; then
-	        CCR_COMPAT_VERSION="${ccrver}"
+            CCR_COMPAT_VERSION="${ccrver}"
         fi
     fi
 fi
