@@ -5,7 +5,7 @@
 export CCR_CPU_FAMILY=$(uname -m)
 
 # set $EPREFIX since that is basically a standard in Gentoo Prefix
-export EPREFIX=$CCR_PREFIX/compat
+export EPREFIX=$CCR_COMPAT_PREFIX
 
 if [[ -z "$CCR_CLUSTER" && -r /etc/environment ]]; then
    # try to recover from /etc/environment (not used by slurm)
