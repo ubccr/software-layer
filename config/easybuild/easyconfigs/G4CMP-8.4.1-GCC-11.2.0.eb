@@ -1,0 +1,38 @@
+easyblock = 'CMakeMake'
+name = 'G4CMP'
+version = '8.4.1'
+local_git_tag = 'g4cmp-V08-04-01'
+
+homepage = 'https://github.com/kelseymh/G4CMP'
+description = """A low energy condensed matter physics package for Geant4"""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/kelseymh/G4CMP/archive/refs/tags/']
+sources = [{'download_filename': '%s.tar.gz' % local_git_tag, 'filename': SOURCE_TAR_GZ}]
+checksums = [
+    '79899dd58070be30cfba4d04b23512448b566601f9de51992c565788b6950208',
+]
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('Geant4', '10.7.4'),
+]
+
+configopts = '-DGeant4_DIR=$G4LIB -DINSTALL_EXAMPLES=ON -DG4CMP_VERSION=%s' % local_git_tag
+
+sanity_check_paths = {
+    'files': ['bin/g4cmpKVtables', 'bin/phononKinematics', 'lib64/libG4cmp.so'],
+    'dirs': ['include/G4CMP'],
+}
+
+modextravars = {
+    'G4CMPINSTALL': '%(installdir)s/share/G4CMP',
+    'G4CMPLIB': '%(installdir)s/lib',
+    'G4CMPINCLUDE': '%(installdir)s/include',
+    'G4LATTICEDATA': '%(installdir)s/share/G4CMP/CrystalMaps',
+}
+
+moduleclass = 'phys'
