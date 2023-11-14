@@ -12,6 +12,7 @@ toolchain = {'name': 'foss', 'version': '2021b'}
 
 dependencies = [
     ('pkgconfig', '1.5.5', '-python'),
+    ('SciPy-bundle', '2021.10'),
     ('Python', '3.9.6'),
     ('scikit-build', '0.15.0'),
     ('scikit-learn', '1.0.2'),
@@ -19,7 +20,6 @@ dependencies = [
     ('imageio', '2.13.5'),
     ('dask', '2022.1.0'),
     ('PyYAML', '5.4.1'),
-    ('matplotlib', '3.5.2'),
     ('Shapely', '1.8.2'),
     ('OpenCV', '4.8.0', '-contrib'),
     ('libvips', '8.15.0'),
@@ -28,6 +28,9 @@ dependencies = [
 exts_list = [
     ('ctk-cli', '1.5', {
         'checksums': ['63afcf2826d867e608f1542db7493a23466e49b7a7ed611e0f098dae33404645'],
+    }),
+    ('palettable', '3.3.0', {
+        'checksums': ['72feca71cf7d79830cd6d9181b02edf227b867d503bec953cf9fa91bf44896bd'],
     }),
     ('diskcache', '5.6.3', {
         'checksums': ['2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc'],
@@ -41,9 +44,6 @@ exts_list = [
     }),
     ('cachetools', '5.3.2', {
         'checksums': ['086ee420196f7b2ab9ca2db2520aca326318b68fe5ba8bc4d49cca91add450f2'],
-    }),
-    ('palettable', '3.3.3', {
-        'checksums': ['094dd7d9a5fc1cca4854773e5c1fc6a315b33bd5b3a8f47064928facaf0490a8'],
     }),
     ('large-image', '1.26.0', {
         'checksums': ['64ad4b1a8993486c150828f858a1c950699e38509be7e0fc52e482622fa10e54'],
