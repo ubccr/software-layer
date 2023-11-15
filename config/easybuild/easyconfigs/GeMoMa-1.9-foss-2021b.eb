@@ -1,0 +1,32 @@
+easyblock = 'Tarball'
+
+name = 'GeMoMa'
+version = '1.9'
+
+homepage = 'http://www.jstacs.de/index.php/GeMoMa'
+description = """Gene Model Mapper (GeMoMa) is a homology-based gene prediction program."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+source_urls = ['http://www.jstacs.de/downloads/']
+sources = ['%(name)s-%(version)s.zip']
+patches = ['%(name)s-%(version)s_fix_run.patch']
+checksums = [
+    '45765e9eee37c21b4e84f86b15cd83a9e3f44317d78f7b121ee7fcd74ad345d8',
+    'bb5784762508c9354af416876107e31082a932e6db9b15d73e71b3e552a756ca',
+]
+
+dependencies = [
+    ('Java', '11'),
+    ('BLAST+', '2.12.0'),
+    ('MMseqs2', '13-45111'),
+]
+
+postinstallcmds = ['mkdir %(installdir)s/bin && ln -s %(installdir)s/run.sh %(installdir)s/bin/%(namelower)s-run.sh ']
+
+sanity_check_paths = {
+    'files': ['bin/%(namelower)s-run.sh', '%(name)s-%(version)s.jar'],
+    'dirs': [],
+}
+
+moduleclass = 'bio'

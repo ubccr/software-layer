@@ -1,0 +1,49 @@
+diff -ru tmp2/createGalaxyIntegration.sh tmp/createGalaxyIntegration.sh
+--- tmp2/createGalaxyIntegration.sh	2021-09-20 13:55:43.000000000 -0400
++++ tmp/createGalaxyIntegration.sh	2023-11-15 08:56:47.009139347 -0500
+@@ -5,7 +5,8 @@
+ #
+ # The script has a single parameter which is the version of GeMoMa.
+ 
+-jar=$(eval "ls GeMoMa-*.jar")
++src_dir=$(dirname "$(readlink -f "$BASH_SOURCE")")
++jar="${src_dir}/GeMoMa-1.9.jar"
+ 
+ java -jar $jar --create
+ java -jar $jar --create GeMoMa -Xms5G -Xmx40G
+@@ -42,4 +43,4 @@
+ sed -i "s/<\/outputs>/<data format=\"bedgraph\" name=\"coverage_forward\" label=\"\#if str(\$Extract_RNA_seq_Evidence_jobname) == \'\' then \$tool.name + \' on \' + \$on_string else \$Extract_RNA_seq_Evidence_jobname\#: coverage (forward strand)\">\n\t<filter>Extract_RNA_seq_Evidence_ps_coverage and Extract_RNA_seq_Evidence_ps_Stranded!=\'FR_UNSTRANDED\'<\/filter>\n<\/data>\n<data format=\"bedgraph\" name=\"coverage_reverse\" label=\"\#if str(\$Extract_RNA_seq_Evidence_jobname) == \'\' then \$tool.name + \' on \' + \$on_string else \$Extract_RNA_seq_Evidence_jobname\#: coverage (reverse strand)\">\n\t<filter>Extract_RNA_seq_Evidence_ps_coverage and Extract_RNA_seq_Evidence_ps_Stranded!=\'FR_UNSTRANDED\'<\/filter>\n<\/data>\n<\/outputs>/g" ERE.xml
+ 
+ 
+-sed -i "s/<command>/<command>\n\t/g" *.xml
+\ No newline at end of file
++sed -i "s/<command>/<command>\n\t/g" *.xml
+diff -ru tmp2/pipeline.sh tmp/pipeline.sh
+--- tmp2/pipeline.sh	2021-09-20 13:55:43.000000000 -0400
++++ tmp/pipeline.sh	2023-11-15 08:56:58.590988462 -0500
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-jar=$(eval "ls GeMoMa-*.jar")
++src_dir=$(dirname "$(readlink -f "$BASH_SOURCE")")
++jar="${src_dir}/GeMoMa-1.9.jar"
+ 
+ # This script allows to run the complete GeMoMa pipeline multithreaded from the command line. 
+ # The final prediction is located in ${out}/filtered_predictions.gff.
+@@ -28,4 +29,4 @@
+ else 
+ 	echo "GeMoMa without RNA-seq data"
+ 	time java -jar $jar CLI GeMoMaPipeline threads=$threads t=$target_genome s=own a=$ref_annotation g=$ref_genome tblastn=${tblastn} outdir=$out AnnotationFinalizer.r=NO
+-fi
+\ No newline at end of file
++fi
+diff -ru tmp2/run.sh tmp/run.sh
+--- tmp2/run.sh	2021-09-20 13:55:43.000000000 -0400
++++ tmp/run.sh	2023-11-15 08:50:33.008986802 -0500
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-jar=$(eval "ls GeMoMa-*.jar")
++src_dir=$(dirname "$(readlink -f "$BASH_SOURCE")")
++jar="${src_dir}/GeMoMa-1.9.jar"
+ 
+ # This script allows to run GeMoMa with minimal work from command line. 
+ #
