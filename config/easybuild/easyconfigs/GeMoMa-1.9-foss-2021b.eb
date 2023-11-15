@@ -22,7 +22,7 @@ dependencies = [
     ('MMseqs2', '13-45111'),
 ]
 
-postinstallcmds = ['mkdir %(installdir)s/bin && ln -s %(installdir)s/run.sh %(installdir)s/bin/%(namelower)s-run.sh ']
+postinstallcmds = ['chmod 755 %(installdir)s/run.sh && mkdir %(installdir)s/bin && ln -s %(installdir)s/run.sh %(installdir)s/bin/%(namelower)s-run.sh ']
 
 sanity_check_paths = {
     'files': ['bin/%(namelower)s-run.sh', '%(name)s-%(version)s.jar'],
