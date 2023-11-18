@@ -1,0 +1,96 @@
+diff '--color=auto' -ruNp NInst-0.12.0/bin/niftypet-resources-setup NInst-0.12.0-fixed/bin/niftypet-resources-setup
+--- NInst-0.12.0/bin/niftypet-resources-setup	1969-12-31 19:00:00.000000000 -0500
++++ NInst-0.12.0-fixed/bin/niftypet-resources-setup	2023-11-17 21:38:44.054449504 -0500
+@@ -0,0 +1,19 @@
++#!/usr/bin/env python
++
++import logging
++
++from niftypet.ninst import cudasetup as cs
++from niftypet.ninst import install_tools as tls
++
++logging.basicConfig(level=logging.INFO, format=tls.LOG_FORMAT)
++
++
++tls.check_platform()
++ext = tls.check_depends()  # external dependencies
++
++# install resources.py
++if ext["cuda"] and ext["cmake"]:
++    # select the supported GPU device and
++    gpuarch = cs.resources_setup()
++else:
++    gpuarch = cs.resources_setup(gpu=False)
+diff '--color=auto' -ruNp NInst-0.12.0/niftypet/ninst/cudasetup.py NInst-0.12.0-fixed/niftypet/ninst/cudasetup.py
+--- NInst-0.12.0/niftypet/ninst/cudasetup.py	2022-09-15 07:04:16.000000000 -0400
++++ NInst-0.12.0-fixed/niftypet/ninst/cudasetup.py	2023-11-17 22:00:47.928708528 -0500
+@@ -10,6 +10,8 @@ import sys
+ from distutils.sysconfig import get_python_inc
+ from subprocess import PIPE, run
+ from textwrap import dedent
++from niftypet.ninst import cudasetup as cs
++from niftypet.ninst import install_tools as tls
+ 
+ # from pkg_resources import resource_filename
+ try:
+@@ -196,9 +198,23 @@ def resources_setup(gpu=True):
+     # return gpuarch for cmake compilation
+     return dev_setup() if gpu else ""
+ 
++def _setup_resources():
++    tls.check_platform()
++    ext = tls.check_depends()  # external dependencies
++
++    # install resources.py
++    if ext["cuda"] and ext["cmake"]:
++        # select the supported GPU device and
++        gpuarch = cs.resources_setup()
++    else:
++        gpuarch = cs.resources_setup(gpu=False)
+ 
+ def get_resources(sys_append=True, reload=True):
+     path_resources = path_niftypet_local()
++
++    if not os.path.isfile(os.path.join(path_resources, "resources.py")):
++        _setup_resources()
++
+     if sys_append:
+         if path_resources not in sys.path:
+             sys.path.append(path_resources)
+diff '--color=auto' -ruNp NInst-0.12.0/niftypet/ninst/_dist_ver.py NInst-0.12.0-fixed/niftypet/ninst/_dist_ver.py
+--- NInst-0.12.0/niftypet/ninst/_dist_ver.py	1969-12-31 19:00:00.000000000 -0500
++++ NInst-0.12.0-fixed/niftypet/ninst/_dist_ver.py	2023-11-17 21:45:17.454059313 -0500
+@@ -0,0 +1 @@
++__version__ = '0.12.0'
+diff '--color=auto' -ruNp NInst-0.12.0/pyproject.toml NInst-0.12.0-fixed/pyproject.toml
+--- NInst-0.12.0/pyproject.toml	2022-09-15 07:04:16.000000000 -0400
++++ NInst-0.12.0-fixed/pyproject.toml	2023-11-17 21:44:11.696787314 -0500
+@@ -2,9 +2,5 @@
+ requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4", "tqdm",
+             "miutil[cuda,web]>=0.7.0"]
+ 
+-[tool.setuptools_scm]
+-write_to = "niftypet/ninst/_dist_ver.py"
+-write_to_template = "__version__ = '{version}'\n"
+-
+ [tool.black]
+ target_version = ["py36", "py39"]
+diff '--color=auto' -ruNp NInst-0.12.0/setup.cfg NInst-0.12.0-fixed/setup.cfg
+--- NInst-0.12.0/setup.cfg	2022-09-15 07:04:16.000000000 -0400
++++ NInst-0.12.0-fixed/setup.cfg	2023-11-17 21:43:55.636476647 -0500
+@@ -1,5 +1,6 @@
+ [metadata]
+ name=ninst
++version=0.12.0
+ description=NiftyPET Installation tools
+ long_description=file: README.rst
+ long_description_content_type=text/x-rst
+diff '--color=auto' -ruNp NInst-0.12.0/setup.py NInst-0.12.0-fixed/setup.py
+--- NInst-0.12.0/setup.py	2022-09-15 07:04:16.000000000 -0400
++++ NInst-0.12.0-fixed/setup.py	2023-11-17 21:40:33.588568298 -0500
+@@ -18,4 +18,4 @@ if ext["cuda"] and ext["cmake"]:
+ else:
+     gpuarch = cs.resources_setup(gpu=False)
+ 
+-setup(use_scm_version=True)
++setup(scripts=['bin/niftypet-resources-setup'])

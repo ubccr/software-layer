@@ -1,0 +1,97 @@
+easyblock = 'PythonBundle'
+
+name = 'NiftyPET'
+version = '2.0.0'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/NiftyPET/NiftyPET'
+description = """
+High-throughput Python platform for image reconstruction and analysis
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('SPM', '12.5_r7771', '-MATLAB-2021b'),
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('scikit-build', '0.15.0'),
+    ('scikit-image', '0.19.1'),
+    ('SciPy-bundle', '2021.10'),
+    ('h5py', '3.6.0'),
+    ('imageio', '2.13.5'),
+    ('NiftyReg', '1.5.76'),
+    ('NiBabel', '4.0.2'),
+    ('dcm2niix', '1.0.20230411'),
+    ('SimpleITK', '2.1.1.2'),
+]
+
+exts_list = [
+    # Need newer version of setuptools to support pyproject.toml
+    ('setuptools', '68.2.2', {
+        'checksums': ['4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87'],
+    }),
+    ('tqdm', '4.64.1', {
+        'checksums': ['5f4f682a004951c1b450bc753c710e9280c5746ce6ffedee253ddbcbf54cf1e4'],
+    }),
+    ('cuvec', '2.12.0', {
+        'checksums': ['e544fbad685b6a1c5615ce6aa8e9cd15d929a01e65aa933eb8a1daf76dce224c'],
+    }),
+    ('miutil', '0.12.0', {
+        'source_urls': ['https://github.com/AMYPAD/miutil/archive/refs/tags/'],
+        'sources': [{'download_filename': 'v%(version)s.tar.gz', 'filename': '%(name)s-%(version)s.tar.gz'}],
+        'checksums': ['7da95a1a5e07a5ba91e51dbe6a6913ea7d37bf5e456ffaae70a87508601825e3'],
+        'preinstallopts': """sed -i 's/^dynamic = .*version.*/version = "%(version)s"/g' pyproject.toml && sed -i 's/^\\[tool.setuptools_scm\\]//' pyproject.toml && sed -i '/^write_to/d' pyproject.toml && echo "__version__ = '%(version)s'\n" > miutil/_dist_ver.py && """,
+    }),
+    ('argopt', '0.8.2', {
+        'checksums': ['fabdb99043a82a320e0c257719f59a677404640dce97b079d2dac9b6b581aeec'],
+    }),
+    ('pynvml', '11.4.1', {
+        'checksums': ['b2e4a33b80569d093b513f5804db0c7f40cfc86f15a013ae7a8e99c5e175d5dd'],
+        'preinstallopts': """sed -i 's#CDLL("libnvidia-ml.so.1")#CDLL("/opt/software/nvidia/lib64/libnvidia-ml.so.1")#' pynvml/nvml.py && """,
+    }),
+    ('ninst', '0.12.0', {
+        'source_urls': ['https://github.com/NiftyPET/NInst/archive/refs/tags/'],
+        'sources': [{'download_filename': 'v%(version)s.tar.gz', 'filename': '%(name)s-%(version)s.tar.gz'}],
+	'patches': ['NInst-0.12.0_setup.patch'],
+        'checksums': [
+	    '6f96f6d747c7ffc9ef1d5b4ed1d587515dcb59d0b12ec8c4233869ca40c51a36',
+	    '19d5b7c2b5c71e7eeaa0f1b0b9d9e5cdd99978af6c7d5e5e4567f6564b93d879',
+        ],
+        'preinstallopts': """sed -i -e '/^# # # start NiftyPET tools # # #/a\\' -e "RESPATH = '$EBROOTNIFTYREG/bin/reg_resample'\\nREGPATH = '$EBROOTNIFTYREG/bin/reg_aladin'\\nDCM2NIIX = '$EBROOTDCM2NIIX/bin/dcm2niix'\\nHMUDIR = ''" niftypet/ninst/raw/resources.py && """,
+        'modulename': 'niftypet.ninst',
+    }),
+    ('dipy', '1.7.0', {
+        'checksums': ['59bb647128aae7793215c813bb8ea35dae260ac9f0d938c724064f0af5a05cc3'],
+    }),
+    ('numcu', '1.0.5', {
+        'checksums': ['a519696e0073cafedc0ac3d0cefe98490c3c18a6d5e95dab16ac3e348ebfa3ed'],
+    }),
+    ('nimpa', '2.6.3', {
+        'source_urls': ['https://github.com/NiftyPET/NIMPA/archive/refs/tags/'],
+        'sources': [{'download_filename': 'v%(version)s.tar.gz', 'filename': '%(name)s-%(version)s.tar.gz'}],
+        'checksums': ['7a893022c2d01c21d04862020d57f0689b80f7e51cedea350ce93315e02e0545'],
+        'preinstallopts': """ sed -i 's/__version__ = get_version(root=".", relative_to=__file__)/__version__ = "%(version)s"/' setup.py  && sed -i 's/"use_scm_version": True, //' setup.py &&  sed -i 's/^dynamic = .*version.*/version = "%(version)s"/g' pyproject.toml && sed -i 's/^\\[tool.setuptools_scm\\]//' pyproject.toml && sed -i '/^write_to/d' pyproject.toml && echo "__version__ = '%(version)s'\n" > niftypet/nimpa/_dist_ver.py && """,
+        'modulename': 'niftypet.nimpa',
+    }),
+    ('spm12', '2.1.0', {
+        'source_tmpl': 'spm12-%(version)s-py3-none-any.whl',
+        'checksums': ['96e95e3bf55356cc8172153e5d0a2a2b58f56194b7ef09f9547703771bf63baa'],
+    }),
+    ('brainweb', '1.6.2', {
+        'checksums': ['cfca5a08d519326662d4135034f340cee7a664e1e02d85bb348c217baeb74eaf'],
+    }),
+    ('nipet', '2.2.0', {
+        'checksums': ['2670b309b359ea73f389822473ea7eb4c782710b0a0f218446b416251e011355'],
+        'modulename': 'niftypet.nipet',
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+modextravars = {
+    'HMUDIR': '%(installdir)s/hmudir',
+}
+
+moduleclass = 'bio'

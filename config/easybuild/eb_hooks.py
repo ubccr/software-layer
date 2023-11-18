@@ -259,24 +259,6 @@ def pillow_preconfig(ec, *args, **kwargs):
 
     setvar("LDFLAGS", '-L/cvmfs/soft.ccr.buffalo.edu/versions/2023.01/compat/usr/lib64')
 
-def matlab_config_opts(ec, prefix):
-    """Custom config options for MATLAB."""
-    if ec.name != 'MATLAB':
-        raise EasyBuildError("matlab-specific hook triggered for non-matlab easyconfig?!")
-
-    print_msg(f"Checking for R{ec.version}_Linux.iso in current directory..")
-    try:
-        sha256_hash = hashlib.sha256()
-        with open(f"R{ec.version}_Linux.iso", "rb") as f:
-            print_msg("Found R%s_Linux.iso computing sha256 checksum..", ec.version)
-            for byte_block in iter(lambda: f.read(4096),b""):
-                sha256_hash.update(byte_block)
-            sha256sum = sha256_hash.hexdigest()
-            print_msg("Done. updating checksums with: %s", sha256sum)
-            ec['checksums'] = [sha256sum]
-    except FileNotFoundError:
-        raise EasyBuildError(f"Failed to find R{ec.version}_Linux.iso please download from Mathworks")
-
 def openmpi_config_opts(ec, prefix):
     """Inject configure options for openmpi."""
     if ec.name == 'OpenMPI':
@@ -554,6 +536,18 @@ def jax_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("jax-specific hook triggered for non-jax easyconfig?!")
 
+def niftypet_postproc(ec, *args, **kwargs):
+    """Add post install cmds for niftypet"""
+
+    if ec.name == 'NiftyPET':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_path="/opt/software/nvidia/lib64"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("niftypet-specific hook triggered for non-niftypet easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -563,7 +557,6 @@ PARSE_HOOKS = {
     'PMIx': pmix_config_opts,
     'CUDA': cuda_config_opts,
     'cuDNN': cuda_config_opts,
-    'MATLAB': matlab_config_opts,
     'Perl': perl_config_opts,
     'GDAL': gdal_config_opts,
     'Gurobi': gurobi_config_opts,
@@ -590,4 +583,5 @@ PRE_POSTPROC_HOOKS = {
     'VTune': vtune_postproc,
     'TensorFlow': tensorflow_postproc,
     'jax': jax_postproc,
+    'NiftyPET': niftypet_postproc,
 }

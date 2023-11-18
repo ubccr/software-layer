@@ -1,0 +1,50 @@
+diff '--color=auto' -ruNp dcm2niix-1.0.20230411/dcm2niix/_dist_ver.py dcm2niix-1.0.20230411-fixed/dcm2niix/_dist_ver.py
+--- dcm2niix-1.0.20230411/dcm2niix/_dist_ver.py	1969-12-31 19:00:00.000000000 -0500
++++ dcm2niix-1.0.20230411-fixed/dcm2niix/_dist_ver.py	2023-11-17 08:11:55.218775892 -0500
+@@ -0,0 +1 @@
++__version__ = '1.0.20230411'
+diff '--color=auto' -ruNp dcm2niix-1.0.20230411/pyproject.toml dcm2niix-1.0.20230411-fixed/pyproject.toml
+--- dcm2niix-1.0.20230411/pyproject.toml	2023-04-24 09:50:18.000000000 -0400
++++ dcm2niix-1.0.20230411-fixed/pyproject.toml	2023-11-17 08:22:26.906830150 -0500
+@@ -1,7 +1,4 @@
+ [build-system]
+-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4",
++requires = ["setuptools>=42", "wheel", 
+             "scikit-build>=0.11.0", "cmake>=3.18", "ninja"]
+ 
+-[tool.setuptools_scm]
+-write_to = "dcm2niix/_dist_ver.py"
+-write_to_template = "__version__ = '{version}'\n"
+diff '--color=auto' -ruNp dcm2niix-1.0.20230411/setup.cfg dcm2niix-1.0.20230411-fixed/setup.cfg
+--- dcm2niix-1.0.20230411/setup.cfg	2023-04-24 09:50:18.000000000 -0400
++++ dcm2niix-1.0.20230411-fixed/setup.cfg	2023-11-17 08:11:24.510189867 -0500
+@@ -1,5 +1,6 @@
+ [metadata]
+ name=dcm2niix
++version=1.0.20230411
+ description=DCM2NIIX Python package
+ long_description=file: README.md
+ long_description_content_type=text/markdown
+@@ -31,7 +32,6 @@ classifiers=
+ setup_requires=
+     setuptools>=42
+     wheel
+-    setuptools_scm[toml]
+     scikit-build>=0.11.0
+     cmake>=3.18
+     ninja
+diff '--color=auto' -ruNp dcm2niix-1.0.20230411/setup.py dcm2niix-1.0.20230411-fixed/setup.py
+--- dcm2niix-1.0.20230411/setup.py	2023-04-24 09:50:18.000000000 -0400
++++ dcm2niix-1.0.20230411-fixed/setup.py	2023-11-17 08:11:04.373805613 -0500
+@@ -5,9 +5,9 @@ from pathlib import Path
+ from setuptools_scm import get_version
+ from skbuild import setup
+ 
+-__version__ = get_version(root=".", relative_to=__file__)
++__version__ = '1.0.20230411'
+ build_ver = ".".join(__version__.split(".")[:3]).split(".dev")[0]
+ for i in (Path(__file__).resolve().parent / "_skbuild").rglob("CMakeCache.txt"):
+     i.write_text(re.sub("^//.*$\n^[^#].*pip-build-env.*$", "", i.read_text(), flags=re.M))
+-setup(use_scm_version=True, packages=["dcm2niix"],
++setup(packages=["dcm2niix"],
+       cmake_languages=("CXX",), cmake_minimum_required_version="3.18")
