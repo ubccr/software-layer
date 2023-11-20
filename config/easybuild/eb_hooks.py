@@ -548,6 +548,16 @@ def niftypet_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("niftypet-specific hook triggered for non-niftypet easyconfig?!")
 
+def openmolcas_postproc(ec, *args, **kwargs):
+    if ec.name == 'OpenMolcas':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/bin --add_path="%(installdir)s/qcmaquis/lib" --any_interpreter',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("openmolcas-specific hook triggered for non-openmolcas easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -584,4 +594,5 @@ PRE_POSTPROC_HOOKS = {
     'TensorFlow': tensorflow_postproc,
     'jax': jax_postproc,
     'NiftyPET': niftypet_postproc,
+    'OpenMolcas': openmolcas_postproc,
 }

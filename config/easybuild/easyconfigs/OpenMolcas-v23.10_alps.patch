@@ -1,0 +1,11 @@
+diff -ruP OpenMolcas-v23.10/cmake/custom/qcmaquis.cmake OpenMolcas-v23.10-fixed/cmake/custom/qcmaquis.cmake
+--- OpenMolcas-v23.10/cmake/custom/qcmaquis.cmake	2023-09-25 05:18:08.000000000 -0400
++++ OpenMolcas-v23.10-fixed/cmake/custom/qcmaquis.cmake	2023-11-18 22:40:17.673394056 -0500
+@@ -78,6 +78,7 @@
+   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+   -DCMAKE_CXX_FLAGS=${QCM_CMake_CXX_FLAGS}
+   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
++  -DMPI_FOUND:BOOL=ON
+   )
+ if(HDF5_ROOT)
+   list(APPEND QCMaquisCMakeArgs

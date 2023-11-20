@@ -1,0 +1,67 @@
+easyblock = 'CMakeMake'
+
+name = 'OpenMolcas'
+version = '23.10'
+
+homepage = "https://gitlab.com/Molcas/OpenMolcas"
+description = "OpenMolcas is a quantum chemistry software package."
+
+toolchain = {'name': 'intel', 'version': '2022.00'}
+toolchainopts = {'usempi': True}
+
+
+source_urls = ['https://gitlab.com/Molcas/OpenMolcas/-/archive/v%(version)s/']
+sources = ["%(name)s-v%(version)s.tar.gz"]
+patches = [
+    '%(name)s-23.06_mcpdft_deps.patch',
+    'OpenMolcas-v23.10_alps.patch',
+]
+checksums = [
+    {'%(name)s-v%(version)s.tar.gz': 'e93b65964a9f1b1ac90e8d56de60d613da5801072bcab76a4da249049e387a1c'},
+    {'%(name)s-23.06_mcpdft_deps.patch': 'a798ec6f93a19539aa2211a978da461d4ecd31c5521b9dab6f2a9b1c2fa65f0e'},
+    {'OpenMolcas-v23.10_alps.patch': '5354337956594ca87daa1114a4e736ff71ba2ad5395de25301a46c246d2e828c'},
+]
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('HDF5', '1.14.1'),
+    ('GSL', '2.7'),
+    ('GlobalArrays', '5.8.2'),
+    ('Boost', '1.77.0'),
+]
+
+build_shared_libs = True
+
+preconfigopts = 'GAROOT=$EBROOTGLOBALARRAYS HDF5_ROOT=$EBROOTHDF5 '
+_copts = [
+    '-DLINALG=MKL',
+    '-DMKLROOT=$MKLROOT',
+    '-DOPENMP=ON',
+    '-DTOOLS=ON',
+    '-DFDE=ON',
+    '-DMPI=ON',
+    '-DGA=ON',
+    '-DDMRG=ON',
+    '-DHDF5_DIR=$EBROOTHDF5',
+]
+configopts = ' '.join(_copts)
+
+pretestopts = 'export LD_LIBRARY_PATH="%(builddir)s/easybuild_obj/lib:%(builddir)s/easybuild_obj/qcmaquis/lib:$LD_LIBRARY_PATH"'
+runtest = 'test && cd %(builddir)s/easybuild_obj && ./pymolcas verify'
+
+modextrapaths = {'PATH': ''}
+modextravars = {
+    'MOLCAS': '%(installdir)s',
+    'MOLCAS_DRIVER': '%(installdir)s/pymolcas',
+    'MOLCAS_SOURCE': '%(installdir)s',
+}
+
+sanity_check_paths = {
+    'files': ['bin/dynamix.exe', 'bin/mpprop.exe', 'lib/libmolcas.%s' % SHLIB_EXT,
+              'sbin/help_basis', 'pymolcas'],
+    'dirs': ['data/', 'basis_library/'],
+}
+
+moduleclass = 'chem'
