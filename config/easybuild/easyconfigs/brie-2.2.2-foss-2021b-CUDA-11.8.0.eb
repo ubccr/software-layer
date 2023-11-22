@@ -1,0 +1,38 @@
+easyblock = 'PythonBundle'
+
+name = 'brie'
+version = '2.2.2'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/huangyh09/brie'
+description = """
+BRIE: Bayesian Regression for Isoform Estimate in Single Cells
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('SciPy-bundle', '2021.10'),
+    ('Python', '3.9.6'),
+    ('TensorFlow', '2.11.0', '-CUDA-%(cudaver)s'),
+    ('tensorflow-probability', '0.19.0', '-CUDA-%(cudaver)s'),
+    ('scanpy', '1.9.1'),
+    ('Seaborn', '0.11.2'),
+    ('Pysam', '0.18.0'),
+    ('statsmodels', '0.13.1'),
+    ('h5py', '3.6.0'),
+    ('matplotlib', '3.4.3'),
+    ('scikit-learn', '1.0.2')
+]
+
+exts_list = [
+    (name, version, {
+        'checksums': ['77f25a898f5bf613e514f79079aa8432eb5491992751dfe6312e1d6cbe0f759c'],
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+moduleclass = 'bio'
