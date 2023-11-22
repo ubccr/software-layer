@@ -14,7 +14,7 @@ toolchain = {'name': 'foss', 'version': '2021b'}
 dependencies = [
     ('Python', '3.9.6'),
     ('SciPy-bundle', '2021.10'),
-    ('Pillow', '8.3.2'),
+    ('Pillow', '9.2.0'),
     ('pydicom', '2.2.2'),
 ]
 
