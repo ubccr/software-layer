@@ -1,0 +1,30 @@
+easyblock = 'PythonPackage'
+
+name = 'denss'
+version = '1.7.1'
+local_commit = '207af75'
+
+homepage = 'https://github.com/tdgrant1/denss'
+description = """DENSS: Density for Solution Scattering"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+source_urls = ['https://github.com/tdgrant1/denss/archive/']
+sources = [{'download_filename': '%s.tar.gz' % local_commit, 'filename': SOURCE_TAR_GZ}]
+checksums = ['53bf9fb1ea9912729e8eb82faab69bc549dda7114d99c4f12fad18720f58a526']
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('SciPy-bundle','2021.10')
+]
+
+use_pip = True
+sanity_pip_check = True
+
+sanity_check_commands = [
+    "denss.py -h"
+]
+
+options = {'modulename': 'saxstats'}
+
+moduleclass = 'bio'
