@@ -1,0 +1,66 @@
+name = 'Mathematica'
+version = '13.3.1'
+
+homepage = 'https://www.wolfram.com/mathematica'
+description = """Mathematica is a computational software program used in many scientific, engineering, mathematical
+and computing fields."""
+
+toolchain = SYSTEM
+
+sources = ['Mathematica_%(version)s_BNDL_LINUX.sh']
+checksums = ['d37478b34e5f9937199e564831223ac652c4479f0c22871ca02af6ec5f015ce9']
+
+dependencies = [
+    ('GCCcore', '11.2.0'),
+    ('expat', '2.4.1-GCCcore-11.2.0'),
+    ('libpng', '1.6.37-GCCcore-11.2.0'),
+    ('Brotli', '1.0.9-GCCcore-11.2.0'),
+    ('freetype', '2.11.0-GCCcore-11.2.0'),
+    ('fontconfig', '2.13.94-GCCcore-11.2.0'),
+    ('xorg-macros', '1.19.3-GCCcore-11.2.0'),
+    ('X11', '20210802-GCCcore-11.2.0'),
+    ('libglvnd', '1.3.3-GCCcore-11.2.0'),
+]
+
+postinstallcmds = [
+    'echo "Show any existing RPATH in the the binaries";'
+    'for bin in $(find "%(installdir)s/SystemFiles/FrontEnd/Binaries/Linux-x86-64/" "%(installdir)s/SystemFiles/Kernel/Binaries/Linux-x86-64/" -type f);'
+    'do'
+    '  echo "objdump -x \"${bin}\" | grep \"R.*PATH\"";'
+    '  objdump -x "${bin}" | grep "R.*PATH";'
+    'done;'
+    'echo "Remove existing RPATH from the binaries";'
+    'for bin in $(find "%(installdir)s/SystemFiles/FrontEnd/Binaries/Linux-x86-64/" "%(installdir)s/SystemFiles/Kernel/Binaries/Linux-x86-64/" -type f);'
+    'do'
+    '  echo "patchelf --remove-rpath \"${bin}\"";'
+    '  patchelf --remove-rpath "${bin}";'
+    'done;'
+    'echo "Set the RPATH";'
+    'for lib_dir in "%(installdir)s/SystemFiles/Libraries/Linux-x86-64" "%(installdir)s/SystemFiles/Libraries/Linux-x86-64/Qt/lib" "%(installdir)s/SystemFiles/Libraries/Linux-x86-64/Qt/plugins" "%(installdir)s/SystemFiles/Java/Linux-x86-64/lib"  $(echo ${LIBRARY_PATH} | sed "s/:/ /g") $(echo ${CMAKE_LIBRARY_PATH} | sed "s/:/ /g") "${EPREFIX}/lib" "${EPREFIX}/lib64" "${EPREFIX}/usr/lib" "${EPREFIX}/usr/lib64";'
+    'do'
+    '  for bin in $(find "%(installdir)s/SystemFiles/FrontEnd/Binaries/Linux-x86-64/" "%(installdir)s/SystemFiles/Kernel/Binaries/Linux-x86-64/" -type f);'
+    '  do'
+    '    echo "patchelf --add-rpath \"${lib_dir}\" \"${bin}\"";'
+    '    patchelf --add-rpath "${lib_dir}" "${bin}";'
+    '  done;'
+    'done;',
+    'echo "Set the interpreter for the binaries to the compat layer ld-linux-x86-64.so.2";'
+    'for bin in $(find "%(installdir)s/SystemFiles/FrontEnd/Binaries/Linux-x86-64/" "%(installdir)s/SystemFiles/Kernel/Binaries/Linux-x86-64/" -type f);'
+    'do'
+    '  patchelf --set-interpreter "${EPREFIX}/lib64/ld-linux-x86-64.so.2" "${bin}";'
+    '  patchelf --no-default-lib "${bin}";'
+    'done'
+]
+
+license_server = 'license.ccr.buffalo.edu'
+
+moduleclass = 'math'
+
+modluafooter = """
+prepend_path("LD_LIBRARY_PATH", os.getenv("EBROOTX11") .. "/lib")
+"""
+
+modloadmsg = "The UB software licenses for Wolfram products are NOT licensed for federally sponsored research.\n"
+modloadmsg += "As per:\n"
+modloadmsg += "  https://www.buffalo.edu/ubit/service-guides/software/downloading/ub-owned-computers/mathematica.html\n"
+
