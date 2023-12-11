@@ -57,7 +57,15 @@ license_server = 'license.ccr.buffalo.edu'
 moduleclass = 'math'
 
 modluafooter = """
+if mode() == "load" then
 prepend_path("LD_LIBRARY_PATH", os.getenv("EBROOTX11") .. "/lib")
+setenv ("MATHEMATICA_LD_LIBRARY_PATH", os.getenv("EBROOTX11") .. "/lib")
+end
+
+if mode() == "unload" then
+remove_path("LD_LIBRARY_PATH", os.getenv("MATHEMATICA_LD_LIBRARY_PATH"))
+setenv ("MATHEMATICA_LD_LIBRARY_PATH", "")
+end
 """
 
 modloadmsg = "The UB software licenses for Wolfram products are NOT licensed for federally sponsored research.\n"
