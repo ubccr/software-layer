@@ -41,7 +41,6 @@ dependencies = [
 
 configopts = '-DVDB_INCDIR="$EBROOTNCBIMINVDB/include" -DVDB_LIBDIR="$EBROOTNCBIMINVDB/lib" '
 configopts += '-DBUILD_TOOLS_LOADERS=ON -DBUILD_TOOLS_INTERNAL=ON '
-configopts += "-DDEFAULT_SYSROOT=$EPREFIX "
 
 _sra_bin = [
     'abi-dump', 'abi-load', 'align-info', 'bam-load', 'cache-mgr', 'cg-load', 'copycat', 'fasterq-dump', 'fastq-dump',

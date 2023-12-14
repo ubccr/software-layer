@@ -30,7 +30,6 @@ dependencies = [
 
 configopts = "-DHDF5_INCDIR=$EBROOTHDF5/include -DHDF5_LIBDIR=$EBROOTHDF5/lib "
 configopts += "-DXML2_INCDIR=$EBROOTLIBXML2/include -DXML2_LIBDIR=$EBROOTLIBXML2/lib "
-configopts += "-DDEFAULT_SYSROOT=$EPREFIX "
 
 sanity_check_paths = {
     'files': ['include/ncbi/ncbi.h', 'include/ncbi/vdb-blast.h'] +
