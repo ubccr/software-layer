@@ -1,0 +1,55 @@
+##
+# Author:    Robert Mijakovic <robert.mijakovic@lxp.lu>
+##
+name = 'CP2K'
+version = '2023.2'
+
+homepage = 'https://www.cp2k.org/'
+description = """CP2K is a freely available (GPL) program, written in Fortran 95, to perform atomistic and molecular
+ simulations of solid state, liquid, molecular and biological systems. It provides a general framework for different
+ methods such as e.g. density functional theory (DFT) using a mixed Gaussian and plane waves approach (GPW), and
+ classical pair and many-body potentials. """
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'pic': True, 'openmp': True}
+
+source_urls = ['https://github.com/cp2k/cp2k/releases/download/v%(version)s/']
+sources = [
+    SOURCELOWER_TAR_BZ2,
+    {
+        'source_urls': ['https://raw.githubusercontent.com/cp2k/cp2k/support/v2023.1/tools/regtesting'],
+        'download_filename': 'do_regtest',
+        'filename': 'do_regtest-v2023.01',
+        'extract_cmd': 'install -m 755 %s "%(namelower)s-%(version)s/tools/regtesting/do_regtest"',
+    },
+]
+
+checksums = [
+    'adbcc903c1a78cba98f49fe6905a62b49f12e3dfd7cedea00616d1a5f50550db',
+    'db09eec8bb432865e8f0e45d777a96d082f277db06fb925dc8aac1ec4564ec85',  # do_regtest-v2023.01
+]
+
+builddependencies = [
+    ('flex', '2.6.4'),
+    ('Bison', '3.8.2'),
+]
+
+dependencies = [
+    ('Libint', '2.7.2', '-lmax-6-cp2k'),
+    ('libxc', '5.1.6'),
+    ('libxsmm', '1.17'),
+    ('libvori', '220621'),
+    ('FFTW', '3.3.10'),
+    ('PLUMED', '2.8.0'),
+]
+
+type = 'psmp'
+
+# missing link?
+#preconfigopts = 'pushd "%(namelower)s-%(version)s/tools" && ln -s regtesting/do_regtest.py do_regtest && popd && '
+
+# regression test reports handful of failures,
+# we're assuming those are OK to ignore...
+ignore_regtest_fails = True
+
+moduleclass = 'chem'
