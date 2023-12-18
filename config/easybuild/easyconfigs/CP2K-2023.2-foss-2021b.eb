@@ -16,6 +16,7 @@ toolchainopts = {'pic': True, 'openmp': True}
 source_urls = ['https://github.com/cp2k/cp2k/releases/download/v%(version)s/']
 sources = [
     SOURCELOWER_TAR_BZ2,
+    # "do_regtest" script missing from the 2023.2 tarball - user the 2023.1 version:
     {
         'source_urls': ['https://raw.githubusercontent.com/cp2k/cp2k/support/v2023.1/tools/regtesting'],
         'download_filename': 'do_regtest',
@@ -44,9 +45,6 @@ dependencies = [
 ]
 
 type = 'psmp'
-
-# missing link?
-#preconfigopts = 'pushd "%(namelower)s-%(version)s/tools" && ln -s regtesting/do_regtest.py do_regtest && popd && '
 
 # regression test reports handful of failures,
 # we're assuming those are OK to ignore...
