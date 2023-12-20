@@ -558,6 +558,19 @@ def openmolcas_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("openmolcas-specific hook triggered for non-openmolcas easyconfig?!")
 
+def mathematica_postproc(ec, *args, **kwargs):
+    """Add post install cmds for mathematica"""
+
+    if ec.name == 'Mathematica':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/SystemFiles/FrontEnd/Binaries/Linux-x86-64/ --add_origin --add_path="/opt/software/nvidia/lib64:$EBROOTX11/lib64:$EBROOTFREETYPE/lib64:$EBROOTFONTCONFIG/lib64:$EPREFIX/usr/lib64:$EPREFIX/lib64"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/SystemFiles/Libraries/Linux-x86-64/Qt/lib/ --add_path="/opt/software/nvidia/lib64:$EBROOTX11/lib64:$EPREFIX/usr/lib64:$EPREFIX/lib64"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("mathematica-specific hook triggered for non-mathematica easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -595,4 +608,5 @@ PRE_POSTPROC_HOOKS = {
     'jax': jax_postproc,
     'NiftyPET': niftypet_postproc,
     'OpenMolcas': openmolcas_postproc,
+    'Mathematica': mathematica_postproc,
 }
