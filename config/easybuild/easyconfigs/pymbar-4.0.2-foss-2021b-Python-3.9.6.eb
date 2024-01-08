@@ -1,0 +1,53 @@
+easyblock = 'PythonPackage'
+
+name = 'pymbar'
+version = '4.0.2'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'http://pymbar.readthedocs.io/en/master/'
+description = """The pymbar package contains the pymbar suite of tools for the analysis of
+simulated and experimental data with the multistate Bennett acceptance
+ratio (MBAR) estimator."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+source_urls = ['https://github.com/choderalab/pymbar/archive/']
+sources = [
+    '%(version)s.tar.gz',
+    # QQMBARobserve.pdf updated in commit e5b7f120f74442658a03c02b1a1898b5c2fa913a
+    {
+        'source_urls': ['https://github.com/choderalab/pymbar/blob/e5b7f120f74442658a03c02b1a1898b5c2fa913a/examples/harmonic-oscillators'],
+        'download_filename': 'QQMBARobserve.pdf',
+        'filename': 'QQMBARobserve.pdf',
+        'extract_cmd': 'install -m 644 %s "%(namelower)s-%(version)s/examples/harmonic-oscillators/QQMBARobserve.pdf"',
+    },
+
+
+]
+patches = [
+    'pymbar-4.0.2_fix-example-bug-and-updated-output.patch',  # commit e5b7f120f74442658a03c02b1a1898b5c2fa913a
+]
+checksums = [
+    '5a149f7e6a7b526c4f74d19a4e8652ead2e9ef0aceeb30f924518d45caa9d4d3',  # Source tarball
+    '8ff3e88ffa039ad73d73b2b546394a9efc085b75953cd83f5ab79acc895e974d',  # pQQMBARobserve.pdf
+    '1ed544a14533bb5c48f212987eda38c146c20901ea85d3bfe9591da114764a9d',  # pymbar-4.0.2_fix-example-bug-and-updated-output.patch
+]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('numexpr', '2.8.1'),
+    ('jax', '0.4.16', '-CUDA-11.8.0'),
+    ('scikit-learn', '1.0.2'),
+]
+
+download_dep_fail = True
+use_pip = True
+
+sanity_pip_check = True
+
+sanity_check_paths = {
+    'files': [],
+    'dirs': ['lib/python%(pyshortver)s/site-packages'],
+}
+
+moduleclass = 'chem'
