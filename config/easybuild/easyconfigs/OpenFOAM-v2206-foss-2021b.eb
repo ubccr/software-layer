@@ -43,4 +43,6 @@ dependencies = [
     ('gnuplot', '5.4.2'),
 ]
 
+modextrapaths = {'PATH': [ '%(name)s-%(version)s/bin', '%(name)s-%(version)s/bin/tools' ]}
+
 moduleclass = 'cae'
