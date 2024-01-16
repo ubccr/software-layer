@@ -34,3 +34,11 @@ if (mode() ~= "spider") then
     prepend_path("MODULEPATH", "/util/common/modulefiles/Core")
     prepend_path("MODULEPATH", "/util/academic/modulefiles/Core")
 end
+
+if mode() == "load" then
+io.stderr:write([==[****************WARNING - DANGER - THE SHIP IS GOING DOWN ******************
+You're loading really freaking old software and it is being deleted very soon.  Please
+update your workflow to bring yourself into this century
+*****************************************************************************************
+]==])
+end

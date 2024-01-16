@@ -1,5 +1,5 @@
 -- CCR default versions
-module_version("ccrsoft/legacy","default")
+module_version("ccrsoft/2023.01","default")
 module_version("ccrarch/avx512","default")
 module_version("easybuild/4.8.1","default")
 module_version("gcc/11.2.0","default")
