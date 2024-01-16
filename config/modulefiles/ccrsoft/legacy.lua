@@ -36,9 +36,9 @@ if (mode() ~= "spider") then
 end
 
 if mode() == "load" then
-io.stderr:write([==[****************WARNING - DANGER - THE SHIP IS GOING DOWN ******************
-You're loading really freaking old software and it is being deleted very soon.  Please
-update your workflow to bring yourself into this century
+io.stderr:write([==[***************************** WARNING *********************************************
+You're loading very old software that is no longer supported.  This software will be removed from CCR
+during the June 2024 downtime.  Please update your workflow to utilize CCR's latest software release
 *****************************************************************************************
 ]==])
 end
