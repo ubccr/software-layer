@@ -30,7 +30,7 @@ runtest = 'racon_test'
 postinstallcmds = ['mkdir -p "%(installdir)s/test/data" && cp "%(start_dir)s/test/data/"* "%(installdir)s/test/data"']
 postinstallcmds += ['"%(builddir)s/easybuild_obj/bin/racon_test" && cp "%(builddir)s/easybuild_obj/bin/racon_test" "%(installdir)s/bin"']
 postinstallcmds += ['install -m 755 -t "%(installdir)s/bin" "%(start_dir)s/scripts/racon_preprocess.py"']
-# Note: racon_wrapper.p is for use with a CUDA compiled version of Racon
+# Note: racon_wrapper.py is for use with a CUDA compiled version of Racon
 #postinstallcmds += ['install -m 755 -t "%(installdir)s/bin" "%(start_dir)s/scripts/racon_wrapper.py"']
 
 fix_python_shebang_for = ['bin/*.py']
