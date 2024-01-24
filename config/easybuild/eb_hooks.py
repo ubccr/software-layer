@@ -67,6 +67,7 @@ if (not found) then
         LmodError(error_message)
 end
 setenv("MATLAB_LOG_DIR","/tmp")
+setenv("FONTCONFIG_PATH","{eprefix}/etc/fonts")
 """
 
 GUROBI_MODLUAFOOTER = """
