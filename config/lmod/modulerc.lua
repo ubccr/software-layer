@@ -15,6 +15,7 @@ module_version("nccl/2.12.12-CUDA-11.8.0","default")
 module_version("ucx-cuda/1.11.2-CUDA-11.8.0","default")
 module_version("vtune/2022.3.0","default")
 module_version("nvhpc/22.7-CUDA-11.8.0","default")
+module_version("matlab/2021b","default")
 
 -- shortcuts
 module_version("gcc/9.3.0","9")
