@@ -80,6 +80,12 @@ if (not found) then
 end
 """
 
+PAVILION_MODLUAFOOTER = """
+if isDir(pathJoin(os.getenv("HOME"), "testsuite/sanitarium")) then
+    setenv("PAV_CONFIG_DIR", pathJoin(os.getenv("HOME"), "testsuite/sanitarium"))
+end
+"""
+
 def get_ccr_envvar(ccr_envvar):
     """Get an CCR environment variable from the environment"""
 
@@ -101,6 +107,9 @@ def set_modluafooter(ec):
 
     if name == 'anaconda3':
         ec['modluafooter'] += (ANACONDA_MODLUAFOOTER)
+
+    if name == 'pavilion':
+        ec['modluafooter'] += (PAVILION_MODLUAFOOTER)
 
     if name == 'openmpi':
         if ec['toolchain']['name'].lower() == 'nvhpc':
