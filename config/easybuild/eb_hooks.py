@@ -513,6 +513,19 @@ def clang_preconfig(ec, *args, **kwargs):
     else:
         raise EasyBuildError("clang-specific hook triggered for non-clang easyconfig?!")
 
+def graphviz_preconfig(ec, *args, **kwargs):
+    """Custom config options for Graphviz."""
+
+    if ec.name == 'Graphviz':
+        # Force module load libtool before the preconfigopts in the module
+        ec.cfg['preconfigopts'] = ("""echo "force load libtool so \${EBROOTLIBTOOL} is defined"; """ +
+             """module load libtool; """ +
+             """echo "EBROOTLIBTOOL set to \\\"$EBROOTLIBTOOL\\\""; """ +
+             ec.cfg['preconfigopts'])
+        print_msg("Using custom preconfig commands for %s: %s", ec.name, ec.cfg['preconfigopts'])
+    else:
+        raise EasyBuildError("Graphviz-specific hook triggered for non-Graphviz easyconfig?!")
+
 def gurobi_postproc(ec, *args, **kwargs):
     """Add post install cmds for Gurobi."""
 
@@ -617,6 +630,7 @@ PRE_CONFIGURE_HOOKS = {
     'Clang': clang_preconfig,
     'Pillow': pillow_preconfig,
     'Pillow-SIMD': pillow_preconfig,
+    'Graphviz': graphviz_preconfig,
 }
 
 PRE_POSTPROC_HOOKS = {
