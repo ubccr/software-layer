@@ -1,7 +1,8 @@
 -- CCR default versions
-module_version("ccrsoft/legacy","default")
+module_version("ccrsoft/2023.01","default")
 module_version("ccrarch/avx512","default")
 module_version("easybuild/4.8.1","default")
+module_version("pavilion/2.4.7217d1f","default")
 module_version("gcc/11.2.0","default")
 module_version("gcccore/11.2.0","default")
 module_version("intel/2022.00","default")
@@ -14,6 +15,7 @@ module_version("nccl/2.12.12-CUDA-11.8.0","default")
 module_version("ucx-cuda/1.11.2-CUDA-11.8.0","default")
 module_version("vtune/2022.3.0","default")
 module_version("nvhpc/22.7-CUDA-11.8.0","default")
+module_version("matlab/2021b","default")
 
 -- shortcuts
 module_version("gcc/9.3.0","9")
@@ -73,3 +75,4 @@ hide_version("nvhpc/21.11")
 hide_version("nvhpc/22.11-CUDA-11.8.0")
 hide_version("code-server/4.9.1")
 hide_version("anaconda3/2022.05")
+hide_version("pavilion/2.4.1")

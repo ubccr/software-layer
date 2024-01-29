@@ -88,6 +88,10 @@ if [ -d "/util" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/util:/util:ro"
 fi
 
+if [ -d "/projects" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/projects:/projects:ro"
+fi
+
 if [ -d "/etc/glvnd" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/etc/glvnd:/etc/glvnd:rw"
 fi

@@ -34,3 +34,11 @@ if (mode() ~= "spider") then
     prepend_path("MODULEPATH", "/util/common/modulefiles/Core")
     prepend_path("MODULEPATH", "/util/academic/modulefiles/Core")
 end
+
+if mode() == "load" then
+io.stderr:write([==[***************************** WARNING *********************************************
+You're loading very old software that is no longer supported.  This software will be removed from CCR
+during the June 2024 downtime.  Please update your workflow to utilize CCR's latest software release
+*****************************************************************************************
+]==])
+end

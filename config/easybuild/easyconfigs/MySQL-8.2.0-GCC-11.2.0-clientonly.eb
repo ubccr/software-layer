@@ -1,0 +1,50 @@
+easyblock = 'CMakeMake'
+
+name = 'MySQL'
+version = '8.2.0'
+versionsuffix = '-clientonly'
+
+homepage = 'http://www.mysql.com/'
+description = """MySQL is (as of March 2014) the world's second most widely used
+ open-source relational database management system (RDBMS)."""
+
+source_urls = [
+    'https://cdn.mysql.com//Downloads/MySQL-%(version_major_minor)s/',
+    'http://dev.mysql.com/get/Downloads/MySQL-%(version)s/',
+]
+sources = [
+    SOURCELOWER_TAR_GZ,
+    'https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.bz2',
+]
+checksums = [
+    '8ad3e3f1c5ae2154be638acf556e8981f702d052acc5957e776df1722c211979',
+    'fc9f85fc030e233142908241af7a846e60630aa7388de9a5fafb1f3a26840854',
+]
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+
+dependencies = [
+    ('libevent', '2.1.12'),
+    ('ncurses', '6.2'),
+    ('libedit', '20210910'),
+    ('zlib', '1.2.11'),
+    # Boost appeasrs to be necessary only for the build to run, but is unused by the client binaries
+    # Boost sources are used for this dependency instead
+    #('Boost', '1.77.0'),
+    #    ('OpenSSL', '1.0.1p'),  # OS dependency should be preferred for security reasons
+]
+
+osdependencies = [('openssl-devel', 'libssl-dev', 'libopenssl-devel')]
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+]
+
+configopts = '-DWITHOUT_SERVER=ON -DWITH_EDITLINE=system -DWITH_BOOST="%(builddir)s/boost_1_77_0/"'
+
+sanity_check_paths = {
+    'files': ['bin/mysql'],
+    'dirs': [],
+}
+
+moduleclass = 'devel'
