@@ -1,0 +1,275 @@
+From 035876880534ff0ec0121a5724cc29574aaf754d Mon Sep 17 00:00:00 2001
+From: Mike Henry <11765982+mikemhenry@users.noreply.github.com>
+Date: Thu, 16 Mar 2023 16:12:06 -0700
+Subject: [PATCH] use mamba to build docs on the lts branch (#495)
+
+* use mamba to build docs on the lts branch
+
+* looks like we need to update statsmodels
+
+* remove np.int
+
+* missed and np.int
+
+* update to work with newer versions of stat tools
+---
+ .readthedocs.yml                              | 19 ++++++++++
+ devtools/conda-envs/test_env.yaml             |  5 ++-
+ pymbar/tests/test_mbar.py                     |  2 +-
+ .../testsystems/exponential_distributions.py  |  8 ++--
+ pymbar/testsystems/harmonic_oscillators.py    |  2 +-
+ pymbar/timeseries.py                          | 38 +++++++++----------
+ 6 files changed, 48 insertions(+), 26 deletions(-)
+ create mode 100644 .readthedocs.yml
+
+diff --git a/.readthedocs.yml b/.readthedocs.yml
+new file mode 100644
+index 00000000..2954ec36
+--- /dev/null
++++ b/.readthedocs.yml
+@@ -0,0 +1,19 @@
++# .readthedocs.yml
++
++version: 2
++
++build:
++  os: "ubuntu-20.04"
++  tools:
++    python: "mambaforge-4.10"
++
++python:
++  install:
++    - method: pip
++      path: .
++
++sphinx:
++   configuration: docs/conf.py
++
++conda:
++  environment: devtools/conda-envs/test_env.yaml
+diff --git a/devtools/conda-envs/test_env.yaml b/devtools/conda-envs/test_env.yaml
+index 88b9b8ec..7b6fb7f9 100644
+--- a/devtools/conda-envs/test_env.yaml
++++ b/devtools/conda-envs/test_env.yaml
+@@ -14,7 +14,10 @@ dependencies:
+   - pytest-cov
+   - flaky
+   - codecov
+-  - statsmodels <0.13
++  - statsmodels 
+   - scikit-learn  # Provides the sklearn module
+   - matplotlib-base
+   - xlrd
++    # Docs
++  - numpydoc
++  - sphinxcontrib-bibtex
+diff --git a/pymbar/tests/test_mbar.py b/pymbar/tests/test_mbar.py
+index 9f6e6a9d..a8fed476 100644
+--- a/pymbar/tests/test_mbar.py
++++ b/pymbar/tests/test_mbar.py
+@@ -374,7 +374,7 @@ def test_mbar_computePMF():
+     xmin = test.O_k[refstate] - 1
+     xmax = test.O_k[refstate] + 1
+     within_bounds = (x_n >= xmin) & (x_n < xmax)
+-    bin_centers = dx*np.arange(np.int(xmin/dx),np.int(xmax/dx)) + dx/2
++    bin_centers = dx*np.arange(int(xmin/dx),int(xmax/dx)) + dx/2
+     bin_n = np.zeros(len(x_n),int)
+     bin_n[within_bounds] = 1 + np.floor((x_n[within_bounds]-xmin)/dx)
+     # 0 is reserved for samples outside the domain.  We will ignore this state
+diff --git a/pymbar/testsystems/exponential_distributions.py b/pymbar/testsystems/exponential_distributions.py
+index 4963d825..2d186be8 100644
+--- a/pymbar/testsystems/exponential_distributions.py
++++ b/pymbar/testsystems/exponential_distributions.py
+@@ -114,7 +114,7 @@ def sample(self, N_k=(10, 20, 30, 40, 50), mode='u_kln', seed=None):
+         N_k : np.ndarray, shape=(n_states), dtype=float
+            N_k[k] is the number of samples generated from state k
+         s_n : np.ndarray, shape=(n_samples), dtype='int'
+-            s_n is the state of origin of x_n           
++            s_n is the state of origin of x_n
+ 
+         x_kn : np.ndarray, shape=(n_states, n_samples), dtype=float
+             1D harmonic oscillator positions
+@@ -138,7 +138,7 @@ def sample(self, N_k=(10, 20, 30, 40, 50), mode='u_kln', seed=None):
+         x_kn = np.zeros([self.n_states, N_max], np.float64)
+         u_kln = np.zeros([self.n_states, self.n_states, N_max], np.float64)
+         x_n = np.zeros([N_tot], np.float64)
+-        s_n = np.zeros([N_tot], np.int)
++        s_n = np.zeros([N_tot], int)
+         u_kn = np.zeros([self.n_states, N_tot], np.float64)
+         index = 0
+         for k, N in enumerate(N_k):
+@@ -160,7 +160,7 @@ def sample(self, N_k=(10, 20, 30, 40, 50), mode='u_kln', seed=None):
+             raise Exception("Unknown mode '{}'".format(mode))
+ 
+         return
+-    
++
+     @classmethod
+     def evenly_spaced_exponentials(cls, n_states, n_samples_per_state, lower_rate=1.0, upper_rate=3.0):
+         """Generate samples from evenly spaced exponential distributions.
+@@ -196,7 +196,7 @@ def evenly_spaced_exponentials(cls, n_states, n_samples_per_state, lower_rate=1.
+         s_n : np.ndarray, shape=(n_samples)
+             State of origin of each sample
+         """
+-                
++
+         name = "%dx%d exponentials" % (n_states, n_samples_per_state)
+ 
+         rates = np.linspace(lower_rate, upper_rate, n_states)
+diff --git a/pymbar/testsystems/harmonic_oscillators.py b/pymbar/testsystems/harmonic_oscillators.py
+index 6192d286..0b8e2d24 100644
+--- a/pymbar/testsystems/harmonic_oscillators.py
++++ b/pymbar/testsystems/harmonic_oscillators.py
+@@ -145,7 +145,7 @@ def sample(self, N_k=[10, 20, 30, 40, 50], mode='u_kn', seed = None):
+         x_kn = np.zeros([self.n_states, N_max], np.float64)
+         u_kln = np.zeros([self.n_states, self.n_states, N_max], np.float64)
+         x_n = np.zeros([N_tot], np.float64)
+-        s_n = np.zeros([N_tot], np.int)
++        s_n = np.zeros([N_tot], int)
+         u_kn = np.zeros([self.n_states, N_tot], np.float64)
+         index = 0
+         for k, N in enumerate(N_k):
+diff --git a/pymbar/timeseries.py b/pymbar/timeseries.py
+index d1e3ddeb..aaf1f482 100644
+--- a/pymbar/timeseries.py
++++ b/pymbar/timeseries.py
+@@ -84,7 +84,7 @@ def statisticalInefficiency(A_n, B_n=None, fast=False, mintime=3, fft=False):
+     B_n : np.ndarray, float, optional, default=None
+         B_n[n] is nth value of timeseries B.  Length is deduced from vector.
+         If supplied, the cross-correlation of timeseries A and B will be estimated instead of the
+-        autocorrelation of timeseries A.  
++        autocorrelation of timeseries A.
+     fast : bool, optional, default=False
+         f True, will use faster (but less accurate) method to estimate correlation
+         time, described in Ref. [1] (default: False).  This is ignored
+@@ -118,7 +118,7 @@ def statisticalInefficiency(A_n, B_n=None, fast=False, mintime=3, fft=False):
+     Examples
+     --------
+ 
+-    Compute statistical inefficiency of timeseries data with known correlation time.  
++    Compute statistical inefficiency of timeseries data with known correlation time.
+ 
+     >>> from pymbar.testsystems import correlated_timeseries_example
+     >>> A_n = correlated_timeseries_example(N=100000, tau=5.0)
+@@ -130,7 +130,7 @@ def statisticalInefficiency(A_n, B_n=None, fast=False, mintime=3, fft=False):
+     A_n = np.array(A_n)
+ 
+     if fft and B_n is None:
+-        return statisticalInefficiency_fft(A_n, mintime=mintime)    
++        return statisticalInefficiency_fft(A_n, mintime=mintime)
+ 
+     if B_n is not None:
+         B_n = np.array(B_n)
+@@ -741,7 +741,7 @@ def detectEquilibration(A_t, fast=True, nskip=1):
+ 
+     Parameters
+     ----------
+-    A_t : np.ndarray 
++    A_t : np.ndarray
+         timeseries
+     nskip : int, optional, default=1
+         number of samples to sparsify data by in order to speed equilibration detection
+@@ -753,7 +753,7 @@ def detectEquilibration(A_t, fast=True, nskip=1):
+     g : float
+         statistical inefficiency of equilibrated data
+     Neff_max : float
+-        number of uncorrelated samples   
++        number of uncorrelated samples
+ 
+     ToDo
+     ----
+@@ -763,7 +763,7 @@ def detectEquilibration(A_t, fast=True, nskip=1):
+     -----
+     If your input consists of some period of equilibration followed by
+     a constant sequence, this function treats the trailing constant sequence
+-    as having Neff = 1.  
++    as having Neff = 1.
+ 
+     Examples
+     --------
+@@ -817,8 +817,8 @@ def statisticalInefficiency_fft(A_n, mintime=3, memsafe=None):
+         correlation function first goes negative.  Note that this time may need to be increased
+         if there is a strong initial negative peak in the correlation function.
+     memsafe: bool, optional, default=None (in depreciation)
+-        If this function is used several times on arrays of comparable size then one might benefit 
+-        from setting this option to False. If set to True then clear np.fft cache to avoid a fast 
++        If this function is used several times on arrays of comparable size then one might benefit
++        from setting this option to False. If set to True then clear np.fft cache to avoid a fast
+         increase in memory consumption when this function is called on many arrays of different sizes.
+ 
+     Returns
+@@ -851,7 +851,7 @@ def statisticalInefficiency_fft(A_n, mintime=3, memsafe=None):
+     # Get the length of the timeseries.
+     N = A_n.size
+ 
+-    C_t = sm.tsa.stattools.acf(A_n, fft=True, unbiased=True, nlags=N)
++    C_t = sm.tsa.stattools.acf(A_n, fft=True, adjusted=True, nlags=N)
+     t_grid = np.arange(N).astype('float')
+     g_t = 2.0 * C_t * (1.0 - t_grid / float(N))
+ 
+@@ -873,7 +873,7 @@ def statisticalInefficiency_fft(A_n, mintime=3, memsafe=None):
+         warnings.warn("NumPy's FFT pack now uses an LRU cache to fix the very problem that the memsafe keyword "
+                       "was protecting. This argument no longer changes the code and will be removed in a future "
+                       "version.", FutureWarning)
+-    
++
+     try:
+         ind = np.where((C_t <= 0) & (t_grid > mintime))[0][0]
+     except IndexError:
+@@ -890,9 +890,9 @@ def detectEquilibration_binary_search(A_t, bs_nodes=10):
+ 
+     Parameters
+     ----------
+-    A_t : np.ndarray 
++    A_t : np.ndarray
+         timeseries
+-    
++
+     bs_nodes : int > 4
+         number of geometrically distributed binary search nodes
+ 
+@@ -904,7 +904,7 @@ def detectEquilibration_binary_search(A_t, bs_nodes=10):
+         statistical inefficiency of equilibrated data
+     Neff_max : float
+         number of uncorrelated samples
+-        
++
+     Notes
+     -----
+     Finds the discard region (t) by a binary search on the range of
+@@ -923,12 +923,12 @@ def detectEquilibration_binary_search(A_t, bs_nodes=10):
+     start = 1
+     end = T - 1
+     n_grid = min(bs_nodes, T)
+-    
++
+     while True:
+-        time_grid = np.unique((10 ** np.linspace(np.log10(start), np.log10(end), n_grid)).round().astype('int')) 
++        time_grid = np.unique((10 ** np.linspace(np.log10(start), np.log10(end), n_grid)).round().astype('int'))
+         g_t = np.ones(time_grid.size)
+         Neff_t = np.ones(time_grid.size)
+-        
++
+         for k, t in enumerate(time_grid):
+             if t < T-1:
+                 g_t[k] = statisticalInefficiency_fft(A_t[t:], memsafe=True)
+@@ -938,10 +938,10 @@ def detectEquilibration_binary_search(A_t, bs_nodes=10):
+         k = Neff_t.argmax()
+         t = time_grid[k]
+         g = g_t[k]
+-        
++
+         if (end - start < 4):
+             break
+-        
++
+         if k == 0:
+             start = time_grid[0]
+             end = time_grid[1]
+@@ -951,5 +951,5 @@ def detectEquilibration_binary_search(A_t, bs_nodes=10):
+         else:
+             start = time_grid[k - 1]
+             end = time_grid[k + 1]
+-        
++
+     return (t, g, Neff_max)

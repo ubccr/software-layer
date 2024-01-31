@@ -67,6 +67,7 @@ if (not found) then
         LmodError(error_message)
 end
 setenv("MATLAB_LOG_DIR","/tmp")
+setenv("FONTCONFIG_PATH","{eprefix}/etc/fonts")
 """
 
 GUROBI_MODLUAFOOTER = """
@@ -77,6 +78,12 @@ if (not found) then
         We did not find a suitable license for Gurobi. If you have access to one, you can create the file $HOME/.licenses/gurobi.lic with the license information. If you think you should have access to one, please write to ccr-help@buffalo.edu.
         ]]
         LmodError(error_message)
+end
+"""
+
+PAVILION_MODLUAFOOTER = """
+if isDir(pathJoin(os.getenv("HOME"), "testsuite/sanitarium")) then
+    setenv("PAV_CONFIG_DIR", pathJoin(os.getenv("HOME"), "testsuite/sanitarium"))
 end
 """
 
@@ -102,9 +109,17 @@ def set_modluafooter(ec):
     if name == 'anaconda3':
         ec['modluafooter'] += (ANACONDA_MODLUAFOOTER)
 
+    if name == 'pavilion':
+        ec['modluafooter'] += (PAVILION_MODLUAFOOTER)
+
     if name == 'openmpi':
-        gccver = get_ccr_envvar('EBVERSIONGCC')
-        comp = os.path.join('MPI', 'gcc', gccver, name, ec['version'])
+        if ec['toolchain']['name'].lower() == 'nvhpc':
+            nvhpcver = get_ccr_envvar('EBVERSIONNVHPC')
+            comp = os.path.join('MPI', 'nvhpc', nvhpcver, name, ec['version'])
+        else:
+            gccver = get_ccr_envvar('EBVERSIONGCC')
+            comp = os.path.join('MPI', 'gcc', gccver, name, ec['version'])
+
         ec['modluafooter'] += MPI_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
 
     if name == 'matlab':
@@ -436,7 +451,7 @@ def matlab_postproc(ec, *args, **kwargs):
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
             'chmod -R u+w %(installdir)s',
-            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin",
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="/opt/software/nvidia/lib64"',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
@@ -473,9 +488,9 @@ def nvhpc_postproc(ec, *args, **kwargs):
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
             f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/Linux_x86_64/%(version)s --add_path="/opt/software/nvidia/lib64:$EBROOTCUDA/lib64:$EPREFIX/lib64"',
-            f'echo "set DEFLIBDIR=$EBROOTGCCCORE/lib64;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+            f'echo "set DEFLIBDIR=$EPREFIX/usr/lib64;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
             f'echo "set DEFSTDOBJDIR=$EPREFIX/usr/lib64;" >> %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
-            f'sed -i "\@^set LC=@s@-lgcc@-rpath=/opt/software/nvidia/lib64:$EBROOTGCCCORE/lib64:$EPREFIX/lib64 -lgcc@" %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
+#            f'sed -i "\@^set LC=@s@-lgcc@-rpath=/opt/software/nvidia/lib64:$EBROOTGCCCORE/lib64:$EPREFIX/lib64 -lgcc@" %(installdir)s/Linux_x86_64/%(version)s/compilers/bin/localrc',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
@@ -558,6 +573,18 @@ def openmolcas_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("openmolcas-specific hook triggered for non-openmolcas easyconfig?!")
 
+def paraview_postproc(ec, *args, **kwargs):
+    """Add post install cmds for paraview"""
+
+    if ec.name == 'ParaView':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib64/ --add_origin --add_path="$EBROOTGCCCORE/lib64:$EPREFIX/lib64"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("paraview-specific hook triggered for non-paraview easyconfig?!")
+
 def mathematica_postproc(ec, *args, **kwargs):
     """Add post install cmds for mathematica"""
 
@@ -570,6 +597,18 @@ def mathematica_postproc(ec, *args, **kwargs):
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
         raise EasyBuildError("mathematica-specific hook triggered for non-mathematica easyconfig?!")
+
+def cupy_postproc(ec, *args, **kwargs):
+    """Add post install cmds for cupy."""
+
+    if ec.name == 'CuPy':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_path="/opt/software/nvidia/lib64"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("cupy-specific hook triggered for non-cuda easyconfig?!")
 
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
@@ -608,5 +647,7 @@ PRE_POSTPROC_HOOKS = {
     'jax': jax_postproc,
     'NiftyPET': niftypet_postproc,
     'OpenMolcas': openmolcas_postproc,
+    'ParaView': paraview_postproc,
     'Mathematica': mathematica_postproc,
+    'CuPy': cupy_postproc,
 }

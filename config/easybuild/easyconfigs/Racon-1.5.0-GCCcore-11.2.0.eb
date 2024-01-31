@@ -1,0 +1,40 @@
+easyblock = 'CMakeMake'
+
+name = 'Racon'
+version = '1.5.0'
+
+homepage = 'https://github.com/lbcb-sci/racon'
+description = """Ultrafast consensus module for raw de novo genome assembly of long uncorrected reads."""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+github_account = 'lbcb-sci'
+source_urls = [GITHUB_SOURCE]
+sources = ['%(version)s.tar.gz']
+checksums = ['41e362f71cc03b934f17d6e2c0d626e1b2997258261b14551586de006666424a']
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+    ('binutils', '2.37'),
+]
+
+sanity_check_paths = {
+    'files': ['bin/racon'],
+    'dirs': [],
+}
+
+preconfigopts = 'sed -i.old -E "/^[[:space:]]*PRIVATE TEST_DATA/s|\\\$\{PROJECT_SOURCE_DIR\}|%(installdir)s|" "%(start_dir)s/CMakeLists.txt" && '
+
+runtest = 'racon_test'
+
+postinstallcmds = ['mkdir -p "%(installdir)s/test/data" && cp "%(start_dir)s/test/data/"* "%(installdir)s/test/data"']
+postinstallcmds += ['"%(builddir)s/easybuild_obj/bin/racon_test" && cp "%(builddir)s/easybuild_obj/bin/racon_test" "%(installdir)s/bin"']
+postinstallcmds += ['install -m 755 -t "%(installdir)s/bin" "%(start_dir)s/scripts/racon_preprocess.py"']
+# Note: racon_wrapper.py is for use with a CUDA compiled version of Racon
+#postinstallcmds += ['install -m 755 -t "%(installdir)s/bin" "%(start_dir)s/scripts/racon_wrapper.py"']
+
+fix_python_shebang_for = ['bin/*.py']
+
+sanity_check_commands = ['racon --help']
+
+moduleclass = 'bio'

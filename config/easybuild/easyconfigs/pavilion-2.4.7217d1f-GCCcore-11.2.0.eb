@@ -1,0 +1,64 @@
+easyblock = 'PythonBundle'
+
+name = 'pavilion'
+version = '2.4.7217d1f'
+local_commit = '7217d1f577653677dcc9d1708d3ecce326fa18b9'
+
+homepage = 'https://github.com/hpc/pavilion2'
+description = """
+Pavilion is a Python based framework for running and analyzing tests targeting HPC systems.
+"""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('PyYAML', '5.4.1'),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+exts_list = [
+    ('Yapsy', '1.12.2', {
+        'checksums': ['d8113d9f9c74eacf65b4663c9c037d278c9cb273b5eee5f0e1803baeedb23f8b'],
+    }),
+    ('lark', '1.1.2', {
+        'checksums': ['7a8d0c07d663da9391d7faee1bf1d7df4998c47ca43a593cbef5c7566acd057a'],
+    }),
+    ('python-hostlist', '1.23.0', {
+        'source_urls': ['https://github.com/lanl-preteam/python-hostlist/archive/'],
+        'sources': [{'download_filename': 'bf50ea2.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['24d012135d9d2fca58c0bc2bc5e988db9c975235ac0eca42dac985ce53d0a3e1'],
+        'preinstallopts': """sed -i 's/^VERSION = .*/VERSION = "%(version)s"/g' setup.py && """,
+        'modulename': 'hostlist',
+    }),
+]
+
+components = [
+    (name, version, {
+        'easyblock': 'Tarball',
+        'source_urls': ['https://github.com/hpc/pavilion2/archive/'],
+        'sources':[{'download_filename': '%s.tar.gz' % local_commit, 'filename': SOURCE_TAR_GZ}],
+	'patches': ['pavilion-2.4.7217d1f_add_mixed_state.patch'],
+        'checksums': [
+	    '6903084350aa2057683edbe3fabf6b783b06b47f5f78601c9a36c622c7ad49d1',
+	    '95298d096a87287adac8d276a800567f6593ba194b88e23574b9baa25e5b8366'
+	],
+
+        'start_dir': 'pavilion2-%s' % local_commit,
+        'install_type': 'subdir',
+        'keepsymlinks': True,
+    }),
+]
+
+postinstallcmds = [
+    'touch %(installdir)s/%(namelower)s/.deps_installed',
+]
+
+modextrapaths = {
+    'PATH': 'pavilion/bin',
+    'PYTHONPATH': ['pavilion/lib']
+}
+
+moduleclass = 'tools'

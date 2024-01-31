@@ -1,0 +1,39 @@
+easyblock = 'PythonPackage'
+
+name = 'pymbar'
+version = '3.1.1'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'http://pymbar.readthedocs.io/en/master/'
+description = """The pymbar package contains the pymbar suite of tools for the analysis of
+simulated and experimental data with the multistate Bennett acceptance
+ratio (MBAR) estimator."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+source_urls = ['https://github.com/choderalab/pymbar/archive/']
+sources = ['%(version)s.tar.gz']
+patches = [
+    'pymbar-3.1.1_use-mamba-to-build-docs-on-the-lts-branch.patch',  # commit 035876880534ff0ec0121a5724cc29574aaf754d
+]
+checksums = [
+    'a888b316bb4b0469744597ca8de04affc95eaa3c65974f2b0c63c8e44f20fbfc',  # Source tarball
+    '6e15c9a6e64ae40449541324dc3c8083a9e4b1ce0819ef591a1a0956c14b8f5f',  # pymbar-3.1.1_use-mamba-to-build-docs-on-the-lts-branch.patch
+]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('numexpr', '2.8.1'),
+]
+
+download_dep_fail = True
+use_pip = True
+
+sanity_pip_check = True
+
+sanity_check_paths = {
+    'files': [],
+    'dirs': ['lib/python%(pyshortver)s/site-packages'],
+}
+
+moduleclass = 'chem'
