@@ -1,0 +1,42 @@
+easyblock = 'PythonBundle'
+
+name = 'bloscpack'
+version = '0.16.0'
+
+homepage = 'https://github.com/Blosc/bloscpack'
+description = """
+Command line interface to and serialization format for Blosc
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+builddependencies = [
+    ('scikit-build', '0.15.0'),
+]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('Blosc', '1.21.1'),
+    ('SciPy-bundle', '2021.10'),
+]
+
+exts_list = [
+    ('blosc', '1.11.1', {
+    	'preinstallopts': 'export USE_SYSTEM_BLOSC=1 BLOSC_ROOT=$EBROOTBLOSC && ',
+        'checksums': ['c22119b27bae1063a697f639028b422d55811b0880c3fc0149cbdea791d0b276'],
+    }),
+    ('wrapt', '1.16.0', {
+        'checksums': ['5f370f952971e7d17c7d1ead40e49f32345a7f7a5373571ef44d800d06b1899d'],
+    }),
+    ('Deprecated', '1.2.14', {
+        'checksums': ['e5323eb936458dccc2582dc6f9c322c852a775a27065ff2b0c4970b9d53d01b3'],
+    }),
+    ('bloscpack', '0.16.0', {
+        'checksums': ['35f440d8114e6f4c909612485fec35862019625995d79c3adb701c736e660ff5'],
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+moduleclass = 'tools'
