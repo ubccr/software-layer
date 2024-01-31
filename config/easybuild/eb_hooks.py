@@ -67,6 +67,7 @@ if (not found) then
         LmodError(error_message)
 end
 setenv("MATLAB_LOG_DIR","/tmp")
+setenv("FONTCONFIG_PATH","{eprefix}/etc/fonts")
 """
 
 GUROBI_MODLUAFOOTER = """
@@ -619,6 +620,18 @@ def checkm_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("checkm-specific hook triggered for non-checkm easyconfig?!")
 
+def cupy_postproc(ec, *args, **kwargs):
+    """Add post install cmds for cupy."""
+
+    if ec.name == 'CuPy':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_path="/opt/software/nvidia/lib64"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("cupy-specific hook triggered for non-cuda easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -659,4 +672,5 @@ PRE_POSTPROC_HOOKS = {
     'ParaView': paraview_postproc,
     'Mathematica': mathematica_postproc,
     'CheckM': checkm_postproc,
+    'CuPy': cupy_postproc,
 }
