@@ -1,0 +1,43 @@
+easyblock = 'CMakeMake'
+
+name = 'ANTs'
+version = '2.5.1'
+
+homepage = 'https://stnava.github.io/ANTs/'
+description = """ANTs extracts information from complex datasets that include imaging. ANTs is useful for managing,
+ interpreting and visualizing multidimensional data."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'pic': True, 'cstd': 'c++98'}
+
+source_urls = ['https://github.com/ANTsX/ANTs/archive/']
+sources = ['v%(version)s.tar.gz']
+checksums = ['8e3a7c0d3dab05883cba466aff262d78d832f679491318b94ce49b606565cebe']
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('VTK', '9.1.0'),
+]
+
+# WarpVTKPolyDataMultiTransform.cxx fails to compile
+# It's only an example so torch it!
+preconfigopts = 'rm -f %(start_dir)s/Examples/WarpVTKPolyDataMultiTransform.cxx && '
+preconfigopts += "sed -E -i '/^[[:space:]]*WarpVTKPolyDataMultiTransform([[:space:]]*|$)/d' %(start_dir)s/Examples/CMakeLists.txt && "
+
+configopts = '-DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF '
+configopts += '-DUSE_VTK=ON -DUSE_SYSTEM_VTK=ON '
+configopts += '-DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF '
+configopts += '-DDEFAULT_SYSROOT="${EPREFIX}" '
+
+preinstallopts = "cd ANTS-build && "
+
+sanity_check_paths = {
+    'files': ['bin/ANTS', 'bin/antsBrainExtraction.sh'],
+    'dirs': ['lib'],
+}
+
+modextravars = {'ANTSPATH': '%(installdir)s/bin'}
+
+moduleclass = 'data'
