@@ -1,0 +1,152 @@
+easyblock = 'CMakeMake'
+
+name = 'DGL'
+version = '1.1.3'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://www.dgl.ai'
+description = """DGL is an easy-to-use, high performance and scalable Python package for deep learning on graphs.
+DGL is framework agnostic, meaning if a deep graph model is a component of an end-to-end application, the rest
+of the logics can be implemented in any major frameworks, such as PyTorch, Apache MXNet or TensorFlow."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+# GCC 10.3.0 vectorizer causes errors in nanoflann on skylake and later
+# and since nanoflann is just a header file we need to turn it off for anything that uses it
+toolchainopts = {'vectorize': False}
+
+sources = [
+    {
+        'source_urls': ['https://github.com/dmlc/dgl/archive/refs/tags'],
+        'download_filename': 'v1.1.3.tar.gz',
+        'filename': '%(namelower)s-%(version)s.tar.gz',
+    },
+    {
+        'source_urls': ['https://github.com/KarypisLab/METIS/archive'],
+        'download_filename': 'v5.1.1-DistDGL-v0.5.tar.gz',
+        'filename': 'metis-5.1.1-DistDGL-v0.5.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/METIS --strip-components=1 -xf %s",
+    },
+    {
+        'source_urls': ['https://github.com/KarypisLab/GKlib/archive'],
+        'download_filename': 'METIS-v5.1.1-DistDGL-0.5.tar.gz',
+        'filename': 'GKlib-METIS-v5.1.1-DistDGL-0.5.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/METIS/GKlib --strip-components=1 -xf %s",
+    },
+    {
+        'source_urls': ['https://github.com/pytorch/tensorpipe/archive'],
+        'download_filename': '6042f1a4cbce8eef997f11ed0012de137b317361.tar.gz',
+        'filename': 'tensorpipe-6042f1a4cbce8eef997f11ed0012de137b317361.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/tensorpipe --strip-components=1 -xf %s",
+    },
+    {
+        'source_urls': ['https://github.com/google/libnop/archive'],
+        'download_filename': 'aa95422ea8c409e3f078d2ee7708a5f59a8b9fa2.tar.gz',
+        'filename': 'libnop-20200723.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/tensorpipe/third_party/libnop --strip-components=1 -xf %s",
+    },
+    {
+        'source_urls': ['https://github.com/imneme/pcg-cpp/archive'],
+        'download_filename': '428802d1a5634f96bcd0705fab379ff0113bcf13.tar.gz',
+        'filename': 'pcg-cpp-428802d1a5634f96bcd0705fab379ff0113bcf13.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/pcg --strip-components=1 -xf %s",
+    },
+    {
+        'source_urls': ['https://github.com/NVIDIA/cccl/archive'],
+        'download_filename': '4d5c181cb4e67b14e7d1fdeb45cf0104119bfb09.tar.gz',
+        'filename': 'cccl-4d5c181cb4e67b14e7d1fdeb45cf0104119bfb09.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/cccl --strip-components=1 -xf %s",
+    },
+    {
+        'source_urls': ['https://github.com/libxsmm/libxsmm/archive'],
+        'download_filename': '80090603e43f6ddc870cc42e1403dd0af07744cc.tar.gz',
+        'filename': 'libxsmm-80090603e43f6ddc870cc42e1403dd0af07744cc.tar.gz',
+        'extract_cmd': "tar -C %(namelower)s-%(version)s/third_party/libxsmm --strip-components=1 -xf %s",
+    },
+]
+patches = [
+    '%(name)s-1.1.3_use_externals_instead_of_submodules.patch',
+]
+checksums = [
+    'c45021d77ff2b1fed814a8b91260671167fb4e42b7d5fab2d37faa74ae1dc5b4',  # dgl-1.0.2.tar.gz
+    'cedf0b32d32a8496bac7eb078b2b8260fb00ddb8d50c27e4082968a01bc33331',  # metis-5.1.1-DistDGL-v0.5.tar.gz
+    '52aa0d383d42360f4faa0ae9537ba2ca348eeab4db5f2dfd6343192d0ff4b833',  # GKlib-METIS-v5.1.1-DistDGL-0.5.tar.gz
+    '50bd7ab968e5da9e42f92b429f530eaaadc4becc1b2756c905094711a0036a3b',  # tensorpipe.tar.gz
+    '9ee3f3b1efc629dbc3703ece3892e7e05c7048eed7031d06020e38bb30bee3ab',  # libnop-20200723.tar.gz
+    '79f23706ed0cbc1bb57ea35d50d0abed66898b8f7b0bcf2aaecdfd234863b060',  # pcg.tar.gz
+    '59bcccb6d7c054323fafb76ff0932c33ed9c3fac969c3eef2a521ad0980639fc',  # cccl.tar.gz
+    '5ee733ccbfe8b79f61e4ea87e5defbbaf51f80a851eb3cf00a0946e4d230d999',  # libxsmm.tar.gz
+    # DGL-1.1.3_use_externals_instead_of_submodules.patch'
+    'e73babb8e50eda586c2b09dbdacdfd8ab1d2985e85e3122a0244cdd43ee4cb04',
+]
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+    ('googletest', '1.11.0'),
+]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+    ('networkx', '2.8.4'),
+    ('tqdm', '4.62.3'),
+    ('libuv', '1.42.0'),
+    ('DLPack', '0.8'),
+    ('DMLC-Core', '0.5'),
+    ('Parallel-Hashmap', '1.33'),
+    ('nanoflann', '1.4.0'),
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('NCCL', '2.12.12', '-CUDA-%(cudaver)s'),
+    ('PyTorch', '1.13.1', '-CUDA-%(cudaver)s'),
+]
+
+_copts = [
+    '-DUSE_AVX=OFF',  # AVX + LIBXSMM requires libxsmm tag 1.eol
+    '-DBUILD_CPP_TEST=ON',
+    '-DUSE_CUDA=ON',  # Must be "ON", as opposed to "1" or so, due to bad CMake code in DGL
+    '-DUSE_NCCL=ON',
+    '-DTP_BUILD_LIBUV=OFF',
+    '-DUSE_SYSTEM_NCCL=ON',
+    '-DBUILD_WITH_SHARED_NCCL=ON',
+    '-DUSE_FP16=ON',
+]
+
+
+preconfigopts = 'LIBUV_ROOT=$EBROOTLIBUV '
+configopts = ' '.join(_copts)
+
+# Must not build shared libs, DGL uses internal versions of, among others, METIS
+# but it doesn't install these internal libraries and simply assumes that everything is
+# statically linked.
+build_shared_libs = False
+
+runtest = 'test'
+
+exts_defaultclass = 'PythonPackage'
+exts_default_options = {
+    'easyblock': 'PythonPackage',
+    'download_dep_fail': True,
+    'use_pip': True,
+    'sanity_pip_check': True,
+    'runtest': True,
+}
+
+exts_list = [
+    ('dgl', version, {
+        'preinstallopts': 'export DGL_LIBRARY_PATH=%(installdir)s/lib  && ',
+        'source_tmpl': '%(namelower)s-%(version)s.tar.gz',
+        'start_dir': 'python',
+        'installopts': '--use-feature=in-tree-build ',
+        'checksums': ['c45021d77ff2b1fed814a8b91260671167fb4e42b7d5fab2d37faa74ae1dc5b4'],
+    }),
+]
+
+sanity_check_paths = {
+    'files': ['lib/libdgl.%s' % SHLIB_EXT],
+    'dirs': ['lib/python%(pyshortver)s/site-packages'],
+}
+
+modextrapaths = {
+    'PYTHONPATH': ['lib/python%(pyshortver)s/site-packages'],
+}
+
+moduleclass = 'ai'
