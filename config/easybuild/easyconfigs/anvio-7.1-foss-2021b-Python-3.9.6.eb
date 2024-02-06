@@ -20,7 +20,7 @@ dependencies = [
     ('SciPy-bundle', '2021.10'),
     ('Pysam', '0.18.0'),
     ('scikit-learn', '1.0.2'),
-    ('matplotlib', '3.4.3'),
+    ('matplotlib', '3.5.2'),
     ('prodigal', '2.6.3'),
     ('Biopython', '1.79'),
     ('h5py', '3.6.0'),
