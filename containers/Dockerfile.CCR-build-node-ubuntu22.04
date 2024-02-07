@@ -1,5 +1,5 @@
-ARG cvmfsversion=2.10.0
-ARG fuseoverlayfsversion=1.10
+ARG cvmfsversion=2.11.2
+ARG fuseoverlayfsversion=1.13
 
 FROM ubuntu:22.04
 ARG cvmfsversion
@@ -10,10 +10,12 @@ RUN apt-get install -y sudo wget kitty-terminfo vim openssh-client gawk autofs c
 
 RUN cd /root && wget http://mirrors.ccr.buffalo.edu/ccr/cvmfs/cvmfs-config-ccr-latest.all.deb \
     && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default_latest_all.deb \
+    && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs-libs_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb \
     && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb \
     && wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-${cvmfsversion}/cvmfs-fuse3_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb
 
-RUN dpkg -i /root/cvmfs_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb \
+RUN dpkg -i /root/cvmfs-libs_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb \
+            /root/cvmfs_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb \
             /root/cvmfs-fuse3_${cvmfsversion}~1+ubuntu22.04_$(dpkg --print-architecture).deb \
             /root/cvmfs-config-default_latest_all.deb \
             /root/cvmfs-config-ccr-latest.all.deb
