@@ -444,18 +444,15 @@ def imkl_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("imkl-specific hook triggered for non-imkl easyconfig?!")
 
-def matlab_postproc(ec, *args, **kwargs):
-    """Add post install cmds for matlab."""
+def nvidia_rpath_postproc(ec, *args, **kwargs):
+    """Add post install cmds to set the RPATH to the nVidia libraries."""
 
-    if ec.name == 'MATLAB':
-        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
-        ec.cfg['postinstallcmds'] = [
-            'chmod -R u+w %(installdir)s',
-            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="/opt/software/nvidia/lib64"',
-        ]
-        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
-    else:
-        raise EasyBuildError("matlab-specific hook triggered for non-matlab easyconfig?!")
+    ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+    ec.cfg['postinstallcmds'] = [
+        'chmod -R u+w %(installdir)s',
+        f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="/opt/software/nvidia/lib64"',
+    ]
+    print_msg("Using custom postproc command to set the RPATH to the nVidia libraries for %s: %s", ec.name, ec.cfg['postinstallcmds'])
 
 def cuda_postproc(ec, *args, **kwargs):
     """Add post install cmds for cuda."""
@@ -551,18 +548,6 @@ def jax_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("jax-specific hook triggered for non-jax easyconfig?!")
 
-def niftypet_postproc(ec, *args, **kwargs):
-    """Add post install cmds for niftypet"""
-
-    if ec.name == 'NiftyPET':
-        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
-        ec.cfg['postinstallcmds'] = [
-            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_path="/opt/software/nvidia/lib64"',
-        ]
-        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
-    else:
-        raise EasyBuildError("niftypet-specific hook triggered for non-niftypet easyconfig?!")
-
 def openmolcas_postproc(ec, *args, **kwargs):
     if ec.name == 'OpenMolcas':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
@@ -598,18 +583,6 @@ def mathematica_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("mathematica-specific hook triggered for non-mathematica easyconfig?!")
 
-def cupy_postproc(ec, *args, **kwargs):
-    """Add post install cmds for cupy."""
-
-    if ec.name == 'CuPy':
-        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
-        ec.cfg['postinstallcmds'] = [
-            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_path="/opt/software/nvidia/lib64"',
-        ]
-        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
-    else:
-        raise EasyBuildError("cupy-specific hook triggered for non-cuda easyconfig?!")
-
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -637,7 +610,7 @@ PRE_POSTPROC_HOOKS = {
     'imkl': imkl_postproc,
     'intel-compilers': intel_postproc,
     'intel': intel_postproc,
-    'MATLAB': matlab_postproc,
+    'MATLAB': nvidia_rpath_postproc,
     'CUDA': cuda_postproc,
     'cuDNN': cuda_postproc,
     'NVHPC': nvhpc_postproc,
@@ -645,9 +618,10 @@ PRE_POSTPROC_HOOKS = {
     'VTune': vtune_postproc,
     'TensorFlow': tensorflow_postproc,
     'jax': jax_postproc,
-    'NiftyPET': niftypet_postproc,
+    'NiftyPET': nvidia_rpath_postproc,
     'OpenMolcas': openmolcas_postproc,
     'ParaView': paraview_postproc,
     'Mathematica': mathematica_postproc,
-    'CuPy': cupy_postproc,
+    'CuPy': nvidia_rpath_postproc,
+    'ont-guppy': nvidia_rpath_postproc,
 }
