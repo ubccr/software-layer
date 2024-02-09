@@ -113,7 +113,6 @@ elseif (path) then
 end
 """
 
->>>>>>> main
 def get_ccr_envvar(ccr_envvar):
     """Get an CCR environment variable from the environment"""
 
