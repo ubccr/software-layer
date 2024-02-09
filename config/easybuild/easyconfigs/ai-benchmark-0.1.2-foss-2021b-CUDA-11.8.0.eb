@@ -1,0 +1,35 @@
+easyblock = 'PythonBundle'
+
+name = 'ai-benchmark'
+version = '0.1.2'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://ai-benchmark.com/alpha.html'
+description = """
+AI Benchmark Alpha is an open source python library for evaluating AI performance of various hardware platforms, including CPUs, GPUs and TPUs.
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('Pillow', '9.2.0'),
+    ('SciPy-bundle', '2021.10'),
+    ('TensorFlow', '2.11.0', '-CUDA-%(cudaver)s'),
+]
+
+exts_list = [
+    ('py-cpuinfo', '9.0.0', {
+        'checksums': ['3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690'],
+        'modulename': 'cpuinfo',
+    }),
+    (name, version, {
+        'checksums': ['759ae01af1f8f1fecacf73b3313c9722d37274f778a0e842feab8c935263580c'],
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+moduleclass = 'ai'
