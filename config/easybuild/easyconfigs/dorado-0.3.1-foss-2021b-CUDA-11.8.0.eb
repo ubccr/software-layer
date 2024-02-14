@@ -1,0 +1,90 @@
+easyblock = 'CMakeMake'
+
+name = 'dorado'
+version = '0.3.1'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/nanoporetech/dorado'
+description = """Dorado is a high-performance, easy-to-use, open source basecaller for Oxford Nanopore reads."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'usempi': True, 'pic': True}
+
+source_urls = ['https://github.com/nanoporetech/dorado/archive/']
+sources = [{
+    'git_config': {
+        'url': 'https://github.com/nanoporetech',
+        'repo_name': name,
+        'tag': 'v%(version)s',
+        'recursive': True,
+    },
+    'filename': SOURCE_TAR_GZ,
+}]
+checksums = ['28ed3036e94a87013c05b85bef780e565662359d515a98f7a2eb95601cd791d0']
+
+builddependencies = [
+    ('binutils', '2.37'),
+    ('CMake', '3.21.1'),
+]
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('OpenSSL', '1.1', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('PyTorch', '1.13.1', '-CUDA-%(cudaver)s'),
+    ('HDF5', '1.12.1'),
+    ('zstd', '1.5.0'),
+    ('HTSlib', '1.14'),
+    ('kineto', '0.4.0'),
+    ('libaec', '1.0.6'),
+    ('zlib', '1.2.11'),
+]
+
+# don't link to OpenSSL static libraries
+# fix for CMake Error "missing: OPENSSL_CRYPTO_LIBRARY" (if only shared OpenSSL libraries are available)
+preconfigopts = "sed -i '/OPENSSL_USE_STATIC_LIBS TRUE/d' ../dorado/cmake/OpenSSL.cmake && "
+preconfigopts += "export OPENSSL_ROOT_DIR=$EBROOTOPENSSL && "
+
+# don't use vendored HTSlib, use provided HTSlib dependency
+preconfigopts += "rm -r ../dorado/dorado/3rdparty/htslib/ && "
+preconfigopts += "sed -i '/add_dependencies.*htslib_project/d' ../dorado/CMakeLists.txt && "
+preconfigopts += "sed -i '/Htslib.cmake/d' ../dorado/CMakeLists.txt && "
+# link with -lhts, not -lhtslib
+preconfigopts += "sed -i 's/htslib/hts/g' ../dorado/CMakeLists.txt && "
+preconfigopts += "echo 'set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)' >> ../dorado/CMakeLists.txt && "
+
+configopts = '-DDORADO_INSTALL_PATH="%(installdir)s" '
+configopts += '-DCUDA_TOOLKIT_ROOT_DIR="${EBROOTCUDA}" -DCMAKE_CUDA_COMPILER="${EBROOTCUDA}/bin/nvcc" '
+configopts += '-DDORADO_LIBTORCH_DIR="${EBROOTPYTORCH}/lib" '
+# The following, though logically correct, breaks the build
+#configopts += '-DDORADO_LIBTORCH_DIR="${EBROOTPYTORCH}/lib/python%(pyshortver)s/site-packages/torch/lib" '
+configopts += '-DHTSLIB_LIBRARIES=hts '
+configopts += '-DHDF5_ROOT="${EBROOTHDF5}" '
+# Option to use Parallel HDF5 libraries if possible:
+#configopts += '-DHDF5_PREFER_PARALLEL=ON '
+# Add -pthread flag (in addition to -lpthread) to avoid linking error:
+# in function `_GLOBAL__sub_I_mutex.cc': mutex.cc:(.text.startup+0x17): undefined reference to `pthread_atfork'
+# Add "-Doff64_t=__off64_t" to the CMAKE_C_FLAGS to fix "‘off64_t’ undeclared here" error
+# compiling CMakeFiles/CheckTypeSize/OFF64_T.c
+# Turn off deprecated declatation warnings
+configopts += '-DCMAKE_C_FLAGS="$CFLAGS -pthread -Doff64_t=__off64_t -Wno-deprecated-declarations" '
+
+# Copy the binary with the correct RPATHs from the build directory to the install directory
+# Fix the perms on the installed library files
+# Add the librorch.so dir to the RPATH
+# fix any occurances of a NULL RPATH i.e. a leading colon, a trailing colon or any double colons in the RPATH
+postinstallcmds = [
+    'cp "%(builddir)s/easybuild_obj/bin/dorado" "%(installdir)s/bin/"',
+    'find "%(installdir)s/lib/" -name \*\.so\* -exec chmod u+rwx,go+rx {} \;',
+    '"${CCR_INIT_DIR}/easybuild/setrpaths.sh" --path "%(installdir)s" --add_origin --add_path="${EBROOTPYTORCH}/lib/python%(pyshortver)s/site-packages/torch/lib"',
+    'find "%(installdir)s/bin" "%(installdir)s/lib" -type f | while read file; do RPATH="$(objdump -x "${file}" | grep RPATH | awk "{print $NF}")"; NEW_RPATH="$(echo "${RPATH}" | sed -E -e "s/^://" -e "s/:$//" -e "s/::/:/g")"; if [ "${NEW_RPATH}" != "${RPATH}" ]; then   echo "fixing the RPATH in \"${file}\"";  patchelf --set-rpath "${NEW_RPATH}" "${file}"; fi; done',
+]
+
+sanity_check_paths = {
+    'files': ['bin/dorado'],
+    'dirs': [],
+}
+
+sanity_check_commands = ["dorado basecaller --help"]
+
+moduleclass = 'bio'
