@@ -1,0 +1,24 @@
+name: Software Request
+description: Tell us about the software you want installed.  Please complete a new request for each software package.
+title: "Software Name: "
+labels: ["build-request"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Information
+      description: Provide link to software website
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: What version would you prefer we install?  If no preference, mark N/A
+    validations:
+      required: true
+  - type: textarea
+    id: info
+    attributes:
+      label: Additional information
+      description: If you have any additional information to share about this request, enter it here.  Please do not provide any personal or account related information.

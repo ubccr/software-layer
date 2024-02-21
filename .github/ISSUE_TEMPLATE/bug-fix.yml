@@ -1,0 +1,25 @@
+name: Bug Report
+description: Tell us about the bug/error that you are experiencing
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: software
+    attributes:
+      label: Software Name
+      description: Provide a list of the modules you're loading when encountering this problem.
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please describe the problem you encountered when using this software package.  Provide as much detail as possible, leaving out anything private or account specific.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output or errors produced. This will be automatically formatted into code, so no need for backticks.
+      render: shell
