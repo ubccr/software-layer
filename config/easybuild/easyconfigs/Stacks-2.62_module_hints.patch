@@ -1,0 +1,36 @@
+--- stacks-2.62/scripts/stacks-gdb.orig	2024-02-09 14:27:38.901276117 -0500
++++ stacks-2.62/scripts/stacks-gdb	2024-02-09 14:30:08.173985030 -0500
+@@ -35,10 +35,8 @@
+ fi
+ 
+ if ! command -v gdb &>/dev/null ;then
+-    gdb
+-    echo "Error: GDB is not installed (or loaded)." >&2
+-    echo
+-    echo -n "$gdb_req"
++    echo "load the gdb module as per:">&2
++    echo "$ module spider gdb" >&2
+     exit 1
+ fi
+ 
+--- stacks-2.62/scripts/stacks-hist2d-loci-samples-coverage.orig	2024-02-09 14:31:57.993386138 -0500
++++ stacks-2.62/scripts/stacks-hist2d-loci-samples-coverage	2024-02-09 15:16:32.371943550 -0500
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env Rscript
++#!/usr/bin/env -S bash -c 'command -v Rscript > /dev/null && exec Rscript $0 $* || echo -e "Load the r module as per\n\$ module spider r" >&2 && exit 1'
+ 
+ usage = "\
+ usage: stacks-hist2d-loci-samples-coverage reads_per_sample_per_locus.tsv
+--- stacks-2.62/scripts/stacks-samtools-tview.orig	2024-02-09 14:16:34.638379189 -0500
++++ stacks-2.62/scripts/stacks-samtools-tview	2024-02-09 14:26:29.429132087 -0500
+@@ -16,8 +16,8 @@
+ # Check that we have samtools
+ # ==========
+ if ! command -v samtools >/dev/null ;then
+-    samtools
+-    echo "ERROR: samtools not installed/not found in \$PATH." >&2
++    echo "load the samtools module as per:">&2
++    echo "$ module spider samtools" >&2
+     exit 1
+ fi
+ 
