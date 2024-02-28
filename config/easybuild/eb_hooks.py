@@ -87,14 +87,6 @@ if isDir(pathJoin(os.getenv("HOME"), "testsuite/sanitarium")) then
 end
 """
 
-CHECKM_MODLUAFOOTER = """
-
-setenv("CHECKM_DATA_PATH", "/util/software/data/{name}/{local_checkm_database_version}")
-"""
-
-# Global vaiable for the CheckM database directory version
-local_checkm_database_version = '2015_01_16'
-
 ANSYS_MODLUAFOOTER = """
 setenv("FONTCONFIG_PATH","{eprefix}/etc/fonts")
 setenv("QT_XKB_CONFIG_ROOT","{ebrootx11}/share/X11/xkb")
@@ -166,9 +158,6 @@ def set_modluafooter(ec):
     if ec['name'] == 'CUDAcore':
         comp = os.path.join('CUDA', 'cuda' + '.'.join(ec['version'].split('.')[:2]))
         ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
-
-    if ec['name'] == 'CheckM':
-        ec['modluafooter'] += CHECKM_MODLUAFOOTER.format(name=ec['name'], local_checkm_database_version=local_checkm_database_version)
 
 def pre_module_hook(self, *args, **kwargs):
     "Modify module footer (here is more efficient than parse_hook since only called once)"
@@ -631,17 +620,6 @@ def mathematica_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("mathematica-specific hook triggered for non-mathematica easyconfig?!")
 
-def checkm_postproc(ec, *args, **kwargs):
-    """Add post install cmds for mathematica"""
-
-    if ec.name == 'CheckM':
-        ec.cfg['postinstallcmds'] = [
-            f'ln -s "/util/software/data/%%(name)s/%s" "%%(installdir)s/data"' % ( local_checkm_database_version ),
-        ]
-        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
-    else:
-        raise EasyBuildError("checkm-specific hook triggered for non-checkm easyconfig?!")
-
 def cupy_postproc(ec, *args, **kwargs):
     """Add post install cmds for cupy."""
 
@@ -752,7 +730,6 @@ PRE_POSTPROC_HOOKS = {
     'OpenMolcas': openmolcas_postproc,
     'ParaView': paraview_postproc,
     'Mathematica': mathematica_postproc,
-    'CheckM': checkm_postproc,
     'CuPy': cupy_postproc,
     'ANSYS': ansys_postproc,
 }
