@@ -1,0 +1,11 @@
+--- unifrac-binaries-1.3.2/src/Makefile.orig	2024-02-29 17:43:26.226300882 -0500
++++ unifrac-binaries-1.3.2/src/Makefile	2024-02-29 17:43:47.168301817 -0500
+@@ -36,7 +36,7 @@
+ 	PREFIX := $(CONDA_PREFIX)
+ endif
+ 
+-BLASLIB=-llapacke -lflexiblas
++BLASLIB=-llapacke -llapack -lflexiblas 
+ 
+ ifeq ($(PLATFORM),Darwin)
+ 	AVX2 := $(shell sysctl -a | grep -c AVX2)
