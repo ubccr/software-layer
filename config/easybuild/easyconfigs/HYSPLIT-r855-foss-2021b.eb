@@ -1,0 +1,39 @@
+easyblock = 'MakeCp'
+
+name = 'HYSPLIT'
+version = 'r855'
+
+homepage = 'https://ready.arl.noaa.gov/HYSPLIT.php'
+description = """ARL HYSPLIT Model."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+# 'pic': True, enforce the -fPIC compiler option for relative addressing
+toolchainopts = {'opt': True, 'pic': True, 'usempi': True, }
+
+# To make a source tarball from the SVN repository:
+# 1. svn --username [...] --password [...] -r 855 export https://svn.arl.noaa.gov:8443/svn/hysplit
+# 2. tar --exclude \.svn -cjvf hysplit-r855.tar.bz2 hysplit/trunk
+sources = [SOURCELOWER_TAR_BZ2]
+# sha256sum hysplit-r855.tar.bz2 for the checksum:
+checksums = [
+    '7b71bc4e8cc1b562068fac18061422d84f5ffde0afe3b6e13228bd5bb40ade8e'
+]
+
+dependencies = [
+    ('netCDF', '4.8.1'),
+]
+
+with_configure = False
+configure_without_installdir = True
+build_cmd = './compile.sh'
+
+files_to_copy = [
+    (['exec/con2srs', 'exec/hycs_std'], 'bin'),
+]
+
+sanity_check_paths = {
+    'files': ['bin/con2srs', 'bin/hycs_std'],
+    'dirs': [],
+}
+
+moduleclass = 'geo'
