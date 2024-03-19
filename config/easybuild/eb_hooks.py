@@ -479,16 +479,6 @@ def matlab_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("matlab-specific hook triggered for non-matlab easyconfig?!")
 
-def nvidia_rpath_postproc(ec, *args, **kwargs):
-    """Add post install cmds to set the RPATH to the nVidia libraries."""
-
-    ccr_init = get_ccr_envvar('CCR_INIT_DIR')
-    ec.cfg['postinstallcmds'] = [
-        'chmod -R u+w %(installdir)s',
-        f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="/opt/software/nvidia/lib64"',
-    ]
-    print_msg("Using custom postproc command to set the RPATH to the nVidia libraries for %s: %s", ec.name, ec.cfg['postinstallcmds'])
-
 def cuda_postproc(ec, *args, **kwargs):
     """Add post install cmds for cuda."""
 
@@ -742,5 +732,4 @@ PRE_POSTPROC_HOOKS = {
     'Mathematica': mathematica_postproc,
     'CuPy': cupy_postproc,
     'ANSYS': ansys_postproc,
-    'ont-guppy': nvidia_rpath_postproc,
 }
