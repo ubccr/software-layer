@@ -83,9 +83,11 @@ runtest = True
 
 static = False
 
-modextrapaths = {'PERL5LIB': 'lib/perl'}
-modextrapaths = {'QUICK_BASIS': 'AmberTools/src/quick/basis'}
-modextrapaths = {'PATH': 'bin/wrapped_progs'}
+modextravars = {'QUICK_BASIS': '%(installdir)s/AmberTools/src/quick/basis'}
+modextrapaths = {
+    'PERL5LIB': 'lib/perl',
+    'PATH': 'bin/wrapped_progs',
+}
 
 modloadmsg = """
 
