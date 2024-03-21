@@ -1,0 +1,11 @@
+--- hatchling-1.21.0/pyproject.toml.orig	2024-02-26 13:23:42.594128825 -0500
++++ hatchling-1.21.0/pyproject.toml	2024-02-26 13:28:20.585710687 -0500
+@@ -36,7 +36,7 @@
+ ]
+ dependencies = [
+   "editables>=0.3",
+-  "packaging>=21.3",
++  "packaging>=20.4",
+   "pathspec>=0.10.1",
+   "pluggy>=1.0.0",
+   "tomli>=1.2.2; python_version < '3.11'",

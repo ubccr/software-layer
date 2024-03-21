@@ -1,0 +1,30 @@
+easyblock = 'PythonBundle'
+
+name = 'scikit_build_core'
+version = '0.8.1'
+
+homepage = 'https://github.com/scikit-build/scikit-build-core'
+description = """Scikit-build-core is a build backend for Python that uses CMake to build
+extension modules."""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+#builddependencies = [
+#    ('binutils', '2.37'),
+#]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('hatchling', '1.18.0'),
+]
+
+use_pip = True
+sanity_pip_check = True
+
+exts_list = [
+    (name, version, {
+        'checksums': ['da058cff222e7fc0396bba7eae42af2ca35a684b7681ec4e9c91b1783b132030'],
+    }),
+]
+
+moduleclass = 'lib'
