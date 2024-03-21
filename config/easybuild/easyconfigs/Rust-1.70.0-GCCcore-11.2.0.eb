@@ -1,0 +1,42 @@
+name = 'Rust'
+version = '1.70.0'
+
+homepage = 'https://www.rust-lang.org'
+description = """Rust is a systems programming language that runs blazingly fast, prevents segfaults,
+ and guarantees thread safety."""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+source_urls = ['https://static.rust-lang.org/dist/']
+sources = ['rustc-%(version)s-src.tar.gz']
+patches = [
+    'Rust-1.70_sysroot-fix-interpreter.patch',
+]
+checksums = [
+    {'rustc-1.70.0-src.tar.gz': 'b2bfae000b7a5040e4ec4bbc50a09f21548190cb7570b0ed77358368413bd27c'},
+    {'Rust-1.70_sysroot-fix-interpreter.patch': '220129db55e022a98d25028da5dcc9f26b252dd995c3ac92f6312dbb1e362cb1'},
+]
+
+builddependencies = [
+    ('binutils', '2.37'),
+    ('CMake', '3.22.1'),
+    ('Python', '3.9.6'),
+    ('Ninja', '1.10.2'),
+    ('pkgconf', '1.8.0'),
+    ('patchelf', '0.13'),  # only required when RPATH linking is enabled
+]
+
+dependencies = [
+    ('OpenSSL', '1.1', '', SYSTEM),
+]
+
+
+# Annoyingly, I can't set "download-ci-llvm=false" with configure:
+#configopts = '--set download-ci-llvm=false '
+# ...so I have to hack the config.toml file after confgure is run
+prebuildopts = "sed -i '/^\[llvm\]/a download-ci-llvm=false' %(start_dir)s/config.toml && "
+# backout "--no-undefined-version" default from https://reviews.llvm.org/D135402
+prebuildopts += "sed -i -e 's/--no-undefined-version/--undefined-version/' %(start_dir)s/compiler/rustc_codegen_ssa/src/back/linker.rs %(start_dir)s/compiler/rustc_target/src/spec/x86_64_fortanix_unknown_sgx.rs && "
+#prebuildopts += 'export RUSTFLAGS="-Clink-arg=-Wl,--undefined-version" && '
+
+moduleclass = 'lang'
