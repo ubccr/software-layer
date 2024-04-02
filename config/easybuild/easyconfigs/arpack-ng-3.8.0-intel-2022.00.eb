@@ -1,0 +1,46 @@
+easyblock = 'CMakeMake'
+
+name = 'arpack-ng'
+version = "3.8.0"
+
+homepage = 'https://github.com/opencollab/arpack-ng'
+description = """ARPACK is a collection of Fortran77 subroutines designed to solve large scale eigenvalue problems."""
+
+toolchain = {'name': 'intel', 'version': '2022.00'}
+toolchainopts = {'pic': True, 'usempi': True}
+
+github_account = 'opencollab'
+source_urls = [GITHUB_SOURCE]
+sources = ['%(version)s.tar.gz']
+patches = ['%(name)s-3.7.0-add_include_CheckSymbolExists_CMakeLists_txt.patch']
+checksums = [
+    'ada5aeb3878874383307239c9235b716a8a170c6d096a6625bfd529844df003d',  # arpack-ng-3.8.0.tar.gz
+    # arpack-ng-3.7.0-add_include_CheckSymbolExists_CMakeLists_txt.patch
+    'ce6035792ed0302a18b0f489024c142d8ed3f76e0b75e6d10dbffded26e7ffce',
+]
+
+builddependencies = [
+    ('CMake', '3.22.1', '', ('GCCcore','11.2.0'))
+]
+
+dependencies = [
+    ('Eigen', '3.4.0', '', ('GCCcore','11.2.0'))
+]
+
+separate_build_dir = True
+
+local_common_configopts = "-DCMAKE_INSTALL_LIBDIR=lib -DICB=ON -DMPI=ON -DEXAMPLES=ON"
+
+# perform iterative build to get both static and shared libraries
+configopts = [
+    local_common_configopts + ' -DBUILD_SHARED_LIBS=OFF',
+    local_common_configopts + ' -DBUILD_SHARED_LIBS=ON',
+]
+
+sanity_check_paths = {
+    'files': ["lib/libarpack.a",  "lib/libarpack.%s" % SHLIB_EXT,
+              "lib/libparpack.a", "lib/libparpack.%s" % SHLIB_EXT],
+    'dirs': []
+}
+
+moduleclass = 'numlib'
