@@ -1,0 +1,44 @@
+diff -ruN vmd-1.9.4a57/src/OpenGLDisplayDevice.C vmd-1.9.4a57-fixed/src/OpenGLDisplayDevice.C
+--- vmd-1.9.4a57/src/OpenGLDisplayDevice.C	2022-04-27 02:21:15.000000000 -0400
++++ vmd-1.9.4a57-fixed/src/OpenGLDisplayDevice.C	2024-04-03 16:17:23.413891109 -0400
+@@ -914,12 +914,12 @@
+   }
+ 
+   // (3) make sure the GLX extension is available
+-  if (!glXQueryExtension(glxsrv.dpy, NULL, NULL)) {
+-    msgErr << "The X server does not support the OpenGL GLX extension." 
+-           << "   Exiting ..." << sendmsg;
+-    XCloseDisplay(glxsrv.dpy);
+-    return (Window)0;
+-  }
++  //if (!glXQueryExtension(glxsrv.dpy, NULL, NULL)) {
++  //  msgErr << "The X server does not support the OpenGL GLX extension." 
++  //         << "   Exiting ..." << sendmsg;
++  //  XCloseDisplay(glxsrv.dpy);
++  //  return (Window)0;
++  //}
+ 
+   ext->hasstereo = TRUE;         // stereo on until we find out otherwise.
+   ext->stereodrawforced = FALSE; // no need for force stereo draws initially
+diff -ruN vmd-1.9.4a57/src/OpenGLPbufferDisplayDevice.C vmd-1.9.4a57-fixed/src/OpenGLPbufferDisplayDevice.C
+--- vmd-1.9.4a57/src/OpenGLPbufferDisplayDevice.C	2024-04-03 16:03:51.492604108 -0400
++++ vmd-1.9.4a57-fixed/src/OpenGLPbufferDisplayDevice.C	2024-04-03 16:04:10.640587019 -0400
+@@ -893,12 +893,12 @@
+   screenY = DisplayHeight(glxsrv.dpy, glxsrv.dpyScreen);
+ 
+   // (3) make sure the GLX extension is available
+-  if (!glXQueryExtension(glxsrv.dpy, NULL, NULL)) {
+-    msgErr << "The X server does not support the OpenGL GLX extension." 
+-           << "   Exiting ..." << sendmsg;
+-    XCloseDisplay(glxsrv.dpy);
+-    return 0;
+-  }
++  //if (!glXQueryExtension(glxsrv.dpy, NULL, NULL)) {
++  //  msgErr << "The X server does not support the OpenGL GLX extension." 
++  //         << "   Exiting ..." << sendmsg;
++  //  XCloseDisplay(glxsrv.dpy);
++  //  return 0;
++  //}
+ 
+   ext->hasstereo = TRUE;         // stereo on until we find out otherwise.
+   ext->stereodrawforced = FALSE; // no need for force stereo draws initially
