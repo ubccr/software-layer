@@ -27,7 +27,7 @@ checksums = [
 builddependencies = [
     ('binutils', '2.39'),
     ('Autotools', '20220317'),
-    ('pkgconf', '1.9.3'),
+    ('pkgconf', '1.8.0'),
 ]
 
 osdependencies = [OS_PKG_IBVERBS_DEV]
