@@ -153,9 +153,10 @@ Please answer "yes" to accept.
 	local licenseT = {
 		[ { "matlab" } ] = "academic_autoaccept",
 		[ { "fsl" } ] = "academic_autoaccept",
+		[ { "vmd" } ] = "academic_license_autoaccept",
 		[ { "intel", "signalp", "tmhmm", "rnammer" } ] = "noncommercial_autoaccept",
 		[ { "cudnn" } ] = "nvidia_autoaccept",
-		[ { "namd", "vmd", "rosetta", "gatk", "gatk-queue", "motioncor2", "pwrf"} ] = "academic_license",
+		[ { "namd", "rosetta", "gatk", "gatk-queue", "motioncor2", "pwrf"} ] = "academic_license",
 		[ { "namd", "namd-mpi", "namd-verbs", "namd-multicore", "namd-verbs-smp" } ] = "academic_license_autoaccept",
 	}
 	local groupT = {

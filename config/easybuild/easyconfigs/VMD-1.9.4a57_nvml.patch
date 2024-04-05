@@ -1,0 +1,12 @@
+diff -ruN vmd-1.9.4a57/src/CUDAWrapNVML.cu vmd-1.9.4a57-fixed/src/CUDAWrapNVML.cu
+--- vmd-1.9.4a57/src/CUDAWrapNVML.cu	2022-04-27 02:21:15.000000000 -0400
++++ vmd-1.9.4a57-fixed/src/CUDAWrapNVML.cu	2024-04-03 23:14:29.506009275 -0400
+@@ -83,6 +83,8 @@
+   /* 64-bit linux assumed */
+   const char *plibnvidia_ml[] = {"/usr/lib64/libnvidia-ml.so", 
+                                  "/usr/lib64/libnvidia-ml.so.1",
++                                 "/opt/software/nvidia/lib64/libnvidia-ml.so",
++                                 "/opt/software/nvidia/lib64/libnvidia-ml.so.1",
+                                  "/usr/lib/aarch64-linux-gnu/libnvidia-ml.so",
+                                  "/usr/lib/aarch64-linux-gnu/libnvidia-ml.so.1",
+                                  "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so",
