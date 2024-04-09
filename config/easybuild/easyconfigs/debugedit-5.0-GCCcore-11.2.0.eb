@@ -1,0 +1,47 @@
+easyblock = 'ConfigureMake'
+
+name = 'debugedit'
+version = '5.0'
+
+homepage = 'https://github.com/rpm-software-management/popt'
+description = """The debugedit project provides programs and scripts for creating
+debuginfo and source file distributions, collect build-ids and rewrite
+source paths in DWARF data for debugging, tracing and profiling."""
+software_license = 'LicenseGPLv3'
+software_license_urls = ['https://spdx.org/licenses/GPL-3.0-or-later.html']
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+
+# NOTE: I can find no way to download a specific git tag from this repo so the following
+#       will not work:
+source_urls = ['https://sourceware.org/git/debugedit.git/archive/refs/tags/']
+sources = [SOURCE_TAR_GZ]
+#
+# I created a tarball of git tag "debugedit-5.0" as follows:
+#
+#   git clone https://sourceware.org/git/debugedit.git
+#   cd debugedit/
+#   git fetch --all --tags
+#   git checkout tags/debugedit-5.0 -b debugedit-5.0
+#   cd ..
+#   mv debugedit debugedit-5.0
+#   tar cvf debugedit-5.0.tar debugedit-5.0
+#   gzip debugedit-5.0.tar 
+#
+checksums = ['8fa0bb12fb7fb2eb8a526baf6e2fa82985b430b9b7fa164d608ae14d6f3b0683']
+
+
+builddependencies = [
+    ('binutils', '2.37'),
+    ('Autotools', '20210726'),
+]
+
+preconfigopts = "autoreconf -i && "
+
+sanity_check_paths = {
+    'files': ['bin/debugedit', 'bin/find-debuginfo', 'bin/sepdebugcrcfix'],
+    'dirs': ['share/man'],
+}
+
+moduleclass = 'tools'

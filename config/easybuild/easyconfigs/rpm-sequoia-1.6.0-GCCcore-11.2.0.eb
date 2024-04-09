@@ -1,0 +1,40 @@
+easyblock = 'MakeCp'
+
+name = 'rpm-sequoia'
+version = '1.6.0'
+
+homepage = 'https://github.com/rpm-software-management/rpm-sequoia'
+description = """rpm-sequoia is a C library that library provides an implementation of the
+rpm's pgp interface using Sequoia."""
+
+software_license = 'LicenseGPLv2'
+software_license_urls = ['https://spdx.org/licenses/GPL-2.0-or-later.html']
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+source_urls = ['https://github.com/rpm-software-management/%(name)s/archive/refs/tags']
+sources = ['v%(version)s.tar.gz']
+checksums = ['be6362c38744635e56fd2fcce5428a6e3058cc52798311ceefbe236fe7890250']
+
+builddependencies = [
+    ('Rust', '1.77.1'),  # includes cargo
+    ('nettle', '3.7.3'),
+    ('Clang', '12.0.1'),
+]
+
+build_cmd = "cargo build --release"
+test_cmd = 'cargo'
+runtest = "test --release"
+postinstallcmds = ["sed -i '/^prefix/s|/usr/local|%(installdir)s|' '%(installdir)s/lib/pkgconfig/%(name)s.pc'"]
+
+files_to_copy = [
+    (['target/release/librpm_sequoia*'], 'lib'),
+    (['target/release/%(name)s.pc'], 'lib//pkgconfig'),
+]
+
+sanity_check_paths = {
+    'files': ['lib/librpm_sequoia.so', 'lib/pkgconfig/%(name)s.pc' ],
+    'dirs': ['lib', 'lib/pkgconfig'],
+}
+
+moduleclass = 'lib'

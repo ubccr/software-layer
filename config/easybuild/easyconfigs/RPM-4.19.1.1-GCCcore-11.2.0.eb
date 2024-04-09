@@ -1,0 +1,60 @@
+easyblock = 'CMakeMake'
+
+name = 'RPM'
+version = '4.19.1.1'
+local_Lua_version = '5.4.3'
+
+homepage = 'http://rpm.org/index.html'
+description = """The RPM Package Manager (RPM) is a powerful package management system capable of:
+ building computer software from source into easily distributable packages,
+ installing, updating and uninstalling packaged software,
+ querying detailed information about the packaged software, whether installed or not,
+ verifying integrity of packaged software and resulting software installation"""
+software_license = 'LicenseGPLv2'
+software_license_urls = ['https://spdx.org/licenses/GPL-2.0-or-later.html']
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+toolchainopts = {'openmp': True, 'pic': True}
+
+source_urls = ['https://ftp.osuosl.org/pub/rpm/releases/rpm-%(version_major_minor)s.x/']
+sources = ['rpm-%(version)s.tar.bz2']
+checksums = [
+    '874091b80efe66f9de8e3242ae2337162e2d7131e3aa4ac99ac22155e9c521e5',  # rpm-4.19.1.1.tar.bz2
+]
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+    ('popt', '1.19'),
+    ('debugedit', '5.0'),
+    ('Lua', local_Lua_version),
+]
+
+dependencies = [
+    ('zlib', '1.2.11'),
+    ('file', '5.41'),  # for libmagic
+    ('rpm-sequoia', '1.6.0'),
+    ('SQLite', '3.36'),
+    ('Doxygen', '1.9.1'),
+    ('Python', '3.9.6'),
+]
+
+# Force load the Lua module if necessary
+preconfigopts = 'module -t list 2>&1 | grep lua || module load gcccore/%%(toolchain_version)s lua/%s && ' % local_Lua_version
+
+# Note: To add security enhanced Linux (SEL) the libselinux see:
+#       http://www.nsa.gov/selinux/
+#       https://github.com/SELinuxProject/selinux
+configopts = '-DWITH_SELINUX=OFF '
+
+# Enable read only support for the old database
+configopts += '-DENABLE_BDB_RO=ON '
+
+# Turn off audit support
+configopts += '-DWITH_AUDIT=OFF '
+
+sanity_check_paths = {
+    'files': ['bin/rpm', 'bin/rpm2cpio'],
+    'dirs': ['share/man'],
+}
+
+moduleclass = 'tools'
