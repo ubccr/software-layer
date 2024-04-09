@@ -1,0 +1,43 @@
+easyblock = 'MakeCp'
+
+name = 'bcl-convert'
+version = '4.0.3-2'
+local_versionsuffix = 'el7.x86_64'
+
+homepage = 'https://support.illumina.com/sequencing/sequencing_software/bcl-convert.html'
+description = """The Illumina BCL Convert v4.0 is a standalone local software app that converts the
+ Binary Base Call (BCL) files produced by Illumina sequencing systems to FASTQ files."""
+
+toolchain = SYSTEM
+
+source_urls = ['https://webdata.illumina.com/downloads/software/bcl-convert/']
+sources = [
+    {
+        'download_filename': '%%(name)s-%%(version)s.%s.rpm' % local_versionsuffix,
+        'filename': '%(name)s-%(version)s.rpm',
+        'extract_cmd': 'mkdir %(name)s-%(version)s; cd %(name)s-%(version)s; module load gcccore rpm; rpm2cpio %s | cpio -ivd',
+    }
+]
+
+checksums = ['be4f3d1d31cb36618f909cdbc0ed0fe70ef57a645e46b421b6e1a7f90c6c9430']
+
+builddependencies = [
+    ('GCCcore', '11.2.0'),
+    ('RPM', '4.19.1.1', '', ('GCCcore', '11.2.0')),
+]
+
+build_cmd = '${CCR_INIT_DIR}/easybuild/setrpaths.sh'
+build_cmd_targets = '--path "usr/bin" --add_origin --add_path="${CCR_COMPAT_PREFIX}/lib:${CCR_COMPAT_PREFIX}/lib64:${CCR_COMPAT_PREFIX}/usr/lib:${CCR_COMPAT_PREFIX}/usr/lib64:${EBROOTGCCCORE}/lib64"'
+
+files_to_copy = [
+    (['usr/bin/bcl-convert'], 'bin'),
+]
+
+sanity_check_paths = {
+    'files': ['bin/bcl-convert'],
+    'dirs': [],
+}
+
+sanity_check_commands = ["bcl-convert --help"]
+
+moduleclass = 'bio'
