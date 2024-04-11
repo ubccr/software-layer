@@ -25,5 +25,5 @@ if [[ -z "$__Init_Default_Modules" ]]; then
         module -q --initial_load restore
     fi
 else
-    module refresh
+    module -q --initial_load restore
 fi
