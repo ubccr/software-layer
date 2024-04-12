@@ -37,6 +37,7 @@ hide_version("ccrarch/avx512")
 hide_version("ccrenv")
 hide_version("gentoo/2022.05")
 hide_version("gentoo/2023.01")
+hide_version("gentoo/2024.04")
 hide_version("ccrsoft/2022.05")
 hide_version("python/3.9.5-bare")
 hide_version("python/3.9.5")
@@ -77,3 +78,8 @@ hide_version("nvhpc/22.11-CUDA-11.8.0")
 hide_version("code-server/4.9.1")
 hide_version("anaconda3/2022.05")
 hide_version("pavilion/2.4.1")
+
+if os.getenv("CCR_CPU_FAMILY") == "aarch64" then
+    hide_version("ccrsoft/2023.01")
+    hide_version("ccrsoft/legacy")
+end

@@ -11,7 +11,6 @@
 
 require("strict")
 
-
 --------------------------------------------------------------------------------
 -- Anything in this file will automatically be loaded everytime the Lmod command
 -- is run.  Here are two suggestions on how to use your SitePackage.lua file
@@ -119,14 +118,6 @@ function dofile (filename)
     return f()
 end
 
-local ccr_repo_path = os.getenv("CCR_CVMFS_REPO")
-local ccr_version =os.getenv("CCR_VERSION") or "2023.01"
-local ccr_prefix = os.getenv("CCR_PREFIX") or pathJoin(ccr_repo_path, "versions", ccr_version)
-local ccr_init = os.getenv("CCR_INIT_DIR")
-
--- NOTE: this matches CCR_PREFIX/easybuild and CCR_PREFIX/banalbuild
-local ccr_soft_path = pathJoin(ccr_prefix, ".*build")
-
 local lmod_package_path = os.getenv("LMOD_PACKAGE_PATH")
 dofile(pathJoin(lmod_package_path,"SitePackage_logging.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_licenses.lua"))
@@ -134,7 +125,7 @@ dofile(pathJoin(lmod_package_path,"SitePackage_families.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_properties.lua"))
 dofile(pathJoin(lmod_package_path,"SitePackage_hidden.lua"))
 
-sandbox_registration{ loadfile = loadfile, assert = assert, loaded_modules = loaded_modules, serializeTbl = serializeTbl, clearWarningFlag = clearWarningFlag  }
+sandbox_registration{ loadfile = loadfile, assert = assert, loaded_modules = loaded_modules, serializeTbl = serializeTbl }
 
 require("strict")
 require("string_utils")
@@ -146,96 +137,13 @@ local time = os.time
 local date = os.date
 
 function has_value(tab, val)
-	for index, value in ipairs(tab) do
-		if value == val then
-			return true
-		end
-	end
-	return false
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+    return false
 end
-local cached_arch = nil
-function get_highest_supported_architecture()
-	if not cached_arch then 
-		cached_arch = _get_highest_supported_architecture()
-	end
-	return cached_arch
-end
-sandbox_registration{ get_highest_supported_architecture = get_highest_supported_architecture }
-function _get_highest_supported_architecture()
-	local flags = {};
-	for line in io.lines("/proc/cpuinfo") do
-		local values = string.match(line, "flags%s*: (.+)");
-		if values ~= nil then
-			for match in (values.." "):gmatch("(.-)".." ") do
-				flags[match] = true;
-			end
-			break
-		end
-	end
-	if flags.avx512f then
-		return "avx512"
-	elseif flags.avx2 then
-		return "avx2"
-	elseif flags.avx then
-		return "avx"
-	elseif flags.pni then
-		return "sse3"
-	end
-	return "sse3"
-end
-local cached_vendor = nil
-function get_cpu_vendor_id()
-	if not cached_vendor then
-		cached_vendor = _get_cpu_vendor_id()
-	end
-	return cached_vendor
-end
-sandbox_registration{ get_cpu_vendor_id = get_cpu_vendor_id }
-function _get_cpu_vendor_id()
-	local vendor_id = {};
-	for line in io.lines("/proc/cpuinfo") do
-		local values = string.match(line, "vendor_id%s*: (.+)");
-		if values ~= nil then
-			vendor_id = values
-			break
-		end
-	end
-	if vendor_id == "AuthenticAMD" then
-		return "amd"
-	elseif vendor_id == "GenuineIntel" then
-		return "intel"
-	else
-		return "unknown"
-	end
-end
-function get_interconnect()
-	local posix = require "posix"
-	if posix.stat("/sys/module/opa_vnic","type") == 'directory' then
-		return "omnipath"
-	elseif posix.stat("/sys/module/ib_core","type") == 'directory' then
-		return "infiniband"
-	end
-	return "ethernet"
-end
-sandbox_registration{ get_interconnect = get_interconnect }
-function get_installed_cuda_driver_version()
-	local lfs       = require("lfs")
-	local posix = require "posix"
-	if posix.stat("/usr/lib64/nvidia","type") == 'directory' then
-		for f in lfs.dir('/usr/lib64/nvidia') do
-			local name = f:match("^(.+%.so).+$")
-			if name == "libcuda.so" then
-				local version = f:match("^.+%.so%.(.+)$")
-				-- skip libcuda.so.1
-				if version ~= "1" then
-					return version
-				end
-			end
-		end
-	end
-	return "0"
-end
-sandbox_registration{ get_installed_cuda_driver_version = get_installed_cuda_driver_version }
 
 local function unload_hook(t)
         set_family(t)
@@ -246,10 +154,10 @@ local function visible_hook(modT)
 end
 
 local function load_hook(t)
-	local valid = validate_license(t)
-        set_props(t)
-        set_family(t)
-        log_module_load(t,true)
+    local valid = validate_license(t)
+    set_props(t)
+    set_family(t)
+    log_module_load(t,true)
 end
 
 local function spider_hook(t)
@@ -261,63 +169,55 @@ hook.register("load",           load_hook)
 hook.register("load_spider",    spider_hook)
 hook.register("isVisibleHook",  visible_hook)
 
-
+--------------------------------------------------------------------------
+--  This code implementes CCR's custom grouped labels for module avail
+--  See: https://lmod.readthedocs.io/en/latest/200_avail_custom.html?highlight=grouped
+--------------------------------------------------------------------------
+local ccr_init = os.getenv("CCR_INIT_DIR")
 local mapT =
 {
    grouped = {
-      [ccr_soft_path .. '/modules/Core.*']     = "Core modules",
-      [ccr_soft_path .. '/modules/CUDA.*'] = "Cuda-dependent modules",
-      [ccr_soft_path .. '/modules/avx512/Core.*'] = "Core avx512 modules",
-      [ccr_soft_path .. '/modules/avx512/Compiler.*'] = "Compiler-dependent avx512 modules",
-      [ccr_soft_path .. '/modules/avx512/MPI.*'] = "MPI-dependent avx512 modules",
-      [ccr_soft_path .. '/modules/avx2/Core.*'] = "Core avx2 modules",
-      [ccr_soft_path .. '/modules/avx2/Compiler.*'] = "Compiler-dependent avx2 modules",
-      [ccr_soft_path .. '/modules/avx2/MPI.*'] = "MPI-dependent avx2 modules",
-      [ccr_soft_path .. '/modules/avx/Core.*'] = "Core avx modules",
-      [ccr_soft_path .. '/modules/avx/Compiler.*'] = "Compiler-dependent avx modules",
-      [ccr_soft_path .. '/modules/avx/MPI.*'] = "MPI-dependent avx modules",
-      [ccr_soft_path .. '/modules/sse3/Core.*'] = "Core sse modules",
-      [ccr_soft_path .. '/modules/sse3/Compiler.*'] = "Compiler-dependent sse3 modules",
-      [ccr_soft_path .. '/modules/sse3/MPI.*'] = "MPI-dependent sse3 modules",
+      ['/modules/Core']     = "Core modules",
       [ccr_init .. '/modulefiles$'] = "Core modules",
-      ['/srv/software.*layer/config/modulefiles$'] = "Core modules",
-      ['/util/software/config.*/modulefiles$'] = "Core modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/Core.*'] = "Your personal Core modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/Core.*'] = "Your personal Core avx512 modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/Compiler.*'] = "Your personal Compiler-dependent avx512 modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx512/MPI.*'] = "Your personal MPI-dependent avx512 modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx2/Core.*'] = "Your personal Core avx2 modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx2/Compiler.*'] = "Your personal Compiler-dependent avx2 modules",
-      [os.getenv('HOME') .. '/.local/easybuild/' .. ccr_version .. '/modules/avx2/MPI.*'] = "Your personal MPI-dependent avx2 modules",
+      ['/srv/software%-layer/config/modulefiles$'] = "Core modules",
+      ['/util/software/config%-dev/modulefiles$'] = "Core modules",
    },
 }
+
+local baseLabelMap = {}
+for _, microArch in pairs({'avx512', 'avx2', 'x86%-64%-v4', 'x86%-64%-v3', 'neoverse%-v2'}) do
+    baseLabelMap['/modules/'..microArch.. '/Core'] = 'Core modules'
+    baseLabelMap['/modules/'..microArch.. '/Compiler'] = 'Compiler-dependent ' .. microArch:gsub('%%', '') .. ' modules'
+    baseLabelMap['/modules/'..microArch.. '/MPI'] = 'MPI-dependent ' .. microArch:gsub('%%', '') .. ' modules'
+end
+
+for pat, label in pairs(baseLabelMap) do
+    mapT['grouped']['/cvmfs/.*'..pat] = label
+    mapT['grouped'][os.getenv('HOME')..'.*'..pat] = 'Your personal '..label
+end
+
 
 function avail_hook(t)
    local availStyle = masterTbl().availStyle
    local styleT     = mapT[availStyle]
    if (not availStyle or availStyle == "system" or styleT == nil) then
-      return
+       return
    end
    local customBuildPaths = os.getenv("CCR_CUSTOM_BUILD_PATHS") or nil
    if customBuildPaths ~= nil then
-    for customPath in customBuildPaths:split(":") do
-       local customModulePathRoot = pathJoin(customPath, ccr_version)
-       styleT[customModulePathRoot .. '/modules/Core.*'] = customPath .. " Core modules"
-       styleT[customModulePathRoot .. '/modules/avx512/Core.*'] = customPath .. " avx512 modules"
-       styleT[customModulePathRoot .. '/modules/avx512/Compiler.*'] = customPath .. " Compiler-dependent avx512 modules"
-       styleT[customModulePathRoot .. '/modules/avx512/MPI.*'] = customPath .. " MPI-dependent avx512 modules"
-       styleT[customModulePathRoot .. '/modules/avx2/Core.*'] = customPath .. " avx2 modules"
-       styleT[customModulePathRoot .. '/modules/avx2/Compiler.*'] = customPath .. " Compiler-dependent avx2 modules"
-       styleT[customModulePathRoot .. '/modules/avx2/MPI.*'] = customPath .. " MPI-dependent avx2 modules"
-    end
+       for customPath in customBuildPaths:split(":") do
+           for pat, label in pairs(baseLabelMap) do
+              styleT[customPath..'.*'..pat] = customPath..' '..label
+           end
+       end
    end
    for k,v in pairs(t) do
-      for pat,label in pairs(styleT) do
-         if (k:find(pat)) then
-            t[k] = label
-            break
-         end
-      end
+       for pat,label in pairs(styleT) do
+          if (k:find(pat)) then
+             t[k] = label
+             break
+          end
+       end
    end
 end
 
