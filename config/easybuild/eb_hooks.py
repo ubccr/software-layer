@@ -634,9 +634,9 @@ def orca_postproc(ec, *args, **kwargs):
         raise EasyBuildError("orca-specific hook triggered for non-orca easyconfig?!")
 
 def cupy_postproc(ec, *args, **kwargs):
-    """Add post install cmds for cupy."""
+    """Add post install cmds for cupy and pycuda."""
 
-    if ec.name == 'CuPy':
+    if ec.name == 'CuPy' or ec.name == 'PyCUDA':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
             f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_path="/opt/software/nvidia/lib64"',
@@ -745,5 +745,6 @@ PRE_POSTPROC_HOOKS = {
     'Mathematica': mathematica_postproc,
     'ORCA': orca_postproc,
     'CuPy': cupy_postproc,
+    'PyCUDA': cupy_postproc,
     'ANSYS': ansys_postproc,
 }

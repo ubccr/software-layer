@@ -1,0 +1,45 @@
+easyblock = 'MakeCp'
+
+name = 'Tachyon'
+version = '0.99.5'
+
+homepage = 'http://jedi.ks.uiuc.edu/~johns/raytracer/'
+description = "a parallel ray tracing library"
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['http://jedi.ks.uiuc.edu/~johns/raytracer/files/%(version)s/']
+sources = [SOURCELOWER_TAR_GZ]
+patches = [
+    'Tachyon-0.99.5_make_config.patch',
+]
+checksums = [
+    '09203c102311149f5df5cc367409f96c725742666d19c24db5ba994d5a81a6f5',
+    '1374faa0841935708e389070bb6a99e0c45921beadac4a8a42fb4c94ee476072',
+]
+
+dependencies = [
+    ('libpng', '1.6.37'),
+    ('libjpeg-turbo', '2.0.6'),
+    ('X11', '20210802'),
+]
+
+start_dir = 'unix'
+build_cmd_targets = 'linux-64-thr'
+
+files_to_copy = [
+    (['../compile/linux-64-thr/tachyon'], 'bin'),
+    (['../compile/linux-64-thr/libtachyon.a'], 'lib'),
+]
+
+sanity_check_paths = {
+    'files': ['bin/tachyon', 'lib/libtachyon.a'],
+    'dirs': [],
+}
+
+sanity_check_commands = [
+    'tachyon test',
+]
+
+moduleclass = 'vis'

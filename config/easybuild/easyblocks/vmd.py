@@ -167,6 +167,10 @@ class EB_VMD(ConfigureMake):
         self.cfg.update(
             'configopts', "LINUXAMD64 LP64 IMD PTHREADS COLVARS NOSILENT FLTK TK OPENGL OPENGLPBUFFER", allow_duplicate=False)
 
+        march = os.environ.get('CCR_ARCH', '')
+        if march == 'avx512' or march == 'x86-64-v4':
+            self.cfg.update('configopts', "AVX512", allow_duplicate=False)
+
         # add additional configopts based on available dependencies
         for key in deps:
             if deps[key]:

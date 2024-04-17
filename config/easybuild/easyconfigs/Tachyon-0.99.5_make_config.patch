@@ -1,0 +1,116 @@
+diff -ruN tachyon/unix/Make-arch tachyon-fixed/unix/Make-arch
+--- tachyon/unix/Make-arch	2022-04-23 03:09:58.000000000 -0400
++++ tachyon-fixed/unix/Make-arch	2024-04-15 21:57:50.074109062 -0400
+@@ -1917,10 +1917,14 @@
+ 	        -gencode arch=compute_70,code=compute_70 \
+ 	        -gencode arch=compute_70,code=sm_70 \
+ 	        -gencode arch=compute_80,code=compute_80 \
++	        -gencode arch=compute_86,code=compute_86 \
++	        -gencode arch=compute_87,code=compute_87 \
++	        -gencode arch=compute_89,code=compute_89 \
++	        -gencode arch=compute_90,code=compute_90 \
+ 	        --machine 64 -g -I$(OPTIXHOME)/include \
+ 		$(GPUPERF) -DTACHYONINTERNAL=1 " \
+ 	"NVCCPTXFLAGS = -std=c++14 -lineinfo --ptxas-options=-v \
+-	        -gencode arch=compute_60,code=compute_60 \
++	        -gencode arch=compute_70,code=compute_70 \
+ 	        --machine 64 -g -I$(OPTIXHOME)/include \
+ 		$(GPUPERF) -DTACHYONINTERNAL=1 " \
+ 	"AR = ar" \
+@@ -1945,10 +1949,14 @@
+ 	        -gencode arch=compute_70,code=compute_70 \
+ 	        -gencode arch=compute_70,code=sm_70 \
+ 	        -gencode arch=compute_80,code=compute_80 \
++	        -gencode arch=compute_86,code=compute_86 \
++	        -gencode arch=compute_87,code=compute_87 \
++	        -gencode arch=compute_89,code=compute_89 \
++	        -gencode arch=compute_90,code=compute_90 \
+ 	        --machine 64 -g -I$(OPTIXHOME)/include \
+ 		$(GPUPERF) -DTACHYONINTERNAL=1 " \
+ 	"NVCCPTXFLAGS = -std=c++14 -lineinfo --ptxas-options=-v \
+-	        -gencode arch=compute_60,code=compute_60 \
++	        -gencode arch=compute_70,code=compute_70 \
+ 	        --machine 64 -g -I$(OPTIXHOME)/include \
+ 		$(GPUPERF) -DTACHYONINTERNAL=1 " \
+ 	"AR = ar" \
+diff -ruN tachyon/unix/Make-config tachyon-fixed/unix/Make-config
+--- tachyon/unix/Make-config	2022-04-23 02:19:13.000000000 -0400
++++ tachyon-fixed/unix/Make-config	2024-04-15 21:46:11.021544022 -0400
+@@ -18,7 +18,7 @@
+ # Bourne Shell Configuration:
+ #   set SHELL=/bin/sh or wherever your bourne shell is
+ ##########################################################################
+-SHELL=/bin/sh
++SHELL=$(EPREFIX)/bin/sh
+ 
+ 
+ 
+@@ -30,13 +30,13 @@
+ 
+ # The following line should be set to -Ixxx where xxx is your X11 include path
+ # Sun puts X11 in /usr/openwin/xxx
+-X11INC= -I/usr/openwin/include
++X11INC= -I$(EBROOTX11)/include
+ 
+ # Others typically use /usr/X11 or /usr/X11R6
+ #X11INC= -I/usr/X11
+ 
+ # The following line should be set to -lX11 or whatever your X library is.
+-X11LIB= -lX11
++X11LIB= -L$(EBROOTX11)/lib -lX11
+ 
+ 
+ 
+@@ -111,7 +111,7 @@
+ ##########################################################################
+ # Customize MPI directories and includes as-needed.
+ # A typical MPICH installation location:
+-MPIDIR=/usr/local/mpi
++MPIDIR=$(EBROOTOPENMPI)
+ MPIINC=$(MPIDIR)/include
+ MPILIB=$(MPIDIR)/lib
+ 
+@@ -137,7 +137,7 @@
+ #
+ ##########################################################################
+ # CUDA installation directory
+-CUDAHOME=/usr/local/cuda-11.6
++CUDAHOME=$(EBROOTCUDA)
+ #CUDAHOME=/sw/summit/cuda/11.0.3/
+ #CUDAHOME=/autofs/nccs-svm1_wombat_sw/CentOS8/spack/opt/spack/linux-centos8-thunderx2/gcc-11.1.0/cuda-11.5.1-4uyuq4gi5fwwqxkty5oykyqxmga5u3ih/
+ CUDAINC=-I$(CUDAHOME)/include 
+@@ -148,7 +148,7 @@
+ #OPTIXHOME=/usr/local/NVIDIA-OptiX-SDK-7.1.0-linux64-x86_64
+ #OPTIXHOME=/usr/local/NVIDIA-OptiX-SDK-7.2.0-linux64-x86_64
+ #OPTIXHOME=/usr/local/NVIDIA-OptiX-SDK-7.3.0-linux64-x86_64
+-OPTIXHOME=/usr/local/NVIDIA-OptiX-SDK-7.4.0-linux64-x86_64
++OPTIXHOME=$(EBROOTOPTIX)
+ #OPTIXHOME=/ccs/home/stonej1/local/NVIDIA-OptiX-SDK-7.1.0-linux64-x86_64
+ #OPTIXHOME=/ccsopen/home/stonej1/NVIDIA-OptiX-SDK-7.4.0-linux64-aarch64
+ OPTIXINC=-I$(OPTIXHOME)/include
+@@ -206,9 +206,9 @@
+ JPEGLIB=
+ 
+ # Uncomment the following lines to enable JPEG support
+-#USEJPEG= -DUSEJPEG
+-#JPEGINC= -I/usr/local/include
+-#JPEGLIB= -L/usr/local/lib -ljpeg
++USEJPEG=-DUSEJPEG
++JPEGINC=-I$(EBROOTLIBJPEGMINTURBO)/include
++JPEGLIB=-L$(EBROOTLIBJPEGMINTURBO)/lib -ljpeg
+ 
+ 
+ ##########################################################################
+@@ -221,9 +221,9 @@
+ #   http://www.libpng.org/
+ ##########################################################################
+ # Uncomment the following lines to disable PNG support
+-USEPNG=
+-PNGINC=
+-PNGLIB=
++USEPNG=-DUSEPNG
++PNGINC=-I$(EBROOTLIBPNG)/include
++PNGLIB=-I$(EBROOTLIBPNG)/lib -lpng -lz
+ 
+ # Uncomment the following lines to enable PNG support
+ #USEPNG= -DUSEPNG
