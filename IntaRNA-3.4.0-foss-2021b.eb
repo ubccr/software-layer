@@ -1,0 +1,29 @@
+easyblock = 'ConfigureMake'
+
+name = 'IntaRNA'
+version = '3.4.0'
+
+homepage = 'https://github.com/BackofenLab/IntaRNA'
+description = "Efficient RNA-RNA interaction prediction incorporating accessibility and seeding of interaction sites"
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+source_urls = ['https://github.com/BackofenLab/%(name)s/releases/download/v%(version)s']
+sources = ['intaRNA-%(version)s.tar.gz']
+checksums = ['4b0c53472dad49f3fbe6f0d3b1613d22d7b438bf650936da6a351a25fa9d535c']
+
+builddependencies = [('pkg-config', '0.29.2')]
+dependencies = [
+    ('Boost', '1.79.0'),
+    ('Python', '3.9.6'),
+    ('ViennaRNA', '2.5.1'),
+]
+
+configopts = "--with-boost=$EBROOTBOOST --with-vrna=$EBROOTVIENNARNA"
+
+sanity_check_paths = {
+    'files': ['bin/IntaRNA', 'lib/libIntaRNA.a'],
+    'dirs': ['include/IntaRNA', 'lib/pkgconfig'],
+}
+
+moduleclass = 'bio'
