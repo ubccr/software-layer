@@ -23,6 +23,7 @@ from ccr_hooks_common import (hook_call, get_ccr_envvar, get_rpath_override_dirs
 def set_modluafooter(ec):
     software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
     ccr_version = get_ccr_envvar('CCR_VERSION')
+    cpu_family = get_ccr_envvar('CCR_CPU_FAMILY')
     eprefix = get_ccr_envvar('EPREFIX')
     moduleclass = ec.get('moduleclass','')
     name = ec['name'].lower()
@@ -37,7 +38,7 @@ def set_modluafooter(ec):
         if name in ['iccifort', 'intel-compilers']:
             name = 'intel'
         comp = os.path.join('Compiler', name, ec['version'])
-        ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
+        ec['modluafooter'] += COMPILER_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, cpu_family=cpu_family, sub_path=comp)
 
     if name == 'openmpi':
         if ec['toolchain']['name'].lower() == 'nvhpc':
@@ -47,7 +48,7 @@ def set_modluafooter(ec):
             gccver = get_ccr_envvar('EBVERSIONGCC')
             comp = os.path.join('MPI', 'gcc', gccver, name, ec['version'])
 
-        ec['modluafooter'] += MPI_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, sub_path=comp)
+        ec['modluafooter'] += MPI_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, cpu_family=cpu_family, sub_path=comp)
 
 def parse_hook(ec, *args, **kwargs):
     modify_dependencies(ec, DEPS)
@@ -100,7 +101,7 @@ def pre_postproc_hook(self, *args, **kwargs):
     "Modify postinstallcmds (here is more efficient than parse_hook since only called once)"
     orig_enable_templating = self.cfg.enable_templating
     self.cfg.enable_templating = False
-    modify_all_opts(self.cfg, opts_changes, opts_to_change=['postinstallcmds'])
+    modify_all_opts(self.cfg, CHANGES, opts_to_change=['postinstallcmds'])
     self.cfg.enable_templating = orig_enable_templating
 
     hook_call('pre_postproc_hook', HOOKS, self, *args, **kwargs)

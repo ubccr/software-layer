@@ -63,15 +63,15 @@ CHANGES = {
 
 COMPILER_MODLUAFOOTER = """
 prepend_path("MODULEPATH", pathJoin("{software_path}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
-if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
-    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
 end
 
 local customBuildPaths = os.getenv("CCR_CUSTOM_BUILD_PATHS") or nil
 if customBuildPaths ~= nil then
  for customPath in customBuildPaths:split(":") do
-   if isDir(pathJoin(customPath, "{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
-     prepend_path("MODULEPATH", pathJoin(customPath, "{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+   if isDir(pathJoin(customPath, "{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+     prepend_path("MODULEPATH", pathJoin(customPath, "{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
    end
  end
 end
@@ -79,15 +79,15 @@ add_property("type_","tools")
 """
 
 MPI_MODLUAFOOTER = """
-if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
-    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+if isDir(pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+    prepend_path("MODULEPATH", pathJoin(os.getenv("HOME"), ".local/easybuild/{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
 end
 
 local customBuildPaths = os.getenv("CCR_CUSTOM_BUILD_PATHS") or nil
 if customBuildPaths ~= nil then
  for customPath in customBuildPaths:split(":") do
-   if isDir(pathJoin(customPath, "{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
-     prepend_path("MODULEPATH", pathJoin(customPath, "{ccr_version}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
+   if isDir(pathJoin(customPath, "{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}")) then
+     prepend_path("MODULEPATH", pathJoin(customPath, "{ccr_version}/{cpu_family}/modules", os.getenv("CCR_ARCH"), "{sub_path}"))
    end
  end
 end
