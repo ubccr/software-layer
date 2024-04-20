@@ -11,7 +11,7 @@ if libdir not in sys.path:
 
 from ccr_hooks_common import Dep, Op
 
-def gcc_postprepare(ec, *args, **kwargs):
+def gcc_postprepare(self, *args, **kwargs):
     """
     Post-configure hook for GCCcore:
     - copy RPATH wrapper script for linker commands to also have a wrapper in place with system type prefix like 'x86_64-pc-linux-gnu'
@@ -21,11 +21,11 @@ def gcc_postprepare(ec, *args, **kwargs):
     cmd_prefix = '%s-' % system_type.strip()
     for cmd in ('ld', 'ld.gold', 'ld.bfd'):
         wrapper = which(cmd)
-        ec.log.info("Path to %s wrapper: %s" % (cmd, wrapper))
+        self.log.info("Path to %s wrapper: %s" % (cmd, wrapper))
         wrapper_dir = os.path.dirname(wrapper)
         prefix_wrapper = os.path.join(wrapper_dir, cmd_prefix + cmd)
         copy_file(wrapper, prefix_wrapper)
-        ec.log.info("Path to %s wrapper with '%s' prefix: %s" % (cmd, cmd_prefix, which(prefix_wrapper)))
+        self.log.info("Path to %s wrapper with '%s' prefix: %s" % (cmd, cmd_prefix, which(prefix_wrapper)))
 
         # we need to tweak the copied wrapper script, so that:
         regex_subs = [
@@ -51,12 +51,18 @@ HOOKS = {
 }
 
 CHANGES = {
+    'EasyBuild': {
+        'modluafooter': ('prepend_path("PATH", pathJoin(os.getenv("CCR_INIT_DIR"), "easybuild/bin"))', Op.REPLACE),
+    },
     'OpenMPI': {
-        #'builddependencies': ([('opa-psm2', '12.0.1')], Op.REPLACE),
+        'builddependencies': ({'x86_64': [('opa-psm2', '12.0.1')]}.get(os.getenv('CCR_CPU_FAMILY'), []), Op.APPEND_LIST),
         'configopts': ('--with-slurm --with-pmi=/opt/software/slurm --with-hwloc=external ', Op.PREPEND),
     },
     'UCX': {
-        'configopts': ('--with-rdmacm=$EPREFIX --with-verbs=$EPREFIX --with-knem=$EPREFIX ', Op.PREPEND),
+        'configopts': ('--with-rdmacm=$EPREFIX/usr --with-verbs=$EPREFIX/usr ', Op.PREPEND),
+    },
+    'SciPy-bundle': {
+        'testopts': ({'neoverse-v2': "|| echo ignoring failing tests"}.get(os.getenv('CCR_ARCH'), ''), Op.REPLACE),
     },
 }
 

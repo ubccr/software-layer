@@ -2,6 +2,7 @@ import os
 from collections.abc import Hashable
 from enum import Enum,auto
 from easybuild.tools.build_log import EasyBuildError, print_msg
+from easybuild.tools.config import build_option, update_build_option
 
 class Op(Enum):
     REPLACE = auto()
@@ -17,7 +18,7 @@ CCR_RPATH_OVERRIDE_ATTR = 'orig_rpath_override_dirs'
 # options to change in parse_hook, others are changed in other hooks
 PARSE_OPTS = ['multi_deps', 'dependencies', 'builddependencies', 'license_file', 'version', 'name',
               'source_urls', 'sources', 'patches', 'checksums', 'versionsuffix', 'modaltsoftname',
-              'skip_license_file_in_module', 'withnvptx', 'skipsteps']
+              'skip_license_file_in_module', 'withnvptx', 'skipsteps', 'testops']
 
 class Dep:
     def __init__(self, name, to_version, from_version=None, suffix='', toolchain=None):
@@ -43,27 +44,6 @@ def get_ccr_envvar(ccr_envvar):
 
     return ccr_envvar_value
 
-def get_rpath_override_dirs(software_name):
-    # determine path to installations in software layer via $CCR_EASYBUILD_PATH
-    ccr_software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
-
-    # construct the rpath override directory stub
-    rpath_injection_stub = os.path.join(
-        # Make sure we are looking inside the `host_injections` directory
-        ccr_software_path.replace('versions', os.path.join('host_injections', ccr_version), 1),
-        # Add the subdirectory for the specific software
-        'rpath_overrides',
-        software_name,
-        # We can't know the version, but this allows the use of a symlink
-        # to facilitate version upgrades without removing files
-        'system',
-    )
-
-    # Allow for libraries in lib or lib64
-    rpath_injection_dirs = [os.path.join(rpath_injection_stub, x) for x in ('lib', 'lib64')]
-
-    return rpath_injection_dirs
-
 def hook_call(name, hooks, ec, *args, **kwargs):
     if ec.name in hooks and name in hooks[ec.name]:
         hooks[ec.name][name](ec, *args, **kwargs)
@@ -80,31 +60,8 @@ def modify_dep(ec, new_dep):
                 if new_dep.from_version != None and dep[1] != new_dep.from_version:
                     continue
 
-                print_msg(f"NOTE:{new_dep.name} {key} version has been modified from {dep[0]}/{dep[1]} --> {new_dep.name}/{new_dep.to_version}")
+                print_msg(f"{new_dep.name} {key} version has been modified from {dep[0]}/{dep[1]} --> {new_dep.name}/{new_dep.to_version}")
                 ec[key][index] = new_dep.to_tuple()
-
-def inject_mpi_rpath_override(self):
-    # Check if we have an MPI family in the toolchain (returns None if there is not)
-    mpi_family = self.toolchain.mpi_family()
-
-    # Inject an RPATH override for MPI (if needed)
-    if mpi_family:
-        # Get list of override directories
-        mpi_rpath_override_dirs = get_rpath_override_dirs(mpi_family)
-
-        # update the relevant option (but keep the original value so we can reset it later)
-        if hasattr(ec, CCR_RPATH_OVERRIDE_ATTR):
-            raise EasyBuildError("attribute already exists: %s", CCR_RPATH_OVERRIDE_ATTR)
-
-        setattr(self, CCR_RPATH_OVERRIDE_ATTR, build_option('rpath_override_dirs'))
-        if getattr(self, CCR_RPATH_OVERRIDE_ATTR):
-            # ec.CCR_RPATH_OVERRIDE_ATTR is (already) a colon separated string, let's make it a list
-            orig_rpath_override_dirs = [getattr(self, CCR_RPATH_OVERRIDE_ATTR)]
-            rpath_override_dirs = ':'.join(orig_rpath_override_dirs + mpi_rpath_override_dirs)
-        else:
-            rpath_override_dirs = ':'.join(mpi_rpath_override_dirs)
-        update_build_option('rpath_override_dirs', rpath_override_dirs)
-        print_msg("Updated rpath_override_dirs (to allow overriding MPI family %s): %s", mpi_family, rpath_override_dirs)
 
 # All code below here copied from:
 # https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_common.py
@@ -186,4 +143,4 @@ def update_opts(ec,changes,key, update_type):
             ec[key] = opts[0]
 
     if str(ec[key]) != str(orig):
-        print("%s: Changing %s from: %s to: %s" % (ec.filename(),key,orig,ec[key]))
+        print_msg("%s: Changing %s from: %s to: %s" % (ec.filename(),key,orig,ec[key]))

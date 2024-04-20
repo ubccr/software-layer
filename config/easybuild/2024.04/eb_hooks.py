@@ -15,10 +15,8 @@ if libdir not in sys.path:
     sys.path.append(libdir)
 
 from ccrsoft import DEPS, HOOKS, CHANGES, COMPILER_MODLUAFOOTER, MPI_MODLUAFOOTER
-from ccr_hooks_common import (hook_call, get_ccr_envvar, get_rpath_override_dirs, 
-                              get_matching_keys_from_ec, modify_dependencies, 
-                              inject_mpi_rpath_override, modify_all_opts, 
-                              PARSE_OPTS, CCR_RPATH_OVERRIDE_ATTR)
+from ccr_hooks_common import (hook_call, get_ccr_envvar, get_matching_keys_from_ec, modify_dependencies, 
+                              modify_all_opts, PARSE_OPTS, CCR_RPATH_OVERRIDE_ATTR)
 
 def set_modluafooter(ec):
     software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
@@ -69,8 +67,6 @@ def pre_module_hook(self, *args, **kwargs):
 def pre_prepare_hook(self, *args, **kwargs):
     """Main pre-prepare hook: trigger custom functions."""
 
-    inject_mpi_rpath_override(self)
-
     hook_call('pre_prepare_hook', HOOKS, self, *args, **kwargs)
 
 def pre_configure_hook(self, *args, **kwargs):
@@ -116,3 +112,7 @@ def post_prepare_hook(self, *args, **kwargs):
         delattr(self, CCR_RPATH_OVERRIDE_ATTR)
 
     hook_call('post_prepare_hook', HOOKS, self, *args, **kwargs)
+
+def pre_test_hook(self, *args, **kwargs):
+    """Main pre-test hook: trigger custom functions based on software name."""
+    hook_call('pre_test_hook', HOOKS, self, *args, **kwargs)
