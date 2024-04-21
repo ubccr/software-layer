@@ -15,8 +15,8 @@ if libdir not in sys.path:
     sys.path.append(libdir)
 
 from ccrsoft import DEPS, HOOKS, CHANGES, COMPILER_MODLUAFOOTER, MPI_MODLUAFOOTER
-from ccr_hooks_common import (hook_call, get_ccr_envvar, get_matching_keys_from_ec, modify_dependencies, 
-                              modify_all_opts, PARSE_OPTS, CCR_RPATH_OVERRIDE_ATTR)
+from ccr_hooks_common import (hook_call, get_ccr_envvar, get_matching_keys_from_ec, modify_dependencies,
+                              modify_all_opts, is_filtered_ec, PARSE_OPTS)
 
 def set_modluafooter(ec):
     software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
@@ -49,7 +49,12 @@ def set_modluafooter(ec):
         ec['modluafooter'] += MPI_MODLUAFOOTER.format(software_path=software_path, ccr_version=ccr_version, cpu_family=cpu_family, sub_path=comp)
 
 def parse_hook(ec, *args, **kwargs):
-    modify_dependencies(ec, DEPS)
+    if is_filtered_ec(ec):
+        print_msg(f"STOP, software {ec.name}/{ec.version} is filtered. Please contact a ccr-help before installing")
+        exit(1)
+
+    modify_dependencies(ec, 'dependencies', DEPS)
+    modify_dependencies(ec, 'builddependencies', DEPS)
     modify_all_opts(ec, CHANGES, opts_to_change=PARSE_OPTS)
 
     hook_call('parse_hook', HOOKS, ec, *args, **kwargs)
@@ -104,13 +109,6 @@ def pre_postproc_hook(self, *args, **kwargs):
 
 def post_prepare_hook(self, *args, **kwargs):
     """Main post-prepare hook: trigger custom functions."""
-
-    if hasattr(self, CCR_RPATH_OVERRIDE_ATTR):
-        # Reset the value of 'rpath_override_dirs' now that we are finished with it
-        update_build_option('rpath_override_dirs', getattr(self, CCR_RPATH_OVERRIDE_ATTR))
-        print_msg("Resetting rpath_override_dirs to original value: %s", getattr(self, CCR_RPATH_OVERRIDE_ATTR))
-        delattr(self, CCR_RPATH_OVERRIDE_ATTR)
-
     hook_call('post_prepare_hook', HOOKS, self, *args, **kwargs)
 
 def pre_test_hook(self, *args, **kwargs):

@@ -3,6 +3,8 @@ from collections.abc import Hashable
 from enum import Enum,auto
 from easybuild.tools.build_log import EasyBuildError, print_msg
 from easybuild.tools.config import build_option, update_build_option
+from easybuild.tools.toolchain.utilities import search_toolchain
+from easybuild.toolchains.system import SystemToolchain
 
 class Op(Enum):
     REPLACE = auto()
@@ -14,26 +16,10 @@ class Op(Enum):
     DROP_FROM_LIST = auto()
     REPLACE_IN_LIST = auto()
 
-CCR_RPATH_OVERRIDE_ATTR = 'orig_rpath_override_dirs'
 # options to change in parse_hook, others are changed in other hooks
 PARSE_OPTS = ['multi_deps', 'dependencies', 'builddependencies', 'license_file', 'version', 'name',
               'source_urls', 'sources', 'patches', 'checksums', 'versionsuffix', 'modaltsoftname',
               'skip_license_file_in_module', 'withnvptx', 'skipsteps', 'testops']
-
-class Dep:
-    def __init__(self, name, to_version, from_version=None, suffix='', toolchain=None):
-        self.name = name
-        self.to_version = to_version
-        self.from_version =from_version
-        self.suffix = suffix
-        self.toolchain = toolchain
-
-    def to_tuple(self):
-        if self.toolchain != None and isinstance(self.toolchain, tuple):
-            return (self.name, self.to_version, self.suffix, self.toolchain)
-
-        return (self.name, self.to_version)
-
 
 def get_ccr_envvar(ccr_envvar):
     """Get an CCR environment variable from the environment"""
@@ -47,21 +33,6 @@ def get_ccr_envvar(ccr_envvar):
 def hook_call(name, hooks, ec, *args, **kwargs):
     if ec.name in hooks and name in hooks[ec.name]:
         hooks[ec.name][name](ec, *args, **kwargs)
-
-def modify_dependencies(ec, deps):
-    for new_dep in deps:
-        modify_dep(ec, new_dep)
-
-def modify_dep(ec, new_dep):
-    for key in ['dependencies', 'hiddendependencies', 'builddependencies']:
-        for index in range(len(ec[key])):
-            dep = ec[key][index]
-            if isinstance(dep, (list,tuple)) and dep[0] == new_dep.name:
-                if new_dep.from_version != None and dep[1] != new_dep.from_version:
-                    continue
-
-                print_msg(f"{new_dep.name} {key} version has been modified from {dep[0]}/{dep[1]} --> {new_dep.name}/{new_dep.to_version}")
-                ec[key][index] = new_dep.to_tuple()
 
 # All code below here copied from:
 # https://github.com/ComputeCanada/easybuild-computecanada-config/blob/main/cc_hooks_common.py
@@ -144,3 +115,68 @@ def update_opts(ec,changes,key, update_type):
 
     if str(ec[key]) != str(orig):
         print_msg("%s: Changing %s from: %s to: %s" % (ec.filename(),key,orig,ec[key]))
+
+def modify_list_of_dependencies(ec, param, version_mapping, list_of_deps):
+    name = ec["name"]
+    version = ec["version"]
+    toolchain_name = ec.toolchain.name
+    new_dep = None
+    if not list_of_deps or not isinstance(list_of_deps[0], tuple): 
+        print("Error, modify_list_of_dependencies did not receive a list of tuples")
+        return
+
+    for n, dep in enumerate(list_of_deps):
+        if isinstance(dep,list): dep = dep[0]
+        dep_name, dep_version, *rest = tuple(dep)
+        dep_version_suffix = rest[0] if len(rest) > 0 else ""
+
+        matching_keys = get_matching_keys(dep_name, dep_version, dep_version_suffix, version_mapping)
+        # search through possible matching keys
+        match_found = False
+        for key in matching_keys:
+            # Skip dependencies on the same name
+            if name == key or name == key[0]:
+                continue
+            new_version, supported_toolchains, *new_version_suffix = version_mapping[key]
+            new_version_suffix = new_version_suffix[0] if len(new_version_suffix) == 1 else dep_version_suffix
+
+            # test if one of the supported toolchains is a subtoolchain of the toolchain with which we are building. If so, a match is found, replace the dependency
+            supported_versions = [tc[1] for tc in supported_toolchains]
+            for tc_name, tc_version in supported_toolchains:
+                try_tc, _ = search_toolchain(tc_name)
+                # for whatever reason, issubclass and class comparison does not work. It is the same class name, but not the same class, so comparing strings
+                str_mro = [str(x) for x in ec.toolchain.__class__.__mro__]
+                if try_tc == SystemToolchain or str(try_tc) in str_mro and ec.toolchain.version in supported_versions:
+                    match_found = True
+                    new_dep = (dep_name, new_version, new_version_suffix, (tc_name, tc_version))
+                    if str(new_dep) != str(dep):
+                        print("%s: Matching updated %s found. Replacing %s with %s" % (ec.filename(), param, str(dep), str(new_dep)))
+                    list_of_deps[n] = new_dep
+                    break
+
+            if match_found: break
+
+        if dep_name == 'SciPy-bundle':
+            new_dep = ('SciPy-bundle', '2023.11', '-gfbf')
+        else:
+            new_dep = None
+        if new_dep is not None and str(new_dep) != str(dep):
+            ec[param][n] = new_dep
+            print("%s: Replacing %s with %s" % (ec.filename(), str(dep), str(new_dep)))
+
+    return list_of_deps
+
+def modify_dependencies(ec, param, version_mapping):
+    name = ec["name"]
+    version = ec["version"]
+    toolchain_name = ec.toolchain.name
+    if ec[param] and isinstance(ec[param][0], list) and ec[param][0] and isinstance(ec[param][0][0], tuple):
+        for n, deps in enumerate(ec[param]):
+            ec[param][n] = modify_list_of_dependencies(ec, param, version_mapping, ec[param][n])
+    elif ec[param] and isinstance(ec[param][0], tuple):
+        ec[param] = modify_list_of_dependencies(ec, param, version_mapping, ec[param])
+
+def is_filtered_ec(ec):
+    filter_spec = ec.parse_filter_deps()
+    software_spec = {'name': ec.name, 'version': ec.version}
+    return ec.dep_is_filtered(software_spec, filter_spec)

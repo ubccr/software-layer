@@ -9,7 +9,7 @@ libdir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'lib')
 if libdir not in sys.path:
     sys.path.append(libdir)
 
-from ccr_hooks_common import Dep, Op
+from ccr_hooks_common import Op
 
 def gcc_postprepare(self, *args, **kwargs):
     """
@@ -38,11 +38,13 @@ def gcc_postprepare(self, *args, **kwargs):
         ]
         apply_regex_substitutions(prefix_wrapper, regex_subs)
 
-
-DEPS = [
-    Dep('OpenSSL', '3', from_version='1.1'),
-    Dep('Catch2', '2.13.9', from_version='2.13.9', toolchain=('GCCcore', '13.2.0')),
-]
+DEPS = {
+    ('OpenSSL', '1.1', ''): ('3', [('system', 'system')]),
+    'Catch2': ('2.13.9', [('GCCcore', '13.2.0')]),
+    'Python': ('3.11.5', [('GCCcore', '13.2.0')]),
+    'CMake': ('3.27.6', [('GCCcore', '13.2.0')]),
+    'cURL': ('8.3.0', [('GCCcore', '13.2.0')]),
+}
 
 HOOKS = {
     'GCCcore': {
