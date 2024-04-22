@@ -16,7 +16,7 @@ if libdir not in sys.path:
 
 from ccrsoft import DEPS, HOOKS, CHANGES, COMPILER_MODLUAFOOTER, MPI_MODLUAFOOTER
 from ccr_hooks_common import (hook_call, get_ccr_envvar, get_matching_keys_from_ec, modify_dependencies,
-                              modify_all_opts, is_filtered_ec, PARSE_OPTS)
+                              modify_all_opts, is_filtered_ec, PARSE_OPTS, update_opts)
 
 def set_modluafooter(ec):
     software_path = get_ccr_envvar('CCR_EASYBUILD_PATH')
