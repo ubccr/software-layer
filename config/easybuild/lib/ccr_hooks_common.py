@@ -156,14 +156,6 @@ def modify_list_of_dependencies(ec, param, version_mapping, list_of_deps):
 
             if match_found: break
 
-        if dep_name == 'SciPy-bundle':
-            new_dep = ('SciPy-bundle', '2023.11', '-gfbf')
-        else:
-            new_dep = None
-        if new_dep is not None and str(new_dep) != str(dep):
-            ec[param][n] = new_dep
-            print("%s: Replacing %s with %s" % (ec.filename(), str(dep), str(new_dep)))
-
     return list_of_deps
 
 def modify_dependencies(ec, param, version_mapping):
