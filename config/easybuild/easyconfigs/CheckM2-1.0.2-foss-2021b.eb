@@ -1,0 +1,60 @@
+# Based on the CheckM easyconfig file
+# Credits from there:
+# Author: Pavel Grochal (INUITS)
+# Updated by: Filip Kružík (INUITS)
+# License: GPLv2
+
+easyblock = 'PythonBundle'
+
+name = 'CheckM2'
+version = '1.0.2'
+
+homepage = 'https://github.com/chklovski/CheckM2'
+description = """CheckM2
+Rapid assessment of genome bin quality using machine learning.
+CheckM2 has universally trained machine learning models it applies regardless
+of taxonomic lineage to predict the completeness and contamination of
+genomic bins. 
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'usempi': True}
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('h5py', '3.6.0'),
+    ('SciPy-bundle', '2021.10'),
+    ('DIAMOND', '2.0.13'),
+    ('TensorFlow', '2.11.0', '-CUDA-11.8.0'),
+    ('prodigal', '2.6.3'),
+    ('tqdm', '4.62.3'),
+]
+
+exts_list = [
+    ('scikit-learn', '0.23.2', {
+        'checksums': ['20766f515e6cd6f954554387dfae705d93c7b544ec0e6c6a5d8e006f6f7ef480'],
+        'modulename': 'sklearn',
+    }),
+    ('lightgbm', '3.2.1', {
+        'checksums': ['bd98e3b501b4c24dc127f4ad93e467f42923fe3eefa99e143b5b93158f024395'],
+    }),
+    (name, version, {
+        'source_urls': ['https://github.com/chklovski/CheckM2/archive/refs/tags'],
+        'sources': ['%(version)s.tar.gz'],
+        'checksums': ['9d3129e4d0b53acc38519a259cc1e20a215dff0cbce51cef874545ca2fff005a'],
+    }),
+]
+
+download_dep_fail = True
+use_pip = True
+
+sanity_check_paths = {
+    'files': ['bin/checkm2'],
+    'dirs': ['lib/python%(pyshortver)s/site-packages'],
+}
+
+sanity_check_commands = ["checkm2 -h"]
+
+sanity_pip_check = True
+
+moduleclass = 'bio'
