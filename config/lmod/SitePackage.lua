@@ -180,7 +180,7 @@ local mapT =
       ['/modules/Core']     = "Core modules",
       [ccr_init .. '/modulefiles$'] = "Core modules",
       ['/srv/software%-layer/config/modulefiles$'] = "Core modules",
-      ['/util/software/config%-dev/modulefiles$'] = "Core modules",
+      ['/util/software/software%-layer/config/modulefiles$'] = "Core modules",
    },
 }
 
