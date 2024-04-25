@@ -41,7 +41,7 @@ def gcc_postprepare(self, *args, **kwargs):
 DEPS = {
     ('OpenSSL', '1.1', ''): ('3', [('system', 'system')]),
     'Catch2': ('2.13.9', [('GCCcore', '13.2.0')]),
-    'Python': ('3.11.5', [('GCCcore', '13.2.0')]),
+    'Python': ('3.11.5', [('GCCcore', '13.2.0')], None),
     'CMake': ('3.27.6', [('GCCcore', '13.2.0')]),
     'cURL': ('8.3.0', [('GCCcore', '13.2.0')]),
 }
