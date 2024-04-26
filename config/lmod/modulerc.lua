@@ -2,6 +2,7 @@
 module_version("pavilion/2.4.7217d1f","default")
 
 -- hidden modules
+hide_version("ccrsoft/2022.05")
 hide_version("ccrarch/avx")
 hide_version("ccrarch/avx2")
 hide_version("ccrarch/avx512")
