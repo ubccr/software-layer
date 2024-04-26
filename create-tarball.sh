@@ -32,16 +32,16 @@ function fatal_error() {
 }
 
 if [[ $# -lt 2 ]]; then
-    fatal_error "Usage: $0 <compat|easybuild|banalbuild|config> </scratch/path/to/workdir>"
+    fatal_error "Usage: $0 <compat|easybuild> </scratch/path/to/workdir>"
 fi
 
 content_type=$1
 workdir=$2
 
 # Check if the content-type is compat, easybuild, or config
-if [ "${content_type}" != "compat" ] && [ "${content_type}" != "easybuild" ] && [ "${content_type}" != "config" ] && [ "${content_type}" != "banalbuild" ]
+if [ "${content_type}" != "compat" ] && [ "${content_type}" != "easybuild" ]
 then
-    fatal_error "Content type should be either compat, easybuild, banalbuild or config."
+    fatal_error "Content type should be either compat or easybuild"
 fi
 
 if [[ -z "$CCR_VERSION" ]]; then
@@ -55,6 +55,10 @@ then
 fi
 
 overlay_upper_dir="${workdir}/overlay-upper"
+if [ ! -d ${overlay_upper_dir} ] && [ -d "${workdir}/cvmfs/soft.ccr.buffalo.edu" ]; then
+    overlay_upper_dir="${workdir}/cvmfs/soft.ccr.buffalo.edu"
+fi
+
 dir_overlay="${overlay_upper_dir}/versions/${CCR_VERSION}/${content_type}"
 
 if [ ! -d ${dir_overlay} ]; then
