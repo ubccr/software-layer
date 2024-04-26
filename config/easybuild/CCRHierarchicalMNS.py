@@ -180,7 +180,7 @@ class CCRHierarchicalMNS(ModuleNamingScheme):
                 subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
             elif tc_comp_name == GCCCORE.lower():
                 subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
-        else:
+        elif ec['name'] != "EasyBuild":
             subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
 
         return subdir
