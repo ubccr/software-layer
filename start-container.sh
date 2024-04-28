@@ -16,14 +16,16 @@
 BUILD_TAG="${BUILD_TAG:-$ID$VERSION_ID}"
 
 # XXX Only run on supported distros for now..
-if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" && "$BUILD_TAG" != "centos7" ]]; then
+if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
     echo "Unsupported linux distro: $BUILD_TAG" >&2
     exit 1
 fi
 
+CCR_CPU_FAMILY=`uname -m`
+
 # Use pre-built CCR local container if available else fetch from dockerhub
-if [ -f "/util/software/containers/${BUILD_TAG}.sif" ]; then
-    BUILD_CONTAINER="/util/software/containers/${BUILD_TAG}.sif"
+if [ -f "/util/software/containers/${CCR_CPU_FAMILY}/${BUILD_TAG}.sif" ]; then
+    BUILD_CONTAINER="/util/software/containers/${CCR_CPU_FAMILY}/${BUILD_TAG}.sif"
 else
     BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
 fi
@@ -84,6 +86,10 @@ if [ -d "/opt/software" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software:/opt/software:ro"
 fi
 
+if [ -d "/usr/lib/${CPU_FAMILY}-linux-gnu" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/usr/lib/${CPU_FAMILY}-linux-gnu:/usr/lib/${CPU_FAMILY}-linux-gnu/:ro"
+fi
+
 if [ -d "/util" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/util:/util:ro"
 fi
@@ -115,7 +121,7 @@ elif [ "$ACTION" == "run" ]; then
     singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$@"
 elif [ "$ACTION" == "prefix" ]; then
     echo "Running gentoo prefix shell in Singularity build container..."
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /cvmfs/${CVMFS_SOFT_REPO}/versions/${CCR_VERSION}/compat/startprefix
+    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /cvmfs/${CVMFS_SOFT_REPO}/versions/${CCR_VERSION}/compat/linux/${CCR_CPU_FAMILY}/startprefix
 else
     echo "ERROR: Unknown action specified: $ACTION (should be either 'shell', 'run', or 'prefix')" >&2
     exit 1
