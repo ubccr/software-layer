@@ -41,7 +41,7 @@ def gcc_postprepare(self, *args, **kwargs):
 DEPS = {
     ('OpenSSL', '1.1', ''): ('3', [('system', 'system')]),
     'Catch2': ('2.13.9', [('GCCcore', '13.2.0')]),
-    'Python': ('3.11.5', [('GCCcore', '13.2.0')], None),
+    'Python': ('3.11.5', [('GCCcore', '13.2.0')], ''),
     'CMake': ('3.27.6', [('GCCcore', '13.2.0')]),
     'cURL': ('8.3.0', [('GCCcore', '13.2.0')]),
 }
@@ -65,6 +65,13 @@ CHANGES = {
     },
     'SciPy-bundle': {
         'testopts': ({'neoverse-v2': "|| echo ignoring failing tests"}.get(os.getenv('CCR_ARCH'), ''), Op.REPLACE),
+    },
+    'CUDA': {
+        'postinstallcmds': (
+            [
+                'for dir in %(installdir)s/{bin,nvvm}; do $CCR_INIT_DIR/easybuild/setrpaths.sh --path $dir; done',
+                'for dir in %(installdir)s/{c,e,g,nsight,t}*; do $CCR_INIT_DIR/easybuild/setrpaths.sh --path $dir --add_origin; done'
+            ], Op.APPEND_LIST),
     },
 }
 
