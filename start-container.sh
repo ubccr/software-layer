@@ -180,5 +180,5 @@ elif [ ! -z "$RUN_CMD" ]; then
     singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$RUN_CMD"
 else
     export SINGULARITYENV_PS1="(v${CCR_VERSION}) \[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER bash --rcfile /cvmfs/${CVMFS_SOFT_REPO}/config/profile/bash.sh
+    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER bash --rcfile /srv/software-layer/config/profile/bash.sh
 fi
