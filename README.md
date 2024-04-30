@@ -29,11 +29,9 @@ build software.
 # Clone repo and start container
 user@host$ git clone https://github.com/ubccr/software-layer.git
 user@host$ cd software-layer
-user@host$ ./start-container.sh prefix /scratch/username_somepackage
+user@host$ ./start-container.sh /scratch/username_somepackage
 
-# Inside container source init scripts and run easybuild
-user@container$ cd /srv/software-layer
-user@container$ source config/profile/bash.sh
+# Inside load easybuild module and run easybuild
 user@container$ module load easybuild
 
 # Show easybuild config
@@ -69,35 +67,31 @@ $ cd software-layer
 ```
 
 2. Start a singularity container. We use the helper script `start-container.sh`
-which takes an action as the first argument: `shell`, `run`, or `prefix`). The
-`prefix` action starts a singularity then runs $EPREFIX/startprefix which puts
-you in a gentoo prefix shell. The second argument is the path to a working
-directory where the writable-overlay will write your files. This should be
-somewhere in `/scratch`. It's recommended to follow a basic naming convention,
-for example if your building OpenMPI, then use `/scratch/username_OpenMPI`.
+which takes a single argument: the path to a working directory where the
+writable-overlay will write your files. This should be somewhere in `/scratch`.
+It's recommended to follow a basic naming convention, for example if your
+building OpenMPI, then use `/scratch/username_OpenMPI`.
 
 ```
-$ ./start-container.sh prefix /scratch/username_somepackage
+$ ./start-container.sh /scratch/username_somepackage
 ```
 
-NOTE: The first time you run this command it will fetch the build-node docker
+NOTE: The first time you run this command it may fetch the build-node docker
 image from docker hub, convert it to singularity sif format, then start the
 container. 
 
-3. After the container starts you have a shell setup to point at the gentoo
-compatibility layer. The current directory (this software-layer git repo where
-you ran the start-container.sh script) is bind mounted into
-`/srv/software-layer` inside the container. So cd into this directory:
+3. After the container starts you have a shell with the current directory 
+(this software-layer git repo where you ran the start-container.sh script)
+bind mounted into `/srv/software-layer` inside the container. So cd into this
+directory:
 
 ```
 $ cd /srv/software-layer
 ```
 
-4. Source CCR's init scripts to setup your environment:
+4. Ensure you enviroment is setup:
 
 ```
-$ source config/profile/bash.sh
-
 # This should now show the latest software modules
 $ module avail
 ```
@@ -131,7 +125,7 @@ for eventual importing into the CCR cvmfs repo. The tarball will be created
 with the following naming convention:
 
 ```
- ccr-<version>-{compat,easybuild,config}-[some tag]-<timestamp>.tar.gz
+ ccr-<version>-{compat,easybuild}-[some tag]-<timestamp>.tar.gz
 ```
 
 To create a tarball after building software with easybuild run:
