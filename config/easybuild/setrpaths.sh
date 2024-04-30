@@ -122,6 +122,12 @@ if [[ -z "$ARG_PATH" ]]; then
 	print_usage; exit 1
 fi
 
+# Avoid failing to set rpaths when a symlink is provided
+if [[ -L "$ARG_PATH" ]]; then
+	echo "error: $ARG_PATH is a symlink. Please provide a path not a symlink."
+	exit 1
+fi
+
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 for filename in $(find $ARG_PATH -type f); do

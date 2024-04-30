@@ -3,7 +3,7 @@
 # Build container for CCR software layer.
 #
 # Runs a singularity container, mounts CCR cvmfs repo with a writable overlay
-# and starts a gentoo prefix shell.
+# and starts a shell.
 #
 # This file was adopted from https://github.com/EESSI/software-layer/blob/main/build_container.sh
 # Distributed under the terms of the GNU General Public License v2.0.
@@ -11,19 +11,75 @@
 # Modifications made by CCR are also released under GPLv2. 
 #
 
+display_help() {
+  echo "usage: $0 [OPTIONS] <path to temporary dir>"
+  echo " OPTIONS:"
+  echo "  -h | --help            - display help"
+  echo "  -p | --prefix          - run gentoo startprefix.sh"
+  echo "  -s | --shell           - start singularity shell"
+  echo "  -r | --run CMD         - exec CMD in container"
+}
+
+LONGOPTS=help,prefix,shell,run:
+OPTIONS=hpsr:
+PARSED_ARGS=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
+if [[ $? -ne 0 ]]; then
+    exit 1;
+fi
+
+eval set -- "$PARSED_ARGS"
+
+RUN_PREFIX=n
+RUN_SHELL=n
+RUN_CMD=
+while [ : ]; do
+  case "$1" in
+    -h | --help)
+        display_help
+        exit 0
+        ;;
+    -p | --prefix)
+        RUN_PREFIX=y
+        shift
+        ;;
+    -s | --shell)
+        RUN_SHELL=y
+        shift
+        ;;
+    -r | --run)
+        RUN_CMD="$2"
+        shift 2
+        ;;
+    --) shift;
+        break
+        ;;
+  esac
+done
+
+if [[ $# -ne 1 ]]; then
+    echo "ERROR: A path to a temporary dir is required."
+    echo ""
+    display_help
+    exit 2
+fi
+
+CCR_TMPDIR=$1
+
 . /etc/os-release
 
 BUILD_TAG="${BUILD_TAG:-$ID$VERSION_ID}"
 
 # XXX Only run on supported distros for now..
-if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" && "$BUILD_TAG" != "centos7" ]]; then
+if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
     echo "Unsupported linux distro: $BUILD_TAG" >&2
     exit 1
 fi
 
+CCR_CPU_FAMILY=`uname -m`
+
 # Use pre-built CCR local container if available else fetch from dockerhub
-if [ -f "/util/software/containers/${BUILD_TAG}.sif" ]; then
-    BUILD_CONTAINER="/util/software/containers/${BUILD_TAG}.sif"
+if [ -f "/util/software/containers/${CCR_CPU_FAMILY}/${BUILD_TAG}.sif" ]; then
+    BUILD_CONTAINER="/util/software/containers/${CCR_CPU_FAMILY}/${BUILD_TAG}.sif"
 else
     BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
 fi
@@ -32,16 +88,8 @@ CVMFS_CONFIG_REPO="cvmfs-config.ccr.buffalo.edu"
 CVMFS_SOFT_REPO="soft.ccr.buffalo.edu"
 CCR_VERSION=${CCR_VERSION:-2023.01}
 
-if [ $# -lt 2 ]; then
-    echo "Usage: $0 <shell|run|prefix> <path to work directory>" >&2
-    exit 1
-fi
-ACTION=$1
-CCR_TMPDIR=$2
-shift 2
-
-if [ "$ACTION" == "run" ] && [ $# -eq 0 ]; then
-    echo "ERROR: No command specified to run?!" >&2
+if [ ! -d "/cvmfs/$CVMFS_SOFT_REPO/versions/$CCR_VERSION" ]; then
+    echo "ERROR: cvmfs not mounted for CCR_VERSION=$CCR_VERSION" >&2
     exit 1
 fi
 
@@ -58,7 +106,7 @@ if [ $? -eq 0 ]; then
     attr -s test -V test $testfile > /dev/null
     if [ $? -ne 0 ]; then
         echo "ERROR: $CCR_TMPDIR does not support extended attributes!" >&2
-       exit 2
+        exit 2
     else
         rm $testfile
     fi
@@ -84,6 +132,10 @@ if [ -d "/opt/software" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software:/opt/software:ro"
 fi
 
+if [ -d "/usr/lib/${CPU_FAMILY}-linux-gnu" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},/usr/lib/${CPU_FAMILY}-linux-gnu:/usr/lib/${CPU_FAMILY}-linux-gnu/:ro"
+fi
+
 if [ -d "/util" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/util:/util:ro"
 fi
@@ -102,21 +154,31 @@ fi
 
 export SINGULARITY_BIND
 
+export SINGULARITYENV_CCR_VERSION=${CCR_VERSION}
+export SINGULARITYENV_CCR_COMPAT_VERSION=${CCR_VERSION}
+export SINGULARITYENV_LMOD_SYSTEM_DEFAULT_MODULES="ccrsoft/${CCR_VERSION}"
+
 # set environment variables for fuse mounts in Singularity container
 export CVMFS_CONFIG="container:cvmfs2 ${CVMFS_CONFIG_REPO} /cvmfs/${CVMFS_CONFIG_REPO}"
 export CVMFS_READONLY="container:cvmfs2 ${CVMFS_SOFT_REPO} /cvmfs_ro/${CVMFS_SOFT_REPO}"
 export CVMFS_WRITABLE_OVERLAY="container:fuse-overlayfs -o lowerdir=/cvmfs_ro/${CVMFS_SOFT_REPO} -o upperdir=$CCR_TMPDIR/overlay-upper -o workdir=$CCR_TMPDIR/overlay-work /cvmfs/${CVMFS_SOFT_REPO}"
 
-if [ "$ACTION" == "shell" ]; then
-    echo "Starting Singularity build container..."
+if [ "$RUN_SHELL" == "y" ]; then
+    echo "Starting Singularity shell..."
     singularity shell --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER
-elif [ "$ACTION" == "run" ]; then
-    echo "Running '$@' in Singularity build container..."
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$@"
-elif [ "$ACTION" == "prefix" ]; then
-    echo "Running gentoo prefix shell in Singularity build container..."
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /cvmfs/${CVMFS_SOFT_REPO}/versions/${CCR_VERSION}/compat/startprefix
+elif [ "$RUN_PREFIX" == "y" ]; then
+    echo "Running gentoo prefix shell..."
+    if [ "$CCR_VERSION" = "2023.01" ]; then
+        start_prefix=/cvmfs/${CVMFS_SOFT_REPO}/versions/${CCR_VERSION}/compat/startprefix
+    else
+        start_prefix=/cvmfs/${CVMFS_SOFT_REPO}/versions/${CCR_VERSION}/compat/linux/${CCR_CPU_FAMILY}/startprefix
+    fi
+
+    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$start_prefix"
+elif [ ! -z "$RUN_CMD" ]; then
+    echo "Running '$RUN_CMD' in Singularity build container..."
+    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$RUN_CMD"
 else
-    echo "ERROR: Unknown action specified: $ACTION (should be either 'shell', 'run', or 'prefix')" >&2
-    exit 1
+    export SINGULARITYENV_PS1="(v${CCR_VERSION}) \[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
+    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER bash --rcfile /cvmfs/${CVMFS_SOFT_REPO}/config/profile/bash.sh
 fi

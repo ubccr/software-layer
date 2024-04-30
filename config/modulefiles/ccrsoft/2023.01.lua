@@ -26,11 +26,6 @@ setenv("CCR_PREFIX", ccr_prefix)
 setenv("CCR_EASYBUILD_PATH", ccr_easybuild_path)
 setenv("CCR_BANALBUILD_PATH", ccr_banalbuild_path)
 
-if not arch or arch == "" then
-    arch = get_highest_supported_architecture()
-    setenv("CCR_ARCH", arch)
-end
-
 add_property("lmod", "sticky")
 require("os")
 require("SitePackage")

@@ -36,9 +36,17 @@ else
     # By default we assume user is building so set default install path to home
     # directory. Users can override this by setting the CCR_BUILD_PREFIX env var
     if [[ -z "$CCR_BUILD_PREFIX" ]]; then
-        export EASYBUILD_INSTALLPATH=${HOME}/.local/easybuild/${CCR_VERSION}
+        if [ "$CCR_VERSION" = "2023.01" ]; then
+            export EASYBUILD_INSTALLPATH=${HOME}/.local/easybuild/${CCR_VERSION}
+        else
+            export EASYBUILD_INSTALLPATH=${HOME}/.local/easybuild/${CCR_VERSION}/${CCR_CPU_FAMILY}
+        fi
     else
-        export EASYBUILD_INSTALLPATH=${CCR_BUILD_PREFIX}/${CCR_VERSION}
+        if [ "$CCR_VERSION" = "2023.01" ]; then
+            export EASYBUILD_INSTALLPATH=${CCR_BUILD_PREFIX}/${CCR_VERSION}
+        else
+            export EASYBUILD_INSTALLPATH=${CCR_BUILD_PREFIX}/${CCR_VERSION}/${CCR_CPU_FAMILY}
+        fi
     fi
 
     # This ensures existing modules get picked up and not rebuilt when
@@ -51,7 +59,7 @@ export EASYBUILD_TRACE=${EASYBUILD_TRACE:-1}
 export EASYBUILD_ZIP_LOGS=${EASYBUILD_ZIP_LOGS:-bzip2}
 
 # Path to our custom EasyBuild config settings file
-export EASYBUILD_CONFIGFILES=${CCR_INIT_DIR}/easybuild/config.cfg
+export EASYBUILD_CONFIGFILES=${CCR_INIT_DIR}/easybuild/${CCR_VERSION}/config.cfg
 
 # Path to CCR custom easyblocks and easyconfig recipe files
 export EASYBUILD_ROBOT_PATHS=${CCR_INIT_DIR}/easybuild/easyconfigs:$EASYBUILD_ROBOT_PATHS
@@ -76,20 +84,22 @@ export EASYBUILD_RPATH=1
 export EASYBUILD_MODULE_EXTENSIONS=1
 
 # Custom CCR easybuild hooks
-export EASYBUILD_HOOKS=${CCR_INIT_DIR}/easybuild/eb_hooks.py
+export EASYBUILD_HOOKS=${CCR_INIT_DIR}/easybuild/${CCR_VERSION}/eb_hooks.py
 
 # Here we set compiler optimization flags based on supported CCR_ARCH types
 # See: https://docs.easybuild.io/en/latest/Controlling_compiler_optimization_flags.html
-if [ "$CCR_ARCH" == avx2 ]; then
+if [ "$CCR_ARCH" = "avx2" ]; then
     export EASYBUILD_OPTARCH='NVHPC:tp=haswell;Intel:march=core-avx2 -axCore-AVX512;GCC:march=core-avx2'
-elif [ "$CCR_ARCH" == avx512 ]; then
+elif [ "$CCR_ARCH" = "avx512" ]; then
     export EASYBUILD_OPTARCH='NVHPC:tp=skylake;Intel:xCore-AVX512;GCC:march=skylake-avx512'
-elif [ "$CCR_ARCH" == avx ]; then
-    export EASYBUILD_OPTARCH='NVHPC:tp=sandybridge;Intel:xAVX;GCC:march=corei7-avx'
-elif [ "$CCR_ARCH" == sse3 ]; then
-    export EASYBUILD_OPTARCH='NVHPC:tp=px;Intel:msse3;GCC:march=nocona -mtune=generic'
+elif [ "$CCR_ARCH" = "x86-64-v3" ]; then
+    export EASYBUILD_OPTARCH='NVHPC:march=x86-64-v3;Intel:march=core-avx2 -axCore-AVX512;GCC:march=x86-64-v3'
+elif [ "$CCR_ARCH" = "x86-64-v4" ]; then
+    export EASYBUILD_OPTARCH='NVHPC:march=x86-64-v4;Intel:march=skylake-avx512;GCC:march=x86-64-v4'
+elif [ "$CCR_ARCH" = "neoverse-v2" ]; then
+    export EASYBUILD_OPTARCH='GCC:mcpu=neoverse-v2'
 else
-    echo -e "\e[31mERROR: please set CCR_ARCH to sse3, avx, or avx2\e[0m" >&2
+    echo -e "\e[31mERROR: invalid microarchitecture detected: CCR_ARCH=$CCR_ARCH \e[0m" >&2
     exit 1
 fi
 
