@@ -1,4 +1,4 @@
-export CCR_INIT_DIR=$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")
+export CCR_INIT_DIR=$(/usr/bin/dirname "$(/usr/bin/dirname "$(/usr/bin/readlink -f "$BASH_SOURCE")")")
 
 if [[ -z $FORCE_CCR_INIT ]]; then
     FORCE_CCR_INIT=0

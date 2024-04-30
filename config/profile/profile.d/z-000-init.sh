@@ -1,7 +1,7 @@
 export CCR_CVMFS_REPO="/cvmfs/soft.ccr.buffalo.edu"
 
 # aarch64 (Arm 64-bit), x86_64 (x86 64-bit)
-export CCR_CPU_FAMILY=$(uname -m)
+export CCR_CPU_FAMILY=$(/usr/bin/uname -m)
 export CCR_OS_TYPE='linux'
 
 if [[ -z $CCR_COMPAT_VERSION ]]; then
