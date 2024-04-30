@@ -148,6 +148,10 @@ if [ -d "/etc/glvnd" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},/etc/glvnd:/etc/glvnd:rw"
 fi
 
+if [ -f "/usr/share/baselayout/flatcar-profile.sh" ]; then
+    SINGULARITY_BIND="${SINGULARITY_BIND},${PWD}/config/profile/bash.sh:/usr/share/baselayout/flatcar-profile.sh:ro"
+fi
+
 if [ -d "${HOME}/testsuite/sanitarium" ]; then
     SINGULARITY_BIND="${SINGULARITY_BIND},${HOME}/testsuite:/home/${USER}/testsuite:rw"
 fi
