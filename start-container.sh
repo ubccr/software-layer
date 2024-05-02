@@ -183,6 +183,6 @@ elif [ ! -z "$RUN_CMD" ]; then
     echo "Running '$RUN_CMD' in Singularity build container..."
     singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$RUN_CMD"
 else
-    export SINGULARITYENV_PS1="(v${CCR_VERSION}) \[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER bash --rcfile /srv/software-layer/config/profile/bash.sh
+    RETAIN="HOME=/home/$USER TERM=$TERM USER=$USER SHELL=$SHELL CCR_VERSION=$CCR_VERSION CCR_COMPAT_VERSION=$CCR_VERSION LMOD_SYSTEM_DEFAULT_MODULES=ccrsoft/${CCR_VERSION}"
+    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /usr/bin/env -i $RETAIN /bin/bash --rcfile /srv/software-layer/config/profile/container-env.sh
 fi
