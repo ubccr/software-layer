@@ -8,12 +8,13 @@ export LMOD_RC=${LMOD_PACKAGE_PATH}/lmodrc.lua
 export LMOD_SHORT_TIME=3600
 
 if [[ -z "$__Init_Default_Modules" ]]; then
-    NEWMODULERCFILE=${LMOD_PACKAGE_PATH}/modulerc.lua
-    if [[ ! -z "$CCR_VERSION" && -f ${LMOD_PACKAGE_PATH}/modulerc_${CCR_VERSION}.lua ]]; then
-        NEWMODULERCFILE=${LMOD_PACKAGE_PATH}/modulerc_${CCR_VERSION}.lua:${NEWMODULERCFILE}
+    if [[ -z "$MODULERCFILE" ]]; then
+        MODULERCFILE=${LMOD_PACKAGE_PATH}/modulerc_${CCR_VERSION}.lua:${LMOD_PACKAGE_PATH}/modulerc.lua
+    else
+        MODULERCFILE=$MODULERCFILE:${LMOD_PACKAGE_PATH}/modulerc_${CCR_VERSION}.lua:${LMOD_PACKAGE_PATH}/modulerc.lua
     fi
-    export MODULERCFILE=${MODULERCFILE:+:$MODULERCFILE}:${NEWMODULERCFILE}
-    unset NEWMODULERCFILE
+    export MODULERCFILE=$MODULERCFILE
+
     export MODULEPATH=${CCR_INIT_DIR}/modulefiles
     __Init_Default_Modules=1; export __Init_Default_Modules;
     if [[ -z "$LMOD_SYSTEM_DEFAULT_MODULES" ]]; then

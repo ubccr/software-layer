@@ -14,6 +14,7 @@ whatis([==[Description: CCR 2023.01 Software release]==])
 whatis([==[Homepage: https://docs.ccr.buffalo.edu/en/latest/software/releases/]==])
 whatis([==[URL: https://docs.ccr.buffalo.edu/en/latest/software/releases/]==])
 
+local ccr_version_prev = os.getenv("CCR_VERSION") or "2023.01"
 local ccr_version ="2023.01"
 local arch = os.getenv("CCR_ARCH") or ""
 local ccr_repo_path = os.getenv("CCR_CVMFS_REPO")
@@ -21,10 +22,22 @@ local ccr_prefix = pathJoin(ccr_repo_path, "versions", ccr_version)
 local ccr_easybuild_path = pathJoin(ccr_prefix, "easybuild")
 local ccr_banalbuild_path = pathJoin(ccr_prefix, "banalbuild")
 
-setenv("CCR_VERSION", ccr_version)
-setenv("CCR_PREFIX", ccr_prefix)
-setenv("CCR_EASYBUILD_PATH", ccr_easybuild_path)
+local modrc = os.getenv("MODULERCFILE")
+modrc = modrc:gsub('modulerc_'..ccr_version_prev..'.lua', 'modulerc_'..ccr_version..'.lua')
+pushenv("MODULERCFILE", modrc)
+
+pushenv("CCR_VERSION", ccr_version)
+pushenv("CCR_PREFIX", ccr_prefix)
+pushenv("CCR_EASYBUILD_PATH", ccr_easybuild_path)
 setenv("CCR_BANALBUILD_PATH", ccr_banalbuild_path)
+
+if arch == "x86-64-v4" then
+    arch = "avx512"
+    setenv("CCR_ARCH", arch)
+elseif arch == "x86-64-v3" then
+    arch = "avx2"
+    setenv("CCR_ARCH", arch)
+end
 
 add_property("lmod", "sticky")
 require("os")
