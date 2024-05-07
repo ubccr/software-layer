@@ -1,0 +1,49 @@
+name = 'Geant4'
+version = '11.2.1'
+
+homepage = 'https://geant4.web.cern.ch/'
+description = """Geant4 is a toolkit for the simulation of the passage of particles through matter.
+ Its areas of application include high energy, nuclear and accelerator physics,
+ as well as studies in medical and space science."""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+toolchainopts = {'cstd': 'c++17'}
+
+github_account = 'Geant4'
+source_urls = [GITHUB_SOURCE]
+sources = [{'download_filename': 'v%(version)s.tar.gz', 'filename': SOURCELOWER_TAR_GZ}]
+patches = [
+    'Geant4-11.1.2_use_data_env_vars_from_Geant4-data_module.patch',
+]
+checksums = [
+    {'%(namelower)s-%(version)s.tar.gz':
+     'd81e9abc98a1989f989a816c9f66924ab654e2cdc66b655f68a4ab42fafe54fb'},
+    {'%(name)s-11.1.2_use_data_env_vars_from_Geant4-data_module.patch':
+     '822265b7cbcaacdffd28b1094786a3c94122aff63338e514d5d3810cdf9218a6'},
+]
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+]
+
+dependencies = [
+    ('expat', '2.4.1'),
+    ('CLHEP', '2.4.6.4'),
+    ('Xerces-C++', '3.2.4'),
+    ('Qt5', '5.15.2'),
+    ('Geant4-data', '11.2', '', SYSTEM),
+]
+
+_copts = [
+    "-DGEANT4_INSTALL_DATA=OFF",
+    "-DGEANT4_USE_SYSTEM_ZLIB=ON",
+    "-DGEANT4_USE_SYSTEM_EXPAT=ON",
+    "-DGEANT4_USE_SYSTEM_CLHEP=ON",
+    "-DGEANT4_USE_QT=ON",
+    "-DGEANT4_USE_GDML=ON",
+    "-DGEANT4_USE_OPENGL_X11=ON",
+    "-DGEANT4_USE_RAYTRACER_X11=ON",
+]
+configopts = ' '.join(_copts)
+
+moduleclass = 'phys'
