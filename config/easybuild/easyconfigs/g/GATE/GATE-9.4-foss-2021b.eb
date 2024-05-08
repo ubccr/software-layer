@@ -1,0 +1,29 @@
+name = 'GATE'
+version = '9.4'
+
+homepage = 'http://www.opengatecollaboration.org/'
+description = """GATE is an advanced opensource software developed by the international OpenGATE collaboration and
+ dedicated to the numerical simulations in medical imaging. It currently supports simulations of Emission Tomography
+ (Positron Emission Tomography - PET and Single Photon Emission Computed Tomography - SPECT), and Computed Tomography"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+source_urls = ['https://github.com/OpenGATE/Gate/archive/']
+sources = ['v%(version)s.tar.gz']
+checksums = [
+    '96c53f6ab1b25c0e540d8f9564bce0049371b378de80a7118a0ff8834c6c117c',  # v9.4.tar.gz
+]
+
+builddependencies = [('CMake', '3.22.1')]
+dependencies = [
+    ('CLHEP', '2.4.6.4'),
+    ('Geant4', '11.2.1'),
+    ('ROOT', '6.26.10'),
+]
+
+preinstallopts = "sed -i 's|/usr/local/bin|%(installdir)s/bin|g' Makefile &&"
+
+# enable extra capabilities (Davis requires Geant4 10.04 or newer)
+configopts = '-DGATE_USE_OPTICAL=1 -DGATE_USE_DAVIS=1 -DGC_DEFAULT_PLATFORM="slurm"'
+
+moduleclass = 'cae'
