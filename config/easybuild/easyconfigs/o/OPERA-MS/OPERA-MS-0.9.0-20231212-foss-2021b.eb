@@ -39,11 +39,7 @@ postinstallcmds = [
     'chmod +x %(installdir)s/bin/OPERA-MS',
     'ln -s $EBROOTPERL/bin/perl %(installdir)s/tools_opera_ms/perl',
     # fix the NUMmer install
-    #'cd "%%(installdir)s/tools_opera_ms" && sh "%%(start_dir)stools_opera_ms/install_mummer%s.sh"' % local_MUMmer_version,
     'cd "%%(installdir)s/tools_opera_ms" && rm -rf MUMmer%s && sh "./install_mummer%s.sh"' % (local_MUMmer_version, local_MUMmer_version),
-    # fix RPATHs
-    '$(find $(dirname $(dirname $(which eb))) -name setrpaths.sh | head -1) --path "%(installdir)s" --add_origin --add_path="${EPREFIX}/lib:${EPREFIX}/lib64:${EPREFIX}/usr/lib:${EPREFIX}/usr/lib64"',
-    # The coverage_estimation test always fails
     '%(installdir)s/bin/OPERA-MS ' + ' '.join([
         '--contig-file test_files/contigs.fasta',
         '--short-read1 test_files/R1.fastq.gz',

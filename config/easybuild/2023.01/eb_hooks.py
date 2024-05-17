@@ -704,6 +704,18 @@ def ansys_postproc(ec, *args, **kwargs):
     else:
         raise EasyBuildError("ansys-specific hook triggered for non-ansys easyconfig?!")
 
+def opera_ms_postproc(ec, *args, **kwargs):
+    """Add post install cmds for OPERA-MS."""
+
+    if ec.name == 'OPERA-MS':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s --add_origin --add_path="$EPREFIX/lib:$EPREFIX/lib64:$EPREFIX/usr/lib:$EPREFIX/usr/lib64"',
+        ] + ec.cfg['postinstallcmds']
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("OPERA-MS specific hook triggered for non OPERA-MS easyconfig?!")
+
 PARSE_HOOKS = {
     'fontconfig': fontconfig_add_fonts,
     'UCX': ucx_eprefix,
@@ -747,4 +759,5 @@ PRE_POSTPROC_HOOKS = {
     'CuPy': cupy_postproc,
     'PyCUDA': cupy_postproc,
     'ANSYS': ansys_postproc,
+    'OPERA-MS': opera_ms_postproc,
 }
