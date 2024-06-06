@@ -13,8 +13,19 @@ description = """FSL is a comprehensive library of analysis tools for FMRI, MRI 
 toolchain = {'name': 'foss', 'version': '2021b'}
 toolchainopts = {'cstd': 'c++11'}
 
-source_urls = ['https://www.fmrib.ox.ac.uk/fsldownloads/']
-sources = ['%(namelower)s-%(version)s-sources.tar.gz']
+sources = [
+    {
+        'source_urls': ['https://www.fmrib.ox.ac.uk/fsldownloads/'],
+        'filename': '%(namelower)s-%(version)s-sources.tar.gz',
+    },
+    {
+        'source_urls': ['https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/public/noarch'],
+        'download_filename': 'fsl-eddy_qc-v1.2.3-py_1.tar.bz2',
+        'filename': 'fsl-eddy_qc-v1.2.3.tar.bz2',
+        'extract_cmd': "mkdir ./eddy_qc && tar -C ./eddy_qc -jxvf %s",
+    },
+]
+
 patches = [
     'FSL-6.0.4_Makefile_fixes.patch',
     'FSL-6.0.5.1_disable_cuda.patch',
@@ -26,6 +37,7 @@ patches = [
 ]
 checksums = [
     'd8ab2ebc87d3e33ce1097dde18d8a55f62d4a27b45efc4f68adccfb6e8e1425c',  # fsl-6.0.5.1-sources.tar.gz
+    'f224dddbabe319234f30a609d1d76b0898e66d77f56995c8d3bab5a29bca6d61',  # fsl-eddy_qc-v1.2.3.tar.bz2
     '43217e86e715a149ec27dfad471383e8f142863aa6f3f943ab4db379bc851055',  # FSL-6.0.4_Makefile_fixes.patch
     'a1e844507207567b7a1df19b484d66b8b30194e455123b78cfd05e236ed864fb',  # FSL-6.0.5.1_disable_cuda.patch
     '1bc83cfeffff21a68db47b6929e94634fc8aaf3db8e276e160e3f468f0889000',  # FSL-6.0.4_build_fixes.patch
@@ -52,6 +64,11 @@ dependencies = [
     ('GSL', '2.7'),
     ('Qwt', '6.2.0'),
     ('h5py', '3.6.0'),
+    # Modules needed for eddy_qc follow:
+    ('NiBabel', '4.0.2'),
+    ('SciPy-bundle', '2021.10'),
+    ('matplotlib', '3.5.2'),
+    ('Seaborn', '0.11.2'),
 ]
 
 modextrapaths = {'PYTHONPATH': ['fsl/lib/python%(pyshortver)s/site-packages']}
@@ -64,12 +81,23 @@ exts_default_options = {
 }
 
 exts_list = [
+    ('PyPDF2', '3.0.1', {
+        'installopts': '--prefix=%(installdir)s/fsl',
+        'source_urls': ['https://pypi.python.org/packages/source/p/PyPDF2/'],
+        'modulename': 'PyPDF2',
+        'checksums': ['a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440'],
+    }),
     ('fslpy', '3.5.3', {
         'installopts': '--prefix=%(installdir)s/fsl',
         'source_urls': ['https://pypi.python.org/packages/source/f/fslpy/'],
         'checksums': ['f80ef8b7b49f475bfb71946619d33c118a7cbbe106c72f7777aaf14d9e261530'],
     }),
 ]
+
+
+postinstallcmds = ['cd "%(installdir)s/eddy_qc" && mv ./python-scripts/* "../fsl/bin/" && mv ./site-packages/* "../fsl/lib/python%(pyshortver)s/site-packages/" && cd "%(installdir)s" && rm -rf "./eddy_qc"']
+
+fix_python_shebang_for = ['fsl/bin/eddy_quad', 'fsl/bin/eddy_squad']
 
 modextravars = {
     'FSLOUTPUTTYPE': 'NIFTI_GZ',
