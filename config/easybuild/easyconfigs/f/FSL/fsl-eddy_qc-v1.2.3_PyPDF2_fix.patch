@@ -1,0 +1,60 @@
+--- eddy_qc/SQUAD/squad_update.py.orig	2024-06-07 10:12:15.426281229 -0400
++++ eddy_qc/SQUAD/squad_update.py	2024-06-07 11:00:26.259140856 -0400
+@@ -7,7 +7,7 @@
+ import seaborn
+ import os
+ import json
+-from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
++from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+ from eddy_qc.SQUAD import squad_group
+ from eddy_qc.SQUAD import squad_var
+ from eddy_qc.QUAD import quad_tables
+@@ -18,7 +18,6 @@
+ 
+ 
+ 
+-
+ #=========================================================================================
+ # SQUAD - Update single subject pdfs
+ # Matteo Bastiani
+@@ -163,23 +162,23 @@
+             pp.close()
+             
+             # Merge the three pdfs
+-            file1 = PdfFileReader(line + '/qc_tables_tmp.pdf', 'rb')
+-            file2 = PdfFileReader(line + '/qc.pdf', 'rb')
+-            file3 = PdfFileReader(line + '/qc_tmp.pdf', 'rb')
++            file1 = PdfReader(line + '/qc_tables_tmp.pdf', 'rb')
++            file2 = PdfReader(line + '/qc.pdf', 'rb')
++            file3 = PdfReader(line + '/qc_tmp.pdf', 'rb')
+ 
+-            output = PdfFileWriter()
++            output = PdfWriter()
+ 
+-            for i in np.arange(0, file1.numPages):
+-                output.addPage(file1.getPage(i))
++            for i in np.arange(0, len(file1.pages)):
++                output.add_page(file1.pages[int(i)])
+             # Get pages from quad report and skip ref page if present
+             if os.path.isfile(line + '/ref.txt'):
+                 i_start = 2
+             else:
+                 i_start = 1
+-            for i in np.arange(i_start, file2.numPages):
+-                output.addPage(file2.getPage(i))
+-            for i in np.arange(0, file3.numPages):
+-                output.addPage(file3.getPage(i))
++            for i in np.arange(i_start, len(file2.pages)):
++                output.add_page(file2.pages[int(i)])
++            for i in np.arange(0, len(file3.pages)):
++                output.add_page(file3.pages[int(i)])
+ 
+             outputStream = open(line + '/qc_updated.pdf', 'wb')
+             output.write(outputStream)
+@@ -190,4 +189,4 @@
+             os.remove(line + '/qc_tmp.pdf')
+ 
+             s_idx = s_idx + 1
+-            
+\ No newline at end of file
++            
