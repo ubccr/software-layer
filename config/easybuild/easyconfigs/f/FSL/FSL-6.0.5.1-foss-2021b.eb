@@ -6,6 +6,7 @@
 
 name = 'FSL'
 version = '6.0.5.1'
+local_eddy_qc_version = '1.2.3'
 
 homepage = 'https://www.fmrib.ox.ac.uk/fsl/'
 description = """FSL is a comprehensive library of analysis tools for FMRI, MRI and DTI brain imaging data."""
@@ -20,7 +21,7 @@ sources = [
     },
     {
         'source_urls': ['https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/public/noarch'],
-        'download_filename': 'fsl-eddy_qc-v1.2.3-py_1.tar.bz2',
+        'download_filename': 'fsl-eddy_qc-v%s-py_1.tar.bz2' % local_eddy_qc_version,
         'filename': 'fsl-eddy_qc-v1.2.3.tar.bz2',
         'extract_cmd': "mkdir ./eddy_qc && tar -C ./eddy_qc -jxvf %s",
     },
@@ -34,6 +35,7 @@ patches = [
     'FSL-6.0.1_Fix_fsl_exec_script.patch',
     'FSL-6.0.5.1_fix-cprob-include.patch',
     'FSL-6.0.5.1_fix-compat-VTK-9.0.1.patch',
+    ('fsl-eddy_qc-v1.2.3_PyPDF2_fix.patch', '%(builddir)s/eddy_qc/site-packages'),
 ]
 checksums = [
     'd8ab2ebc87d3e33ce1097dde18d8a55f62d4a27b45efc4f68adccfb6e8e1425c',  # fsl-6.0.5.1-sources.tar.gz
@@ -45,6 +47,8 @@ checksums = [
     'aa155f8576dc5f010757ecf66fc0bf673454b6c6c40346cbb01cbe59236ed6ef',  # FSL-6.0.1_Fix_fsl_exec_script.patch
     '6c06d92979bf5ef4c24d71fc459a230017398a8124cfa253cbc0556a6cf2d420',  # FSL-6.0.5.1_fix-cprob-include.patch
     '0bee00eb136d3431fa7332aac7957b1c90bc93c381ecc6379d93e19a933ac4bc',  # FSL-6.0.5.1_fix-compat-VTK-9.0.1.patch
+    'e54474e3446a24f763adf112e1a3ee322a6334a67d97d0b6b6f05c61400f6b26',  # fsl-eddy_qc-v1.2.3_PyPDF2_fix.patch
+
 ]
 
 dependencies = [
