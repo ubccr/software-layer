@@ -1,0 +1,84 @@
+# Updated from previous config
+# Author: Pavel Grochal (INUITS)
+# License: GPLv2
+
+name = 'fastStructure'
+version = '1.0'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://rajanil.github.io/fastStructure/'
+description = """
+fastStructure is a fast algorithm for inferring population structure
+from large SNP genotype data. It is based on a variational Bayesian
+framework for posterior inference and is written in Python2.x.
+"""
+docurls = ['https://github.com/rajanil/fastStructure']
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+# https://github.com/rajanil/fastStructure/archive/
+github_account = 'rajanil'
+source_urls = [GITHUB_SOURCE]
+sources = ['v%(version)s.tar.gz']
+patches = [
+    'fastStructure-Python3_fixes.patch',
+]
+
+checksums = [
+    'f1bfb24bb5ecd108bc3a90145fad232012165c1e60608003f1c87d200f867b81',  # v1.0.tar.gz
+    '775e345476163a1f0b7e9e99b6fb68842eab4bd6dc12761db46104f352f2e907',  # fastStructure-Python3_fixes.patch
+]
+
+builddependencies = [
+    # Needs Cython v0.27.3 see:
+    # https://github.com/rajanil/fastStructure/issues/39
+    #('Cython', '0.29.22', versionsuffix),  # Cython/0.29.24 provided by Python/3.9.6
+]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+    ('matplotlib', '3.5.2'),
+    ('GSL', '2.7'),
+]
+
+buildopts = 'CFLAGS="${CFLAGS} -I${EBROOTGSL}/include" '
+buildopts += 'LDFLAGS="${LDFLAGS} -L${EBROOTGSL}/lib" '
+
+postinstallcmds = [
+    'cd %(installdir)s && \
+    mkdir lib && \
+    cd lib && \
+    ln -s ../fastStructure.cpython-39-x86_64-linux-gnu.so fastStructure.so && \
+    ln -s ../parse_str.cpython-39-x86_64-linux-gnu.so parse_str.so && \
+    ln -s ../parse_bed.cpython-39-x86_64-linux-gnu.so parse_bed.so && \
+    ln -s ../vars/marglikehood.cpython-39-x86_64-linux-gnu.so marglikehood.so && \
+    ln -s ../vars/admixprop.cpython-39-x86_64-linux-gnu.so admixprop.so && \
+    ln -s ../vars/allelefreq.cpython-39-x86_64-linux-gnu.so allelefreq.so && \
+    ln -s ../vars/utils.cpython-39-x86_64-linux-gnu.so utils.so'
+]
+
+sanity_check_paths = {
+    'files': [
+        'lib/fastStructure.%s' % SHLIB_EXT,
+        'lib/parse_bed.%s' % SHLIB_EXT,
+        'lib/parse_str.%s' % SHLIB_EXT,
+        'structure.py',
+    ],
+    'dirs': [],
+}
+
+sanity_check_commands = [
+    ('%(installdir)s/structure.py '
+     '-K 3 '
+     '--input=%(installdir)s/test/testdata '
+     '--output=%(builddir)s/testoutput_simple '
+     '--full '
+     '--seed=100'),
+]
+
+modextrapaths = {
+    'PYTHONPATH': ['lib', 'vars'],
+}
+
+moduleclass = 'bio'
