@@ -83,5 +83,4 @@ hide_version("pavilion/2.4.1")
 
 if os.getenv("CCR_CPU_FAMILY") == "aarch64" then
     hide_version("ccrsoft/2023.01")
-    hide_version("ccrsoft/legacy")
 end

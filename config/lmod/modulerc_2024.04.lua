@@ -9,5 +9,4 @@ module_version("gcc/13.2.0","13")
 
 if os.getenv("CCR_CPU_FAMILY") == "aarch64" then
     hide_version("ccrsoft/2023.01")
-    hide_version("ccrsoft/legacy")
 end
