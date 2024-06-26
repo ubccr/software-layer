@@ -1,0 +1,473 @@
+#
+# https://github.com/rajanil/fastStructure/pull/26
+#
+From e0e37f0d90ddb82fc17d4d3b70110ccdba99e053 Mon Sep 17 00:00:00 2001
+From: Joshua A Shapiro <josh@shapbio.net>
+Date: Thu, 17 Sep 2015 14:49:24 -0400
+Subject: [PATCH 1/9] Update print statements to py3 syntax
+
+---
+ chooseK.py   | 12 ++++++------
+ distruct.py  | 18 +++++++++---------
+ structure.py | 40 ++++++++++++++++++++--------------------
+ 3 files changed, 35 insertions(+), 35 deletions(-)
+
+diff --git a/chooseK.py b/chooseK.py
+index 07e0a04..3595323 100644
+--- a/chooseK.py
++++ b/chooseK.py
+@@ -79,9 +79,9 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t --input=<file>"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t --input=<file>")
+ 
+ if __name__=="__main__":
+ 
+@@ -95,7 +95,7 @@ def usage():
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+@@ -108,5 +108,5 @@ def usage():
+     files = glob.glob('%s.*.meanQ'%filetag)
+     bestKs = parse_varQs(files)
+ 
+-    print "Model complexity that maximizes marginal likelihood = %d"%Ks[np.argmax(marginal_likelihoods)]
+-    print "Model components used to explain structure in data = %d"%np.argmax(np.bincount(bestKs)) 
++    print("Model complexity that maximizes marginal likelihood = %d"%Ks[np.argmax(marginal_likelihoods)])
++    print("Model components used to explain structure in data = %d"%np.argmax(np.bincount(bestKs))) 
+diff --git a/distruct.py b/distruct.py
+index a9e2398..c78889e 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -83,8 +83,8 @@ def get_admixture_proportions(params):
+ 
+     else:
+ 
+-        print "file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions"
+         population_labels = ['population %d'%i for i in xrange(1,K+1)]
++        print("file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions")
+         population_indices = np.argmax(admixture,1)
+ 
+         # re-order samples in admixture matrix
+@@ -131,13 +131,13 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int>  (number of populations)"
+-    print "\t --input=<file>  (/path/to/input/file; same as output flag passed to structure.py)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --popfile=<file> (file with known categorical labels; optional)"
+-    print "\t --title=<figure title> (a title for the figure; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int>  (number of populations)")
++    print("\t --input=<file>  (/path/to/input/file; same as output flag passed to structure.py)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --popfile=<file> (file with known categorical labels; optional)")
++    print("\t --title=<figure title> (a title for the figure; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -152,7 +152,7 @@ def usage():
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+diff --git a/structure.py b/structure.py
+index 9472251..e3adfa4 100644
+--- a/structure.py
++++ b/structure.py
+@@ -41,7 +41,7 @@ def parseopts(opts):
+             params['prior'] = arg
+ 
+             if params['prior'] not in ['simple','logistic']:
+-                print "%s prior is not currently implemented, defaulting to the simple prior"
++                print("%s prior is not currently implemented, defaulting to the simple prior")
+                 params['prior'] = 'simple'
+ 
+         elif opt in ["--format"]:
+@@ -70,31 +70,31 @@ def checkopts(params):
+     """
+ 
+     if params['mintol']<=0:
+-        print "a non-positive value was provided as convergence criterion"
++        print("a non-positive value was provided as convergence criterion")
+         raise ValueError
+     
+     if params['cv']<0:
+-        print "a negative value was provided for the number of cross-validations folds"
++        print("a negative value was provided for the number of cross-validations folds")
+         raise ValueError
+ 
+     if not params.has_key('K'):
+-        print "a positive integer should be provided for number of populations"
++        print("a positive integer should be provided for number of populations")
+         raise KeyError
+ 
+     if params['format'] not in ['bed','str']:
+-        print "%s data format is not currently implemented"
++        print("%s data format is not currently implemented")
+         raise ValueError
+ 
+     if params['K']<=0:
+-        print "a negative value was provided for the number of populations"
++        print("a negative value was provided for the number of populations")
+         raise ValueError
+     
+     if not params.has_key('inputfile'):
+-        print "an input file needs to be provided"
++        print("an input file needs to be provided")
+         raise KeyError 
+ 
+     if not params.has_key('outputfile'):
+-        print "an output file needs to be provided"
++        print("an output file needs to be provided")
+         raise KeyError
+     
+ def write_output(Q, P, other, params):
+@@ -128,17 +128,17 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int> (number of populations)"
+-    print "\t --input=<file> (/path/to/input/file)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --tol=<float> (convergence criterion; default: 10e-6)"
+-    print "\t --prior={simple,logistic} (choice of prior; default: simple)"
+-    print "\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)"
+-    print "\t --format={bed,str} (format of input file; default: bed)"
+-    print "\t --full (to output all variational parameters; optional)"
+-    print "\t --seed=<int> (manually specify seed for random number generator; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int> (number of populations)")
++    print("\t --input=<file> (/path/to/input/file)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --tol=<float> (convergence criterion; default: 10e-6)")
++    print("\t --prior={simple,logistic} (choice of prior; default: simple)")
++    print("\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)")
++    print("\t --format={bed,str} (format of input file; default: bed)")
++    print("\t --full (to output all variational parameters; optional)")
++    print("\t --seed=<int> (manually specify seed for random number generator; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -153,7 +153,7 @@ def usage():
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+
+From cef9875615715e99d6206065a86b48d919ae057f Mon Sep 17 00:00:00 2001
+From: Joshua A Shapiro <josh@shapbio.net>
+Date: Thu, 17 Sep 2015 14:52:33 -0400
+Subject: [PATCH 2/9] Eliminate calls to has_key().
+
+Replace with py3-compatible `in` statements
+---
+ distruct.py  | 4 ++--
+ structure.py | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/distruct.py b/distruct.py
+index c78889e..4e0e9aa 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -64,7 +64,7 @@ def get_admixture_proportions(params):
+     admixture = admixture/admixture.sum(1).reshape(N,1)
+ 
+     # get population labels
+-    if params.has_key('popfile'):
++    if 'popfile' in params:
+         handle = open(params['popfile'],'r')
+         populations = [line.strip() for line in handle]
+         handle.close()
+@@ -160,7 +160,7 @@ def usage():
+     
+     # get the data to be plotted
+     admixture, population_indices, population_labels = get_admixture_proportions(params)
+-    if params.has_key('title'):
++    if 'title' in params:
+         title = params['title']
+     else:
+         title = params['inputfile']
+diff --git a/structure.py b/structure.py
+index e3adfa4..2eb5664 100644
+--- a/structure.py
++++ b/structure.py
+@@ -77,7 +77,7 @@ def checkopts(params):
+         print("a negative value was provided for the number of cross-validations folds")
+         raise ValueError
+ 
+-    if not params.has_key('K'):
++    if 'K' not in params:
+         print("a positive integer should be provided for number of populations")
+         raise KeyError
+ 
+@@ -89,11 +89,11 @@ def checkopts(params):
+         print("a negative value was provided for the number of populations")
+         raise ValueError
+     
+-    if not params.has_key('inputfile'):
++    if 'inputfile' not in params:
+         print("an input file needs to be provided")
+         raise KeyError 
+ 
+-    if not params.has_key('outputfile'):
++    if 'outputfile' not in params:
+         print("an output file needs to be provided")
+         raise KeyError
+     
+
+From adb6a629556913d99ea1ff3dc3134bf9926ed8bc Mon Sep 17 00:00:00 2001
+From: Joshua A Shapiro <josh@shapbio.net>
+Date: Thu, 17 Sep 2015 14:55:58 -0400
+Subject: [PATCH 3/9] Update to py3 range
+
+This version of range is an iterator, eliminating the need for xrange, which is not present in py3
+---
+ distruct.py | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/distruct.py b/distruct.py
+index 4e0e9aa..f656499 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -3,6 +3,7 @@
+ import colorsys
+ import getopt
+ import sys, pdb
++from builtins import range
+ 
+ def plot_admixture(admixture, population_indices, population_labels, title):
+ 
+@@ -22,7 +23,7 @@ def plot_admixture(admixture, population_indices, population_labels, title):
+     subplot = figure.add_axes([xmin,ymin,width,height])
+     [spine.set_linewidth(0.001) for spine in subplot.spines.values()]
+ 
+-    for k in xrange(K):
++    for k in range(K):
+         if k:
+             bottoms = admixture[:,:k].sum(1)
+         else:
+@@ -83,8 +84,8 @@ def get_admixture_proportions(params):
+ 
+     else:
+ 
+-        population_labels = ['population %d'%i for i in xrange(1,K+1)]
+         print("file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions")
++        population_labels = ['population %d'%i for i in range(1,K+1)]
+         population_indices = np.argmax(admixture,1)
+ 
+         # re-order samples in admixture matrix
+@@ -92,7 +93,7 @@ def get_admixture_proportions(params):
+         population_indices = population_indices[order]
+         admixture = admixture[order,:]
+         order = np.arange(N)
+-        for k in xrange(K):
++        for k in range(K):
+             order[population_indices==k] = order[population_indices==k][np.argsort(admixture[population_indices==k,:][:,k])[::-1]]
+         admixture = admixture[order,:]
+ 
+
+From 64e58bf0a5ca2411925ae6599c133dfb09fadec4 Mon Sep 17 00:00:00 2001
+From: Joshua A Shapiro <josh@shapbio.net>
+Date: Thu, 17 Sep 2015 15:03:33 -0400
+Subject: [PATCH 4/9] Update to py3 map() behavior
+
+py3 map() returns an iterator, so an explicit call to list() is added here.
+---
+ chooseK.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/chooseK.py b/chooseK.py
+index 3595323..95a1222 100644
+--- a/chooseK.py
++++ b/chooseK.py
+@@ -4,6 +4,7 @@
+ import glob
+ import sys
+ import pdb
++from builtins import map
+ 
+ def parse_logs(files):
+ 
+@@ -50,7 +51,7 @@ def parse_varQs(files):
+     bestKs = []
+     for file in files:
+         handle = open(file,'r')
+-        Q = np.array([map(float,line.strip().split()) for line in handle])
++        Q = np.array([list(map(float,line.strip().split())) for line in handle])
+         Q = Q/utils.insum(Q,[1])
+         handle.close()
+ 
+
+From 3d149b8ec6709f145744d956f558e33cb504d060 Mon Sep 17 00:00:00 2001
+From: Joshua A Shapiro <josh@shapbio.net>
+Date: Thu, 17 Sep 2015 15:04:44 -0400
+Subject: [PATCH 5/9] Accomodate py3 dict() behavior
+
+Explicit call to list() to convert values() call from iterator
+---
+ distruct.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/distruct.py b/distruct.py
+index f656499..9795ee5 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -21,7 +21,7 @@ def plot_admixture(admixture, population_indices, population_labels, title):
+     width = 0.74
+     indiv_width = width/N
+     subplot = figure.add_axes([xmin,ymin,width,height])
+-    [spine.set_linewidth(0.001) for spine in subplot.spines.values()]
++    [spine.set_linewidth(0.001) for spine in list(subplot.spines.values())]
+ 
+     for k in range(K):
+         if k:
+
+From dfb3689a9e5ed34e2ce74c5bb360cdb614aeb2a3 Mon Sep 17 00:00:00 2001
+From: Joshua A Shapiro <josh@shapbio.net>
+Date: Thu, 15 Oct 2015 13:26:03 -0400
+Subject: [PATCH 6/9] Add import functools for reduce()
+
+---
+ vars/allelefreq.pyx | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/vars/allelefreq.pyx b/vars/allelefreq.pyx
+index 961d162..805f0f8 100644
+--- a/vars/allelefreq.pyx
++++ b/vars/allelefreq.pyx
+@@ -6,6 +6,7 @@ from cpython cimport bool
+ from scipy.special import digamma, gammaln, polygamma
+ import scipy.optimize as opt
+ import utils
++from functools import reduce
+ 
+ ctypedef np.uint8_t uint8_t
+ 
+
+From 9e407342b9709ec8b356debab6883a59b038d4e8 Mon Sep 17 00:00:00 2001
+From: Joshua Shapiro <josh@shapbio.net>
+Date: Thu, 15 Oct 2015 15:32:21 -0400
+Subject: [PATCH 7/9] use bytes for py3 compatibility
+
+---
+ parse_bed.pyx | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/parse_bed.pyx b/parse_bed.pyx
+index 34d95e5..77e0ec6 100644
+--- a/parse_bed.pyx
++++ b/parse_bed.pyx
+@@ -11,12 +11,13 @@ cdef dict genomap = dict([('00',0),('01',1),('11',2),('10',3)])
+ def load(file):
+ 
+     cdef int n, l, i, Nindiv, Nsnp, Nbytes
+-    cdef str line, checkA, checkB, checkC, bytestr
++    cdef bytes line
++    cdef str checkA, checkB, checkC, bytestr
+     cdef np.ndarray genotype
+ 
+     # number of individuals
+     handle = open(file+'.fam','r')
+-    for i,line in enumerate(handle):
++    for i, li in enumerate(handle):
+         pass
+     Nindiv = i+1
+ 
+@@ -25,7 +26,7 @@ def load(file):
+ 
+     # number of SNPs
+     handle = open(file+'.bim','r')
+-    for i,line in enumerate(handle):
++    for i, li in enumerate(handle):
+         pass
+     Nsnp = i+1
+ 
+
+From 27a619e944b0d058ea72323062343b4d8087eed0 Mon Sep 17 00:00:00 2001
+From: Joshua Shapiro <josh@shapbio.net>
+Date: Thu, 15 Oct 2015 16:06:01 -0400
+Subject: [PATCH 8/9] Fix errors in include code.
+
+---
+ chooseK.py  | 2 +-
+ distruct.py | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/chooseK.py b/chooseK.py
+index 95a1222..d1ef04f 100644
+--- a/chooseK.py
++++ b/chooseK.py
+@@ -4,7 +4,7 @@
+ import glob
+ import sys
+ import pdb
+-from builtins import map
++from future_builtins import map
+ 
+ def parse_logs(files):
+ 
+diff --git a/distruct.py b/distruct.py
+index 9795ee5..22ab353 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -3,7 +3,6 @@
+ import colorsys
+ import getopt
+ import sys, pdb
+-from builtins import range
+ 
+ def plot_admixture(admixture, population_indices, population_labels, title):
+ 
+
+From 19e39d1161c2eb49e6137d2ab2449888bd04f7ec Mon Sep 17 00:00:00 2001
+From: Joshua Shapiro <josh@shapbio.net>
+Date: Thu, 15 Oct 2015 16:34:35 -0400
+Subject: [PATCH 9/9] Trying another method for importing map
+
+---
+ chooseK.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/chooseK.py b/chooseK.py
+index d1ef04f..98de39a 100644
+--- a/chooseK.py
++++ b/chooseK.py
+@@ -4,7 +4,10 @@
+ import glob
+ import sys
+ import pdb
+-from future_builtins import map
++try:
++    import itertools.imap as map
++except ImportError:
++    pass
+ 
+ def parse_logs(files):
+ 
