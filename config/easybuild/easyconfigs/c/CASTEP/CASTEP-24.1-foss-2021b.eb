@@ -1,0 +1,85 @@
+easyblock = 'ConfigureMake'
+
+name = 'CASTEP'
+version = '24.1'
+
+homepage = 'http://www.castep.org'
+description = """CASTEP is an electronic structure materials modelling code based on density functional theory (DFT), 
+with functionality including geometry optimization molecular dynamics, phonons, NMR chemical shifts and much more."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+# CASTEP is proprietary software, available under a free-of-charge license for academic use only. 
+# Visit http://www.castep.org and navigate to "Getting Castep" to apply for a license.
+sources = ['CASTEP-%(version_major_minor)s.tar.gz']
+
+checksums = ['97d77a4f3ce3f5c5b87e812f15a2c2cb23918acd7034c91a872b6d66ea0f7dbb']
+
+# Python+numpy are needed for the elastic constants and castepconv utilities, but
+# should work with any system or eb Python including 2.7.
+dependencies = [
+    ('Perl', '5.34.0'),
+    ('Python', '3.9.6'),
+    ('FlexiBLAS', '3.0.4'),
+    ('FFTW', '3.3.10'),
+    ('SciPy-bundle', '2021.10'),
+]
+
+skipsteps = ['configure']
+
+buildininstalldir = True
+
+prebuildopts = "sed -E -i '/^[[:space:]]*@bin\/mkbuildinfo.pl/s|^([[:space:]]*)@|\\1%(builddir)s/%(name)s-%(version_major_minor)s/|' '%(builddir)s/%(name)s-%(version_major_minor)s/Makefile' && "
+prebuildopts += 'find %(builddir)s/%(name)s-%(version_major_minor)s -name \*\.pl -exec sed -E -i "1!b;s|/usr/bin/perl|${EBROOTPERL}/bin/perl|" {} \; && '
+
+buildopts = 'COMMS_ARCH="mpi" FFT="fftw3" MATHLIBS="flexiblas" FFTLIBDIR="${EBROOTFFTW}/lib" MATHLIBDIR="${EBROOTFLEXIBLAS}/lib" '
+buildopts += ' castep tools utilities'
+
+preinstallopts = 'mkdir -p %(installdir)s/bin && mkdir -p %(installdir)s/lib && '
+installopts = 'COMMS_ARCH="mpi" FFT="fftw3" MATHLIBS="flexiblas" FFTLIBDIR="${EBROOTFFTW}/lib" MATHLIBDIR="${EBROOTFLEXIBLAS}/lib" INSTALL_DIR="%(installdir)s/bin"'
+#installopts += ' install-castep install-tools install-utilities'
+installopts += ' install '
+installopts += '&& make COMMS_ARCH="mpi" FFT="fftw3" MATHLIBS="flexiblas" FFTLIBDIR="${EBROOTFFTW}/lib" MATHLIBDIR="${EBROOTFLEXIBLAS}/lib" INSTALL_DIR="%(installdir)s/bin" install-tools '
+
+postinstallcmds = [' && '.join([
+    "cd %(installdir)s/lib",
+    "ln -s ../%(name)s-%(version_major_minor)s/obj/linux_x86_64_gfortran10--mpi/dl_mg/lib/dl_mg.mod dl_mg.mod",
+    "ln -s ../%(name)s-%(version_major_minor)s/obj/linux_x86_64_gfortran10--mpi/dl_mg/lib/libdlmg.a libdlmg.a",
+    "ln -s ../%(name)s-%(version_major_minor)s/obj/linux_x86_64_gfortran10--mpi/spglib/lib64/libsymspg.a libsymspg.a",
+    "find ../ -name \*\.\so\* -exec ln -s {} \;",
+    "cd %(installdir)s/bin",
+    "chmod ugo+x *.py",
+])]
+
+# NOTE: perl scripts (other than *.pl) from the following one-liner
+#   cd ${EBROOTCASTEP}/bin && echo $(for file in *; do if [ -f "${file}" ] && ! echo "${file}" | grep -q '.pl$' && head -1 "${file}" | grep -q 'perl'; then echo "${file}"; fi; done | grep -E -v 'MolPDOS|den2cube') | sed -E -e "s|[[:space:]]+|', 'bin/|g" -e "s|^|[ 'bin/|" -e "s|$|' ]|"
+fix_perl_shebang_for = ['bin/*.pl'] + [ 'bin/castep2cell', 'bin/castep2cssr',
+    'bin/castep2pdb', 'bin/castep2shak', 'bin/castep2shx', 'bin/castep2xsf',
+    'bin/castep2xtl', 'bin/castep2xyz', 'bin/cell2cell', 'bin/cell2pdb',
+    'bin/cell2sgroup', 'bin/cell2shx', 'bin/cell2xsf', 'bin/cell2xtl',
+    'bin/cell2xyz', 'bin/cssr2cell', 'bin/cssr2gulp', 'bin/den2grd',
+    'bin/den2xplor', 'bin/den2xsf', 'bin/geom2dcd', 'bin/geom2pdbseq',
+    'bin/geom2xsf', 'bin/pdb2cell', 'bin/pdb2pdb', 'bin/pdb2shak',
+    'bin/pdb2shx', 'bin/pdb2xtl', 'bin/phonon2xyz', 'bin/shx2cell',
+    'bin/vasp2cell', 'bin/vasp2pdb', 'bin/xtl2cell', 'bin/xtl2cssr',
+    'bin/xtl2pdb', 'bin/xtl2sgroup', 'bin/xtl2shx' ]
+
+# NOTE: python scripts (other than *.py) from the following one-liner
+#   cd ${EBROOTCASTEP}/bin && echo $(for file in *; do if [ -f "${file}" ] && ! echo "${file}" | grep -q '.py$' && head -1 "${file}" | grep -q 'python'; then echo "${file}"; fi; done | grep -E -v 'MolPDOS|den2cube') | sed -E -e "s|[[:space:]]+|', 'bin/|g" -e "s|^|[ 'bin/|" -e "s|$|' ]|"
+fix_python_shebang_for = ['bin/*.py'] + [ 'bin/cif2cell', 'bin/numpy-config',
+    'bin/vasp2cif' ]
+
+sanity_check_paths = {
+    'files': ['bin/%s' % x for x in ['castep.mpi', 'optados.mpi', 'orbitals2bands', 'dispersion.pl',
+                                     'elastics.py', 'ceteprouts.pm']],
+    'dirs': [],
+}
+
+local_add_python_paths = [ 'bin/PyCifRW-4.4.6-py3.9-linux-x86_64.egg', 'bin/numpy-2.0.0-py3.9-linux-x86_64.egg', 'bin/ply-3.11-py3.9.egg' ]
+
+modextrapaths = {
+    'PYTHONPATH': ['bin', 'lib'] + local_add_python_paths,
+    #'PERL5LIB':
+}
+
+moduleclass = 'phys'
