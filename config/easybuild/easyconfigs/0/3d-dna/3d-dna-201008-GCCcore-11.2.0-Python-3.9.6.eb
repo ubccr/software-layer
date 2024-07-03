@@ -1,0 +1,40 @@
+easyblock = 'Tarball'
+
+name = '3d-dna'
+version = '201008'
+versionsuffix = '-Python-%(pyver)s'
+
+homepage = 'https://github.com/theaidenlab/3d-dna'
+description = """3D de novo assembly (3D DNA) pipeline"""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+
+source_urls = ['https://github.com/theaidenlab/%(name)s/archive']
+sources = ['%(version)s.tar.gz']
+checksums = ['a027963f0b4fc59a24bac38e2ab71e6bcd25f4ad3182f8bdfe1beb37dabaef4b']
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('LASTZ', '1.04.15'),
+    ('Java', '11.0.16', '', SYSTEM),
+    ('parallel', '20210722'),
+    # scipy numpy & matplotlib for the chromosome number-aware splitter module:
+    ('GCC', '11.2.0', '', SYSTEM),
+    ('OpenMPI', '4.1.1', '', ('GCC', '11.2.0')),
+    ('SciPy-bundle', '2021.10', '', ('foss', '2021b')),
+    ('matplotlib', '3.5.2', '', ('foss', '2021b')),
+]
+
+postinstallcmds = ['chmod 755 %(installdir)s/*.sh']
+
+sanity_check_paths = {
+    'files': ['run-asm-pipeline.sh', 'run-asm-pipeline-post-review.sh'],
+    'dirs': [],
+}
+
+sanity_check_commands = ["run-asm-pipeline.sh --help"]
+
+modextrapaths = {'PATH': ''}
+
+moduleclass = 'bio'
