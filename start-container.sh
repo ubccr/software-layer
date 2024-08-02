@@ -70,7 +70,7 @@ CCR_TMPDIR=$1
 BUILD_TAG="${BUILD_TAG:-$ID$VERSION_ID}"
 
 # XXX Only run on supported distros for now..
-if [[ "$BUILD_TAG" != "ubuntu20.04" && "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
+if [[ "$BUILD_TAG" != "ubuntu22.04" && "$BUILD_TAG" != "ubuntu24.04" && "$BUILD_TAG" != "flatcar3227.0.0" ]]; then
     echo "Unsupported linux distro: $BUILD_TAG" >&2
     exit 1
 fi
@@ -80,6 +80,8 @@ CCR_CPU_FAMILY=`uname -m`
 # Use pre-built CCR local container if available else fetch from dockerhub
 if [ -f "/util/software/containers/${CCR_CPU_FAMILY}/${BUILD_TAG}.sif" ]; then
     BUILD_CONTAINER="/util/software/containers/${CCR_CPU_FAMILY}/${BUILD_TAG}.sif"
+elif [ -f "/util/software/containers/${CCR_CPU_FAMILY}/${IMAGE_ID}-${IMAGE_VERSION}.sif" ]; then
+    BUILD_CONTAINER="/util/software/containers/${CCR_CPU_FAMILY}/${IMAGE_ID}-${IMAGE_VERSION}.sif"
 else
     BUILD_CONTAINER="docker://ubccr/build-node:$BUILD_TAG"
 fi
