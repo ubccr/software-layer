@@ -2,7 +2,7 @@
 #
 # Build container for CCR software layer.
 #
-# Runs a singularity container, mounts CCR cvmfs repo with a writable overlay
+# Runs a apptainer container, mounts CCR cvmfs repo with a writable overlay
 # and starts a shell.
 #
 # This file was adopted from https://github.com/EESSI/software-layer/blob/main/build_container.sh
@@ -16,7 +16,7 @@ display_help() {
   echo " OPTIONS:"
   echo "  -h | --help            - display help"
   echo "  -p | --prefix          - run gentoo startprefix.sh"
-  echo "  -s | --shell           - start singularity shell"
+  echo "  -s | --shell           - start apptainer shell"
   echo "  -r | --run CMD         - exec CMD in container"
 }
 
@@ -119,59 +119,59 @@ fi
 echo "Using $CCR_TMPDIR as parent for temporary directories..."
 
 # create temporary directories
-mkdir -p $CCR_TMPDIR/{home,overlay-upper,overlay-work}
+mkdir -p $CCR_TMPDIR/{home,overlay-upper,overlay-work,cache}
 mkdir -p $CCR_TMPDIR/{var-lib-cvmfs,var-run-cvmfs,tmp}
 
 # use tmp dir
 export TMPDIR=$CCR_TMPDIR/tmp
 
-# configure Singularity
-export SINGULARITY_HOME="$CCR_TMPDIR/home:/home/$USER"
-export SINGULARITY_CACHEDIR=$CCR_TMPDIR/singularity_cache
-SINGULARITY_BIND="$PWD:/srv/software-layer,$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
+# configure apptainer
+export APPTAINER_HOME="$CCR_TMPDIR/home:/home/$USER"
+export APPTAINER_CACHEDIR=$CCR_TMPDIR/cache
+APPTAINER_BIND="$PWD:/srv/software-layer,$CCR_TMPDIR/var-run-cvmfs:/var/run/cvmfs,$CCR_TMPDIR/var-lib-cvmfs:/var/lib/cvmfs,$CCR_TMPDIR"
 
 if [ -d "/opt/software" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/opt/software:/opt/software:ro"
+    APPTAINER_BIND="${APPTAINER_BIND},/opt/software:/opt/software:ro"
 fi
 
 if [ -d "/usr/lib/${CPU_FAMILY}-linux-gnu" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/usr/lib/${CPU_FAMILY}-linux-gnu:/usr/lib/${CPU_FAMILY}-linux-gnu/:ro"
+    APPTAINER_BIND="${APPTAINER_BIND},/usr/lib/${CPU_FAMILY}-linux-gnu:/usr/lib/${CPU_FAMILY}-linux-gnu/:ro"
 fi
 
 if [ -d "/util" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/util:/util:ro"
+    APPTAINER_BIND="${APPTAINER_BIND},/util:/util:ro"
 fi
 
 if [ -d "/projects" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/projects:/projects:ro"
+    APPTAINER_BIND="${APPTAINER_BIND},/projects:/projects:ro"
 fi
 
 if [ -d "/etc/glvnd" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},/etc/glvnd:/etc/glvnd:rw"
+    APPTAINER_BIND="${APPTAINER_BIND},/etc/glvnd:/etc/glvnd:rw"
 fi
 
 if [ -f "/usr/share/baselayout/flatcar-profile.sh" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},${PWD}/config/profile/bash.sh:/usr/share/baselayout/flatcar-profile.sh:ro"
+    APPTAINER_BIND="${APPTAINER_BIND},${PWD}/config/profile/bash.sh:/usr/share/baselayout/flatcar-profile.sh:ro"
 fi
 
 if [ -d "${HOME}/testsuite/sanitarium" ]; then
-    SINGULARITY_BIND="${SINGULARITY_BIND},${HOME}/testsuite:/home/${USER}/testsuite:rw"
+    APPTAINER_BIND="${APPTAINER_BIND},${HOME}/testsuite:/home/${USER}/testsuite:rw"
 fi
 
-export SINGULARITY_BIND
+export APPTAINER_BIND
 
-export SINGULARITYENV_CCR_VERSION=${CCR_VERSION}
-export SINGULARITYENV_CCR_COMPAT_VERSION=${CCR_VERSION}
-export SINGULARITYENV_LMOD_SYSTEM_DEFAULT_MODULES="ccrsoft/${CCR_VERSION}"
+export APPTAINERENV_CCR_VERSION=${CCR_VERSION}
+export APPTAINERENV_CCR_COMPAT_VERSION=${CCR_VERSION}
+export APPTAINERENV_LMOD_SYSTEM_DEFAULT_MODULES="ccrsoft/${CCR_VERSION}"
 
-# set environment variables for fuse mounts in Singularity container
+# set environment variables for fuse mounts in apptainer container
 export CVMFS_CONFIG="container:cvmfs2 ${CVMFS_CONFIG_REPO} /cvmfs/${CVMFS_CONFIG_REPO}"
 export CVMFS_READONLY="container:cvmfs2 ${CVMFS_SOFT_REPO} /cvmfs_ro/${CVMFS_SOFT_REPO}"
 export CVMFS_WRITABLE_OVERLAY="container:fuse-overlayfs -o lowerdir=/cvmfs_ro/${CVMFS_SOFT_REPO} -o upperdir=$CCR_TMPDIR/overlay-upper -o workdir=$CCR_TMPDIR/overlay-work /cvmfs/${CVMFS_SOFT_REPO}"
 
 if [ "$RUN_SHELL" == "y" ]; then
-    echo "Starting Singularity shell..."
-    singularity shell --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER
+    echo "Starting apptainer shell..."
+    apptainer shell --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER
 elif [ "$RUN_PREFIX" == "y" ]; then
     echo "Running gentoo prefix shell..."
     if [ "$CCR_VERSION" = "2023.01" ]; then
@@ -180,11 +180,11 @@ elif [ "$RUN_PREFIX" == "y" ]; then
         start_prefix=/cvmfs/${CVMFS_SOFT_REPO}/versions/${CCR_VERSION}/compat/linux/${CCR_CPU_FAMILY}/startprefix
     fi
 
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$start_prefix"
+    apptainer exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$start_prefix"
 elif [ ! -z "$RUN_CMD" ]; then
-    echo "Running '$RUN_CMD' in Singularity build container..."
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$RUN_CMD"
+    echo "Running '$RUN_CMD' in apptainer build container..."
+    apptainer exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$RUN_CMD"
 else
     RETAIN="HOME=/home/$USER TERM=$TERM USER=$USER SHELL=$SHELL CCR_VERSION=$CCR_VERSION CCR_COMPAT_VERSION=$CCR_VERSION LMOD_SYSTEM_DEFAULT_MODULES=ccrsoft/${CCR_VERSION}"
-    singularity exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /usr/bin/env -i $RETAIN /bin/bash --rcfile /srv/software-layer/config/profile/container-env.sh
+    apptainer exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /usr/bin/env -i $RETAIN /bin/bash --rcfile /srv/software-layer/config/profile/container-env.sh
 fi
