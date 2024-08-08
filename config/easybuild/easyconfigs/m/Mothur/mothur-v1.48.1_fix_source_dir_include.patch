@@ -1,0 +1,59 @@
+From 6f5778131d5fbbed487505ca8f57624b94a23dae Mon Sep 17 00:00:00 2001
+From: Simon Symeonidis <lethaljellybean@gmail.com>
+Date: Wed, 24 Apr 2024 20:42:54 -0400
+Subject: [PATCH] Fix makefile compilation steps for Linux
+
+There were certain issues when trying to compile on my Linux machine
+like so:
+
+        $ make
+        ...
+        /usr/bin/ld: source/commands/unifracweightedcommand.o: warning: relocation against `_ZTV10ColumnFile' in read-only section `.text.unlikely'
+        /usr/bin/ld: /usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/../../../../lib/Scrt1.o: in function `_start':
+        (.text+0x1b): undefined reference to `main'
+        /usr/bin/ld: source/calculators/ace.o: in function `Ace::getValues(SAbundVector*)':
+        ace.cpp:(.text+0x164): undefined reference to `Utils::isEqual(double, double)'
+        /usr/bin/ld: ace.cpp:(.text+0x192): undefined reference to `Utils::isEqual(double, double)'
+        /usr/bin/ld: ace.cpp:(.text+0xa6a): undefined reference to `Utils::isEqual(double, double)'
+        /usr/bin/ld: ace.cpp:(.text+0x103a): undefined reference to `Utils::isEqual(double, double)'
+        /usr/bin/ld: source/calculators/ace.o: in function `Ace::getValues(SAbundVector*) [clone .cold]':
+        ...
+
+For some reason the top level sources were not being built, and linked
+against.  This commit adds the root sources into the include dir, and
+link dir.
+
+This fix takes some parts of the patch posted by Owen Williams
+(@OwenUoL) in this Github issue:
+
+        https://github.com/mothur/mothur/issues/843#issuecomment-1746864732
+
+Co-authored-by: Owen Williams
+---
+ Makefile | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index cfa8fcdf..bb2ebbe4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -109,8 +109,8 @@ endif
+     subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/))))
+     subDirIncludes = $(patsubst %, -I %, $(subdirs))
+     subDirLinking =  $(patsubst %, -L%, $(subdirs))
+-    CXXFLAGS += -I. -I./source $(subDirIncludes)
+-    LDFLAGS += $(subDirLinking)
++    CXXFLAGS += -I. -Isource/ $(subDirIncludes)
++    LDFLAGS += -Lsource/ $(subDirLinking)
+ 
+ 
+ #
+@@ -118,6 +118,8 @@ endif
+ #
+     OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
+     OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
++    OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard source/*.cpp))
++    OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard source/*.c))
+     OBJECTS+=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
+     OBJECTS+=$(patsubst %.c,%.o,$(wildcard *.c))
+ 
