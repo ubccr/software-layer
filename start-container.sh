@@ -89,6 +89,7 @@ fi
 CVMFS_CONFIG_REPO="cvmfs-config.ccr.buffalo.edu"
 CVMFS_SOFT_REPO="soft.ccr.buffalo.edu"
 CCR_VERSION=${CCR_VERSION:-2023.01}
+EXTRA_OPTS=""
 
 if [ ! -d "/cvmfs/$CVMFS_SOFT_REPO/versions/$CCR_VERSION" ]; then
     echo "ERROR: cvmfs not mounted for CCR_VERSION=$CCR_VERSION" >&2
@@ -134,8 +135,8 @@ if [ -d "/opt/software" ]; then
     APPTAINER_BIND="${APPTAINER_BIND},/opt/software:/opt/software:ro"
 fi
 
-if [ -d "/usr/lib/${CPU_FAMILY}-linux-gnu" ]; then
-    APPTAINER_BIND="${APPTAINER_BIND},/usr/lib/${CPU_FAMILY}-linux-gnu:/usr/lib/${CPU_FAMILY}-linux-gnu/:ro"
+if [ -d "/opt/software/nvidia" ]; then
+    EXTRA_OPTS="${EXTRA_OPTS} --nv "
 fi
 
 if [ -d "/util" ]; then
@@ -148,10 +149,6 @@ fi
 
 if [ -d "/etc/glvnd" ]; then
     APPTAINER_BIND="${APPTAINER_BIND},/etc/glvnd:/etc/glvnd:rw"
-fi
-
-if [ -f "/usr/share/baselayout/flatcar-profile.sh" ]; then
-    APPTAINER_BIND="${APPTAINER_BIND},${PWD}/config/profile/bash.sh:/usr/share/baselayout/flatcar-profile.sh:ro"
 fi
 
 if [ -d "${HOME}/testsuite/sanitarium" ]; then
@@ -186,5 +183,5 @@ elif [ ! -z "$RUN_CMD" ]; then
     apptainer exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER "$RUN_CMD"
 else
     RETAIN="HOME=/home/$USER TERM=$TERM USER=$USER SHELL=$SHELL CCR_VERSION=$CCR_VERSION CCR_COMPAT_VERSION=$CCR_VERSION LMOD_SYSTEM_DEFAULT_MODULES=ccrsoft/${CCR_VERSION}"
-    apptainer exec --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /usr/bin/env -i $RETAIN /bin/bash --rcfile /srv/software-layer/config/profile/container-env.sh
+    apptainer exec $EXTRA_OPTS --fusemount "$CVMFS_CONFIG" --fusemount "$CVMFS_READONLY" --fusemount "$CVMFS_WRITABLE_OVERLAY" $BUILD_CONTAINER /usr/bin/env -i $RETAIN /bin/bash --rcfile /srv/software-layer/config/profile/container-env.sh
 fi
