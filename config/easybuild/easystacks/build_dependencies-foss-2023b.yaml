@@ -1,0 +1,15 @@
+easyconfigs:
+  - Boost-1.83.0-GCC-13.2.0.eb:
+  - Boost.Python-1.83.0-GCC-13.2.0.eb:
+  - Boost.MPI-1.83.0-gompi-2023b.eb:
+  - Szip-2.1.1-GCCcore-13.2.0.eb:
+  - HDF5-1.14.3-gompi-2023b.eb:
+  - FriBidi-1.0.13-GCCcore-13.2.0.eb:
+  - GMP-6.3.0-GCCcore-13.2.0.eb:
+  - Mesa-23.1.9-GCCcore-13.2.0.eb:
+  - PCRE2-10.42-GCCcore-13.2.0.eb:
+  - Tk-8.6.13-GCCcore-13.2.0.eb:
+  - cairo-1.18.0-GCCcore-13.2.0.eb:
+  - libGLU-9.0.3-GCCcore-13.2.0.eb:
+  - libgit2-1.7.2-GCCcore-13.2.0.eb:
+  - TurboVNC-3.1.1-GCCcore-13.2.0.eb:
