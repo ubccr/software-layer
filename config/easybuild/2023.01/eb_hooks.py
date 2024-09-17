@@ -626,12 +626,29 @@ def orca_postproc(ec, *args, **kwargs):
     if ec.name == 'ORCA':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
-            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/bin --add_origin --add_path='$ORIGIN/../lib'",
-            f"{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_origin",
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/bin --add_origin --add_path="$ORIGIN/../lib"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_origin',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
     else:
         raise EasyBuildError("orca-specific hook triggered for non-orca easyconfig?!")
+
+def stata_postproc(ec, *args, **kwargs):
+    """Add post install cmds for stata."""
+
+    if ec.name == 'Stata':
+        ccr_init = get_ccr_envvar('CCR_INIT_DIR')
+        ec.cfg['postinstallcmds'] = [
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/stata --add_origin --add_path="$EPREFIX/usr/lib64"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/stata-mp --add_origin --add_path="$EPREFIX/usr/lib64"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/stata-se --add_origin --add_path="$EPREFIX/usr/lib64"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/xstata --add_origin --add_path="$EBROOTGTK2/lib:$EBROOTPANGO/lib:$EBROOTFREETYPE/lib:$EBROOTATK/lib:$EBROOTCAIRO/lib:$EBROOTGDKMINPIXBUF/lib:$EBROOTFONTCONFIG/lib"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/xstata-mp --add_origin --add_path="$EBROOTGTK2/lib:$EBROOTPANGO/lib:$EBROOTFREETYPE/lib:$EBROOTATK/lib:$EBROOTCAIRO/lib:$EBROOTGDKMINPIXBUF/lib:$EBROOTFONTCONFIG/lib"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/xstata-se --add_origin --add_path="$EBROOTGTK2/lib:$EBROOTPANGO/lib:$EBROOTFREETYPE/lib:$EBROOTATK/lib:$EBROOTCAIRO/lib:$EBROOTGDKMINPIXBUF/lib:$EBROOTFONTCONFIG/lib"',
+        ]
+        print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
+    else:
+        raise EasyBuildError("stata-specific hook triggered for non-stata easyconfig?!")
 
 def cupy_postproc(ec, *args, **kwargs):
     """Add post install cmds for cupy and pycuda."""
@@ -756,6 +773,7 @@ PRE_POSTPROC_HOOKS = {
     'ParaView': paraview_postproc,
     'Mathematica': mathematica_postproc,
     'ORCA': orca_postproc,
+    'Stata': stata_postproc,
     'CuPy': cupy_postproc,
     'PyCUDA': cupy_postproc,
     'ANSYS': ansys_postproc,
