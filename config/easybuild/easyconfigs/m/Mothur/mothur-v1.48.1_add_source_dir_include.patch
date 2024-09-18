@@ -1,0 +1,52 @@
+From edc2df7a4ef6de813cf7b1ce7f244880db18004e Mon Sep 17 00:00:00 2001
+From: Simon Symeonidis <lethaljellybean@gmail.com>
+Date: Tue, 23 Apr 2024 23:06:56 -0400
+Subject: [PATCH] Add ./source as include directory
+
+When attempting to build, I got error messages like so from gcc:
+
+        $ make
+        g++ -O3 -std=c++11 -pthread -DVERSION="\"1.48.0\"" -DRELEASE_DATE="\"5/20/22\"" clearcut/
+        -I source/commands/  -I source/communitytype/  -I
+        source/datastructurculators/accuracy.o source/calculators/accuracy.cpp
+        In file included from source/datastructures/sabundvector.hpp:4,
+                         from source/calculators/calculator.h:5,
+                         from source/calculators/accuracy.hpp:12,
+                         from source/calculators/accuracy.cpp:9:
+        source/datastructures/datavector.hpp:4:10: fatal error: mothurout.h: No such fil
+            4 | #include "mothurout.h"
+              |          ^~~~~~~~~~~~~
+
+This should stop complaints from gcc when attempting to build on Linux.
+---
+ Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 2f898919..cfa8fcdf 100644
+--- a/Makefile
++++ b/Makefile
+@@ -109,7 +109,7 @@ endif
+     subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/))))
+     subDirIncludes = $(patsubst %, -I %, $(subdirs))
+     subDirLinking =  $(patsubst %, -L%, $(subdirs))
+-    CXXFLAGS += -I. $(subDirIncludes)
++    CXXFLAGS += -I. -I./source $(subDirIncludes)
+     LDFLAGS += $(subDirLinking)
+ 
+ 
+@@ -135,7 +135,7 @@ else
+ 	mv mothur ${INSTALL_DIR}/mothur
+ endif
+ 
+-	
++
+ %.o : %.c %.h
+ 	$(COMPILE.c) $(OUTPUT_OPTION) $<
+ %.o : %.cpp %.h
+@@ -147,4 +147,4 @@ endif
+ 
+ clean :
+ 	@rm -f $(OBJECTS)
+-	
++
