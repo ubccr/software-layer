@@ -58,7 +58,10 @@ CHANGES = {
     },
     'OpenMPI': {
         'builddependencies': ({'x86_64': [('opa-psm2', '12.0.1')]}.get(os.getenv('CCR_CPU_FAMILY'), []), Op.APPEND_LIST),
+        'preconfigopts': ('LDFLAGS="-L/usr/lib/x86_64-linux-gnu/slurm" ', Op.APPEND),
         'configopts': ('--with-slurm --with-pmi=/opt/software/slurm --with-hwloc=external ', Op.PREPEND),
+        # See: https://github.com/easybuilders/easybuild-easyconfigs/issues/20233
+        'modluafooter': ('setenv("OMPI_MCA_btl", "^ofi")\nsetenv("OMPI_MCA_mtl", "^ofi")', Op.APPEND),
     },
     'UCX': {
         'configopts': ('--with-rdmacm=$EPREFIX/usr --with-verbs=$EPREFIX/usr ', Op.PREPEND),
@@ -72,6 +75,40 @@ CHANGES = {
                 'for dir in %(installdir)s/{bin,nvvm}; do $CCR_INIT_DIR/easybuild/setrpaths.sh --path $dir; done',
                 'for dir in %(installdir)s/{c,e,g,nsight,t}*; do $CCR_INIT_DIR/easybuild/setrpaths.sh --path $dir --add_origin; done'
             ], Op.APPEND_LIST),
+    },
+    'impi': {
+        'postinstallcmds': (
+            [
+                "sed -i 's@\\(#!/bin/sh.*\\)$@\\1\\nunset I_MPI_PMI_LIBRARY@' %(installdir)s/mpi/%(version)s/bin/mpirun",
+                "$CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s/mpi/%(version)s/bin",
+                "for i in %(installdir)s/mpi/%(version)s/bin/I*; do patchelf --set-rpath '$ORIGIN/../lib/release' --force-rpath $i; done",
+                "patchelf --set-rpath '$ORIGIN/../lib/release:$ORIGIN/../libfabric/lib' --force-rpath %(installdir)s/mpi/%(version)s/bin/impi_info",
+                "for dir in release debug; do $CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s/mpi/%(version)s/lib/$dir --add_path='$ORIGIN/../../libfabric/lib'; done",
+                'patchelf --set-rpath "\$ORIGIN/..:$EBROOTUCX/lib" --force-rpath %(installdir)s/mpi/%(version)s/libfabric/lib/prov/libmlx-fi.so',
+                "$CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s/mpi/%(version)s/libfabric/bin --add_path='$ORIGIN/../lib'",
+            ], Op.APPEND_LIST),
+    },
+    'intel-compilers': {
+        'postinstallcmds': (
+            ['''
+    for compname in icc icpc ifort; do
+       echo "--sysroot=$EPREFIX" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/$compname.cfg
+    done
+    for compname in icx icpx ifx; do
+       echo "--sysroot=$EPREFIX" > %(installdir)s/compiler/%(version)s/linux/bin/$compname.cfg
+       echo "-L$EBROOTGCCCORE/lib64" >> %(installdir)s/compiler/%(version)s/linux/bin/$compname.cfg
+       echo "-Wl,-dynamic-linker=$EPREFIX/lib64/ld-linux-x86-64.so.2" >> %(installdir)s/compiler/%(version)s/linux/bin/$compname.cfg
+    done
+    echo "#!$EPREFIX/bin/sh" > %(installdir)s/compiler/%(version)s/linux/bin/intel64/dpcpp
+    echo "exec %(installdir)s/compiler/%(version)s/linux/bin/dpcpp --sysroot=$EPREFIX -Wl,-dynamic-linker=$EPREFIX/lib64/ld-linux-x86-64.so.2 -L$EBROOTGCCCORE/lib64 \${1+\\"\$@\\"}" >> %(installdir)s/compiler/%(version)s/linux/bin/intel64/dpcpp
+    chmod +x %(installdir)s/compiler/%(version)s/linux/bin/intel64/dpcpp
+    $CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s
+    $CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s/compiler/%(version)s/linux/compiler/lib --add_origin
+    for i in %(installdir)s/compiler/%(version)s/linux/lib/*.so; do
+       patchelf --set-rpath '$ORIGIN/../lib:$ORIGIN/../compiler/lib/intel64' $i
+    done
+    patchelf --set-rpath '$ORIGIN:$ORIGIN/../../../../../tbb/%(version)s/lib/intel64/gcc4.8' %(installdir)s/compiler/%(version)s/linux/lib/x64/libintelocl.so
+            '''], Op.APPEND_LIST),
     },
 }
 
