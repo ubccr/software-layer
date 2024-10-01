@@ -1,0 +1,203 @@
+From 2c9e551c3dc3779fdfaf65943ef2e309f624bd52 Mon Sep 17 00:00:00 2001
+From: srubinacci <srubinac@broadinstitute.org>
+Date: Tue, 25 Jul 2023 18:43:39 -0400
+Subject: [PATCH] fix contig
+
+---
+ phase_common/src/io/haplotype_writer.cpp      | 16 +++++++++++---
+ phase_common/src/io/haplotype_writer.h        |  2 +-
+ .../src/models/haplotype_segment_double.h     |  6 +++---
+ .../src/models/haplotype_segment_single.h     |  6 +++---
+ phase_common/src/phaser/phaser_finalise.cpp   |  2 +-
+ phase_rare/src/io/haplotype_writer.cpp        | 21 +++++++++++++++++--
+ phase_rare/src/io/haplotype_writer.h          |  2 +-
+ phase_rare/src/phaser/phaser_finalise.cpp     |  2 +-
+ 8 files changed, 43 insertions(+), 16 deletions(-)
+
+diff --git a/phase_common/src/io/haplotype_writer.cpp b/phase_common/src/io/haplotype_writer.cpp
+index d10ba358..7de3e58c 100644
+--- a/phase_common/src/io/haplotype_writer.cpp
++++ b/phase_common/src/io/haplotype_writer.cpp
+@@ -36,7 +36,7 @@ haplotype_writer::haplotype_writer(haplotype_set & _H, genotype_set & _G, varian
+ haplotype_writer::~haplotype_writer() {
+ }
+ 
+-void haplotype_writer::writeHaplotypes(string fname, string fformat) {
++void haplotype_writer::writeHaplotypes(string fname, string fformat, string ifile) {
+ 	tac.clock();
+ 
+ 	//Open XCF writer
+@@ -46,8 +46,18 @@ void haplotype_writer::writeHaplotypes(string fname, string fformat) {
+ 	//Write header
+ 	vector < string > snames;
+ 	for (int32_t i = 0 ; i < G.n_ind ; i ++) snames.push_back(G.vecG[i]->name.c_str());
+-	XW.writeHeader(snames, V.vec_pos[0]->chr, string("SHAPEIT5 phase_common ") + string(PHASE1_VERSION));
+-
++	try
++	{
++	    htsFile *fp_tar = bcf_open(ifile.c_str(), "r");
++	    bcf_hdr_t *hdr_tar = bcf_hdr_read(fp_tar);
++	    XW.writeHeader(hdr_tar, snames, string("SHAPEIT5 phase_common ") + string(PHASE1_VERSION));
++	    bcf_hdr_destroy(hdr_tar);
++	    bcf_close(fp_tar);
++	}
++	catch (std::exception& e)
++	{
++		XW.writeHeader(snames, V.vec_pos[0]->chr, string("SHAPEIT5 phase_common ") + string(PHASE1_VERSION));
++	}
+ 	//Allocate buffers
+ 	int32_t * output_buffer = (int32_t *) malloc(G.n_ind * 2 * sizeof(int32_t));
+ 	bitvector output_bitvector (G.n_ind * 2);
+diff --git a/phase_common/src/io/haplotype_writer.h b/phase_common/src/io/haplotype_writer.h
+index c2aac143..2b8df367 100644
+--- a/phase_common/src/io/haplotype_writer.h
++++ b/phase_common/src/io/haplotype_writer.h
+@@ -43,7 +43,7 @@ class haplotype_writer {
+ 	~haplotype_writer();
+ 
+ 	//IO
+-	void writeHaplotypes(std::string, std::string);
++	void writeHaplotypes(std::string, std::string, std::string);
+ };
+ 
+ #endif
+diff --git a/phase_common/src/models/haplotype_segment_double.h b/phase_common/src/models/haplotype_segment_double.h
+index feb4d52f..44e59fe0 100644
+--- a/phase_common/src/models/haplotype_segment_double.h
++++ b/phase_common/src/models/haplotype_segment_double.h
+@@ -400,7 +400,7 @@ bool haplotype_segment_double::TRANS_HAP() {
+ 		_mm256_store_pd(&HProbs[h1*HAP_NUMBER+4], _sum1);
+ 		sumHProbs += HProbs[h1*HAP_NUMBER+0]+HProbs[h1*HAP_NUMBER+1]+HProbs[h1*HAP_NUMBER+2]+HProbs[h1*HAP_NUMBER+3]+HProbs[h1*HAP_NUMBER+4]+HProbs[h1*HAP_NUMBER+5]+HProbs[h1*HAP_NUMBER+6]+HProbs[h1*HAP_NUMBER+7];
+ 	}
+-	return (isnan(sumHProbs) || isinf(sumHProbs) || sumHProbs < std::numeric_limits<double>::min());
++	return (std::isnan(sumHProbs) || std::isinf(sumHProbs) || sumHProbs < std::numeric_limits<double>::min());
+ }
+ 
+ inline
+@@ -418,7 +418,7 @@ bool haplotype_segment_double::TRANS_DIP_MULT() {
+ 			}
+ 		}
+ 	}
+-	return (isnan(sumDProbs) || isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+ inline
+@@ -436,7 +436,7 @@ bool haplotype_segment_double::TRANS_DIP_ADD() {
+ 			}
+ 		}
+ 	}
+-	return (isnan(sumDProbs) || isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+ inline
+diff --git a/phase_common/src/models/haplotype_segment_single.h b/phase_common/src/models/haplotype_segment_single.h
+index 23fab208..782b023e 100644
+--- a/phase_common/src/models/haplotype_segment_single.h
++++ b/phase_common/src/models/haplotype_segment_single.h
+@@ -369,7 +369,7 @@ bool haplotype_segment_single::TRANS_HAP() {
+ 		_mm256_store_ps(&HProbs[h1*HAP_NUMBER], _sum);
+ 		sumHProbs += HProbs[h1*HAP_NUMBER+0]+HProbs[h1*HAP_NUMBER+1]+HProbs[h1*HAP_NUMBER+2]+HProbs[h1*HAP_NUMBER+3]+HProbs[h1*HAP_NUMBER+4]+HProbs[h1*HAP_NUMBER+5]+HProbs[h1*HAP_NUMBER+6]+HProbs[h1*HAP_NUMBER+7];
+ 	}
+-	return (isnan(sumHProbs) || isinf(sumHProbs) || sumHProbs < std::numeric_limits<float>::min());
++	return (std::isnan(sumHProbs) || std::isinf(sumHProbs) || sumHProbs < std::numeric_limits<float>::min());
+ }
+ 
+ inline
+@@ -387,7 +387,7 @@ bool haplotype_segment_single::TRANS_DIP_MULT() {
+ 			}
+ 		}
+ 	}
+-	return (isnan(sumDProbs) || isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+ inline
+@@ -405,7 +405,7 @@ bool haplotype_segment_single::TRANS_DIP_ADD() {
+ 			}
+ 		}
+ 	}
+-	return (isnan(sumDProbs) || isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+ inline
+diff --git a/phase_common/src/phaser/phaser_finalise.cpp b/phase_common/src/phaser/phaser_finalise.cpp
+index ecd24981..8ff8e006 100644
+--- a/phase_common/src/phaser/phaser_finalise.cpp
++++ b/phase_common/src/phaser/phaser_finalise.cpp
+@@ -41,7 +41,7 @@ void phaser::write_files_and_finalise() {
+ 	if (oformat == "graph")
+ 		graph_writer(G, V).writeGraphs(options["bingraph"].as < std::string > ());
+ 	else
+-		haplotype_writer(H, G, V, options["thread"].as < int > ()).writeHaplotypes(options["output"].as < std::string > (), oformat);
++		haplotype_writer(H, G, V, options["thread"].as < int > ()).writeHaplotypes(options["output"].as < std::string > (), oformat , options["input"].as < std::string > ());
+ 
+ 	//step2: Measure overall running time
+ 	vrb.bullet("Total running time = " + stb.str(tac.abs_time()) + " seconds");
+diff --git a/phase_rare/src/io/haplotype_writer.cpp b/phase_rare/src/io/haplotype_writer.cpp
+index bdf48821..f93792cc 100644
+--- a/phase_rare/src/io/haplotype_writer.cpp
++++ b/phase_rare/src/io/haplotype_writer.cpp
+@@ -42,7 +42,7 @@ void haplotype_writer::setRegions(int _input_start, int _input_stop) {
+ 	input_stop = _input_stop;
+ }
+ 
+-void haplotype_writer::writeHaplotypes(string fname) {
++void haplotype_writer::writeHaplotypes(string fname, string ifile) {
+ 	// Init
+ 	tac.clock();
+ 	string file_format = "w";
+@@ -56,7 +56,24 @@ void haplotype_writer::writeHaplotypes(string fname) {
+ 
+ 	// Create VCF header
+ 	bcf_hdr_append(hdr, string("##source=shapeit5 phase_rare v" + string(PHASE2_VERSION)).c_str());
+-	bcf_hdr_append(hdr, string("##contig=<ID="+ V.vec_full[0]->chr + ">").c_str());
++	try
++	{
++	    htsFile *fp_tar = bcf_open(ifile.c_str(), "r");
++	    bcf_hdr_t *hdr_tar = bcf_hdr_read(fp_tar);
++	    bcf_idpair_t *ctg = hdr_tar->id[BCF_DT_CTG];
++	    for (int idx_ctg = 0; idx_ctg < hdr_tar->n[BCF_DT_CTG]; ++idx_ctg)
++	    {
++	    	std::string length = "";
++	    	if (ctg[idx_ctg].val->info[0] > 0) length = ",length=" + std::to_string(ctg[idx_ctg].val->info[0]);
++	    	bcf_hdr_append(hdr, std::string("##contig=<ID="+ std::string(ctg[idx_ctg].key) + length + ">").c_str());
++	    }
++	    bcf_hdr_destroy(hdr_tar);
++	    bcf_close(fp_tar);
++	}
++	catch (std::exception& e)
++	{
++		bcf_hdr_append(hdr, string("##contig=<ID="+ V.vec_full[0]->chr + ">").c_str());
++	}
+ 	bcf_hdr_append(hdr, "##INFO=<ID=AC,Number=A,Type=Integer,Description=\"ALT allele count\">");
+ 	bcf_hdr_append(hdr, "##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Number of alleles\">");
+ 	bcf_hdr_append(hdr, "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Phased genotypes\">");
+diff --git a/phase_rare/src/io/haplotype_writer.h b/phase_rare/src/io/haplotype_writer.h
+index a12fc355..5e29e55f 100644
+--- a/phase_rare/src/io/haplotype_writer.h
++++ b/phase_rare/src/io/haplotype_writer.h
+@@ -46,7 +46,7 @@ class haplotype_writer {
+ 	void setRegions(int _input_start, int _input_stop);
+ 
+ 	//IO
+-	void writeHaplotypes(std::string foutput);
++	void writeHaplotypes(std::string foutput, std::string ifile);
+ };
+ 
+ #endif
+diff --git a/phase_rare/src/phaser/phaser_finalise.cpp b/phase_rare/src/phaser/phaser_finalise.cpp
+index 9cc0dc09..fbba7277 100644
+--- a/phase_rare/src/phaser/phaser_finalise.cpp
++++ b/phase_rare/src/phaser/phaser_finalise.cpp
+@@ -33,7 +33,7 @@ void phaser::write_files_and_finalise() {
+ 	//step1: writing best guess haplotypes in VCF/BCF file
+ 	haplotype_writer writerH (H, G, V, options["thread"].as < int > ());
+ 	writerH.setRegions(input_start, input_stop);
+-	writerH.writeHaplotypes(options["output"].as < std::string > ());
++	writerH.writeHaplotypes(options["output"].as < std::string > (), options["input"].as < std::string > ());
+ 
+ 	//step2: Measure overall running time
+ 	vrb.bullet("Total running time = " + stb.str(tac.abs_time()) + " seconds");
