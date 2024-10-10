@@ -7,9 +7,9 @@ local_commit_date ='2023-05-08'
 
 local_xcftools_version = '0.1.1'
 
-homepage = 'https://odelaneau.github.io/shapeit4/'
+homepage = 'https://odelaneau.github.io/shapeit5/'
 description = """
-SHAPEIT4 is a fast and accurate method for estimation of haplotypes
+SHAPEIT5 is a fast and accurate method for estimation of haplotypes
 (aka phasing) for SNP array and high coverage sequencing data.
 """
 
