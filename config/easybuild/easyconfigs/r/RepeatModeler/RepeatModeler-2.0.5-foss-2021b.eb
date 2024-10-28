@@ -13,7 +13,7 @@ sources = [SOURCE_TAR_GZ]
 patches = ['%(name)s-2.0.5_RepeatClassifier_LIBDIR.patch']
 checksums = [
     '4c005ada7e88ff944116832349580a0dc3db762dc1c91235fa574b32ea9a8452',
-    'c1f8fbc1c1e5ddd5a5a8d4f9bcac05a686a9d2525ef1b3670dd65ea1b33d91bf',
+    '4e843f0ac75de9d06b31332cddc36449f37cd1c23f8465f68649ca492c048fb1',
 ]
 
 dependencies = [

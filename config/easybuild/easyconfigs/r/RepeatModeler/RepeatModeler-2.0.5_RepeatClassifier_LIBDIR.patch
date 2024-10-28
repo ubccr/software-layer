@@ -4,10 +4,10 @@
  my $REPEATMASKER_DIR = $config->{'REPEATMASKER_DIR'}->{'value'};
  my $RMBLASTN_PRGM    = $config->{'RMBLAST_DIR'}->{'value'} . "/rmblastn";
  my $NCBIBLASTX_PRGM  = $config->{'RMBLAST_DIR'}->{'value'} . "/blastx";
-+my $libdir="$REPEATMASKER_DIR/Libraries"
++my $libdir="$REPEATMASKER_DIR/Libraries";
 +my $LIBDIR = $ENV{LIBDIR};
 +if ($LIBDIR) {
-+  libdir="$LIBDIR"
++  $libdir="${LIBDIR}";
 +}
  
  #
