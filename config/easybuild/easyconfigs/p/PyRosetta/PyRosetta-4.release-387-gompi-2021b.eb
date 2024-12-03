@@ -1,0 +1,38 @@
+easyblock = 'PythonBundle'
+
+name = 'PyRosetta'
+version = '4.release-387'
+
+homepage = 'https://www.pyrosetta.org/'
+description = """
+PyRosetta is an interactive Python-based interface to the powerful Rosetta molecular modeling
+suite. It enables users to design their own custom molecular modeling algorithms using Rosetta
+sampling methods and energy functions.
+"""
+
+toolchain = {'name': 'gompi', 'version': '2021b'}
+toolchainopts = {'usempi': True}
+
+builddependencies = [('binutils', '2.40')]
+
+dependencies = [
+    ('Python', '3.9.6'),
+]
+
+use_pip = True
+
+local_source_tmpl = '%(name)s%(version_major)s.Release.python%(pymajver)s%(pyminver)s.linux.%(version_minor)s.tar.bz2'
+local_source_urls = 'https://graylab.jhu.edu/download/PyRosetta4/archive/release/PyRosetta4.Release.python39.linux/'
+
+exts_list = [
+    (name, version, {
+        'source_tmpl': local_source_tmpl,
+        'source_urls': [local_source_urls],
+        'start_dir': 'setup',
+        'checksums': ['84611a3414357ce6cf3fb6d1daef00f74ba6645a30f2359455ab4b77e512db4d'],
+    }),
+]
+
+sanity_pip_check = True
+
+moduleclass = 'bio'
