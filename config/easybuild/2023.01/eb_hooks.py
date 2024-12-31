@@ -626,7 +626,7 @@ def orca_postproc(ec, *args, **kwargs):
     if ec.name == 'ORCA':
         ccr_init = get_ccr_envvar('CCR_INIT_DIR')
         ec.cfg['postinstallcmds'] = [
-            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/bin --add_origin --add_path="$ORIGIN/../lib"',
+            f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/bin --add_origin --add_path="\$ORIGIN/../lib"',
             f'{ccr_init}/easybuild/setrpaths.sh --path %(installdir)s/lib --add_origin',
         ]
         print_msg("Using custom postproc command option for %s: %s", ec.name, ec.cfg['postinstallcmds'])
