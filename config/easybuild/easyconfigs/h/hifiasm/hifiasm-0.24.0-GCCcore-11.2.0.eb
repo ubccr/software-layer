@@ -1,0 +1,42 @@
+# Author: Jasper Grimm (UoY)
+# Update: Sebastien Moretti (SIB), Denis Kristak (Inuits)
+
+easyblock = 'MakeCp'
+
+name = 'hifiasm'
+version = '0.24.0'
+
+homepage = 'https://github.com/chhylp123/hifiasm'
+description = """Hifiasm: a haplotype-resolved assembler for accurate Hifi reads."""
+# software_license = 'LicenseMIT'
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+
+github_account = 'chhylp123'
+source_urls = [GITHUB_SOURCE]
+sources = ['%(version)s.tar.gz']
+checksums = ['d207b8ba504e0f775d01bc9d7baa2016194d4bd392fa3f68573c1cc9b64d78ae']
+
+builddependencies = [
+    ('binutils', '2.37'),
+]
+
+dependencies = [
+    ('zlib', '1.2.11'),
+]
+
+buildopts = 'CC="$CC" CXX="$CXX" CPPFLAGS="$CPPFLAGS"'
+
+files_to_copy = [
+    ([name], 'bin'),
+    (['*.h'], 'include/hifiasm'),
+    'LICENSE', 'README.md',
+]
+
+sanity_check_paths = {
+    'files': ['bin/%(name)s'],
+    'dirs': [],
+}
+sanity_check_commands = ["%(name)s -h"]
+
+moduleclass = 'bio'
