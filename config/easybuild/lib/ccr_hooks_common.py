@@ -172,3 +172,28 @@ def is_filtered_ec(ec):
     filter_spec = ec.parse_filter_deps()
     software_spec = {'name': ec.name, 'version': ec.version}
     return ec.dep_is_filtered(software_spec, filter_spec)
+
+def drop_dependencies(ec, param):
+    # dictionary in format <name>:<version under which to drop>
+    to_drop = {
+            'ICU': 'ALL',
+    }
+    # iterate over a copy
+    for dep in ec[param][:]:
+        if isinstance(dep, list):
+            dep_copy = dep[:]
+            for d in dep_copy:
+                name, version = d[0], d[1]
+                if name in to_drop:
+                    if to_drop[name] == 'ALL' or LooseVersion(version) < LooseVersion(to_drop[name]):
+                        print("%s: Dropped %s, %s from %s" % (ec.filename(), name, version, param))
+                        dep.remove(d)
+
+        else:
+            dep_list = list(dep)
+            if dep_list[0] == ec.name:
+                continue
+            if dep_list[0] in to_drop:
+                if to_drop[dep_list[0]] == 'ALL' or LooseVersion(dep_list[1]) < LooseVersion(to_drop[dep_list[0]]):
+                    print("%s: Dropped %s, %s from %s" % (ec.filename(), dep_list[0],dep_list[1],param))
+                    ec[param].remove(dep)
