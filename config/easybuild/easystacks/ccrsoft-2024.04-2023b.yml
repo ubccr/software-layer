@@ -1,7 +1,0 @@
-easyconfigs:
-  - GCC-13.2.0.eb
-  - foss-2023b.eb
-  - intel-2023b.eb
-  - SciPy-bundle-2023.11-gfbf-2023b.eb
-  - CUDA-12.4.0.eb
-  - UCX-CUDA-1.15.0-GCCcore-13.2.0-CUDA-12.4.0.eb

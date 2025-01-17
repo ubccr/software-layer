@@ -1,0 +1,26 @@
+easyconfigs:
+  - GCC-13.2.0.eb
+  - foss-2023b.eb
+  - intel-2023b.eb
+  - SciPy-bundle-2023.11-gfbf-2023b.eb
+  - h5py-3.11.0-foss-2023b.eb
+  - CUDA-12.4.0.eb
+  - Go-1.22.1.eb
+  - NCCL-2.20.5-GCCcore-13.2.0-CUDA-12.4.0.eb
+  - cuDNN-8.9.7.29-CUDA-12.4.0.eb
+  - magma-2.7.2-foss-2023b-CUDA-12.4.0.eb
+  - UCX-CUDA-1.15.0-GCCcore-13.2.0-CUDA-12.4.0.eb
+  - TurboVNC-3.1.3-GCCcore-13.2.0.eb
+  - VirtualGL-3.1.1-GCC-13.2.0.eb
+  - Boost-1.83.0-GCC-13.2.0.eb
+  - Boost.MPI-1.83.0-gompi-2023b.eb
+  - R-4.4.1-gfbf-2023b.eb
+  - R-bundle-CRAN-2024.06-foss-2023b.eb
+  - RStudio-Server-2024.09.0+375-foss-2023b-Java-11-R-4.4.1.eb
+  - JupyterLab-4.2.0-GCCcore-13.2.0.eb
+  - JupyterNotebook-7.2.0-GCCcore-13.2.0.eb
+  - jupyter-resource-usage-1.0.2-GCCcore-13.2.0.eb
+  - nbclassic-1.0.0-GCCcore-13.2.0.eb
+  - code-server-4.90.2.eb
+  - Julia-1.10.4-linux-x86_64.eb
+  - scikit-learn-1.4.0-gfbf-2023b.eb
