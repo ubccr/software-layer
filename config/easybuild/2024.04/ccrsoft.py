@@ -76,6 +76,12 @@ CHANGES = {
                 'for dir in %(installdir)s/{c,e,g,nsight,t}*; do $CCR_INIT_DIR/easybuild/setrpaths.sh --path $dir --add_origin; done'
             ], Op.APPEND_LIST),
     },
+    'cuDNN': {
+        'postinstallcmds': (
+            [
+                '$CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s --add_path $EBROOTCUDA/lib64 --add_origin'
+            ], Op.APPEND_LIST),
+    },
     'impi': {
         'postinstallcmds': (
             [
@@ -109,6 +115,39 @@ CHANGES = {
     done
     patchelf --set-rpath '$ORIGIN:$ORIGIN/../../../../../tbb/%(version)s/lib/intel64/gcc4.8' %(installdir)s/compiler/%(version)s/linux/lib/x64/libintelocl.so
             '''], Op.APPEND_LIST),
+    },
+    'Clang': {
+        'preconfigopts': (
+            """sed -i -e "/LibDir.*Loader/s@return \\"\/\\"@return \\"${EPREFIX%/}/\\"@" """ +
+            """%(builddir)s/llvm-project-%(version)s.src/clang/lib/Driver/ToolChains/Linux.cpp &&""",
+            Op.PREPEND),
+        'configopts': ('-DDEFAULT_SYSROOT=${EPREFIX} ', Op.PREPEND),
+        'postinstallcmds': (
+            [
+                '$CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s/lib --add_origin --add_path="%(installdir)s/lib:$EBROOTHWLOC/lib64:$EBROOTGCCCORE/lib64:$EBROOTZ3/lib64" --any_interpreter',
+                '$CCR_INIT_DIR/easybuild/setrpaths.sh --path %(installdir)s/bin --add_path="%(installdir)s/lib:$EBROOTHWLOC/lib64:$EBROOTGCCCORE/lib64:$EBROOTZ3/lib64" --any_interpreter',
+            ], Op.APPEND_LIST),
+    },
+    'Ghostscript': {
+        'dependencies': (('GTK3', '3.24.39'), Op.DROP_FROM_LIST),
+    },
+    'PostgreSQL': {
+        'sanity_check_paths': ({'files': ['bin/psql', 'bin/pg_config', 'lib/libpq.a', 'lib/libpq.so'], 'dirs': []}, Op.REPLACE),
+    },
+    'Boost': {
+        'source_urls': (['https://archives.boost.io/release/%(version)s/source/'], Op.REPLACE),
+    },
+    'Boost.MPI': {
+        'source_urls': (['https://archives.boost.io/release/%(version)s/source/'], Op.REPLACE),
+    },
+    'R-bundle-CRAN': {
+         # This fixes: https://github.com/h2oai/h2o-3/issues/16477
+         'exts_list': ([
+             (
+                ('h2o', '3.44.0.3', {'checksums': ['61a85f6c2f15e8e96839f8a4fd3a45eaa6bca90517bb20a4dd36e951d6fd0c82'],}),
+                ('h2o', '3.44.0.3', {'checksums': ['61a85f6c2f15e8e96839f8a4fd3a45eaa6bca90517bb20a4dd36e951d6fd0c82'],'preinstallopts':'H2O_JAR_PATH="https://s3.amazonaws.com/h2o-release-migratedv2/h2o/rel-3.44.0/3/Rjar/h2o.jar"'})
+             )
+          ], Op.REPLACE_IN_LIST),
     },
 }
 
