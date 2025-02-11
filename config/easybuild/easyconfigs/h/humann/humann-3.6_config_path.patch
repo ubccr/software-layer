@@ -1,0 +1,90 @@
+diff -ruNp humann-3.6/humann/config.py humann-3.6-fixed/humann/config.py
+--- humann-3.6/humann/config.py	2022-10-03 13:27:29.000000000 -0400
++++ humann-3.6-fixed/humann/config.py	2025-02-10 16:26:17.064308147 -0500
+@@ -103,8 +103,9 @@ def log_settings():
+ # User config file
+ user_edit_config_file="humann.cfg"
+ 
+-full_path_user_edit_config_file=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+-    user_edit_config_file)
++full_path_user_edit_config_file=os.getenv('HUMAnN_CONFIG',
++    os.path.join(os.path.dirname(os.path.abspath(__file__)),
++    user_edit_config_file))
+ 
+ def update_user_edit_config_file_single_item(section,name,value):
+     """
+diff -ruNp humann-3.6/humann/tools/create-user-config-file humann-3.6-fixed/humann/tools/create-user-config-file
+--- humann-3.6/humann/tools/create-user-config-file	1969-12-31 19:00:00.000000000 -0500
++++ humann-3.6-fixed/humann/tools/create-user-config-file	2025-02-11 11:09:26.852020821 -0500
+@@ -0,0 +1,71 @@
++#!/bin/bash
++#
++# crate a copy of the HUMaN config file humann.cfg with the database paths
++# fromt he distributed version
++#
++
++usage () {
++  echo "usage: create-user-config-file filename" >&2
++  echo "e.g." >&2
++  echo "  create-user-config-file \${HOME}/humann.cfg" >&2
++}
++
++config_file="${1}"
++
++if [ "${config_file}" = "" ]
++then
++  usage
++  exit 1
++fi
++if [ -d "${config_file}" ]
++then
++  echo "filename cannot be a directory name!" >&2
++  usage
++  exit 1
++fi
++if echo "${config_file}" | grep -q -E '^/cvmfs/'
++then
++  echo "filename cannot be in the read only /cvmfs path" >&2
++  usage
++  exit 1
++fi
++if [ -f "${config_file}" ]
++then
++  echo "Config file \"${config_file}\" already exists - not overwriting!" >&2
++  echo "remove or rename the file first" >&2
++  exit 1
++fi
++if [ "${EBROOTHUMANN}" = "" ]
++then
++  echo "\${EBROOTHUMANN} is unset?" >&2
++  echo "This script cannot be run without the humann module loaded!" >&2
++  exit 1
++fi
++
++master_config_file="$(find ${EBROOTHUMANN} -name humann.cfg)"
++
++if [ "${master_config_file}" = "" ] || [ ! -f "${master_config_file}" ]
++then
++  echo "script failed to find the /cvmfs version of the config file - bailing!" >&2
++  exit 1
++fi
++
++cp "${master_config_file}" "${config_file}"
++
++
++# set the /cvmfs default database paths in the user's confif file
++export HUMAnN_CONFIG="${config_file}"
++#### DIAGS
++###humann_config --print | grep "^database_folders"
++for database in "nucleotide" "protein" "utility_mapping"
++do
++  database_dir="$(HUMAnN_CONFIG="${master_config_file}" humann_config --print | grep "^database_folders" | grep "${database}" | awk '{print $NF}')"
++  humann_config --update database_folders "${database}" "${database_dir}"
++done
++
++#### DIAGS
++###humann_config --print | grep "^database_folders"
++
++echo "To use the config file set the environment variable to the config file"
++echo "e.g."
++echo "  export HUMAnN_CONFIG=\"$(readlink -f "${config_file}")\""
