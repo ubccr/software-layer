@@ -27,9 +27,16 @@ dependencies = {
 
 exts_list = [
     (name, version, {
-        'checksums': ['addce81db58bacfdd5465423455d25e385aa8dd14349253c3a7054bf7d3747dc'],
+        'sources': [
+	    SOURCE_TAR_GZ,
+	],
+        'patches': ['%(name)s-3.6_config_path.patch'],
+        'checksums': [
+	    'addce81db58bacfdd5465423455d25e385aa8dd14349253c3a7054bf7d3747dc',  # humann-3.6.tar.gz
+	    '6b3509608d8c9abf976b9c5d0c5715fdc700d03ee388c7997c3f37373fa58b56',  # humann-3.6_config_path.patch
+	],
+        'postinstallcmds': ['cp humann/tools/create-user-config-file "%(installdir)s/bin/" && chmod 755 "%(installdir)s/bin/create-user-config-file"'],
     }),
-
 ]
 
 
