@@ -3,18 +3,32 @@ description: Tell us about the software you want installed.  Please complete a n
 title: "Software Name: "
 labels: ["build-request"]
 body:
+type: textarea
+    id: last_name
+    attributes:
+      label: Requestor Last Name
+      description: Please enter your last name here so that we may lookup your CCR account.  This is a public repository so don't provide more than this.
+    validations:
+      required: true
+- type: textarea
+    id: research_group
+    attributes:
+      label: Research_Group
+      description: Please provide the last name of the faculty member for whom you're working for, if different than above.  If you're requesting this installation for a course, please note we do not accept installation requests from students. 
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:
       label: Information
-      description: Provide link to software website
+      description: Provide link to software website and any other information you have about the software.
     validations:
       required: true
   - type: textarea
     id: version
     attributes:
       label: Version
-      description: What version would you prefer we install?  If no preference, mark N/A
+      description: What version would you prefer we install?  If no preference or there's only 1 version, enter N/A
     validations:
       required: true
   - type: textarea
