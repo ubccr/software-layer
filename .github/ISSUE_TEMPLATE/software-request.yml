@@ -3,7 +3,7 @@ description: Tell us about the software you want installed.  Please complete a n
 title: "Software Name: "
 labels: ["build-request"]
 body:
-type: textarea
+- type: textarea
     id: lastname
     attributes:
       label: Requestor Last Name
