@@ -1,5 +1,5 @@
 name: Software Request
-description: Tell us about the software you want installed.  Please complete a new request for each software package.
+description: Tell us about the software you want installed.  Please complete a new request for each software package.  Prior to submitting this request, please ensure you've read the README file in this repo that contains info on CCR's software policy, restrictions and limitations.
 title: "Software Name: "
 labels: ["build-request"]
 body:
@@ -55,4 +55,4 @@ body:
       description: If you have any additional information to share about this request, enter it here.  Please do not provide any personal or account related information.
   - type: markdown
     attributes:
-      value: "Thanks for submitting an installation request. This submission created an open issue in the repository which we'll use to communicate with you."
+      value: "Thank you for submitting an installation request. This submission will create an open issue in the repository which we'll use to communicate with you."
