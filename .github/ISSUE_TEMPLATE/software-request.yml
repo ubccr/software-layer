@@ -3,14 +3,14 @@ description: Tell us about the software you want installed.  Please complete a n
 title: "Software Name: "
 labels: ["build-request"]
 body:
-- type: textarea
+  - type: textarea
     id: lastname
     attributes:
       label: Requestor Last Name
       description: Please enter your last name here so that we may lookup your CCR account.  This is a public repository so don't provide more than this.
     validations:
       required: true
-- type: textarea
+  - type: textarea
     id: researchgroup
     attributes:
       label: Research_Group
