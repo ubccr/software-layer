@@ -1,5 +1,5 @@
 name: Software Request
-description: Tell us about the software you want installed.  Please complete a new request for each software package.  Prior to submitting this request, please ensure you've read the README file in this repo that contains info on CCR's software policy, restrictions and limitations.
+description: Refer to the README file in this repo that contains info on CCR's software policy, restrictions and limitations. Please complete a new request for each software package.
 title: "Software Name: "
 labels: ["build-request"]
 body:
