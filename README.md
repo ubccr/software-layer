@@ -7,7 +7,7 @@ Software at CCR is built using [easybuild](https://docs.easybuild.io/en/latest/)
 
 ## CCR Software Policy  
 
-Please refer to the [CCR documentation](https://docs.ccr.buffalo.edu/en/latest/policies/support/#software-installation-policy) for information about what software is provided by CCR, instructions for requesting software installations, and details on what restrictions or limitations are enforced.  
+Please refer to the [CCR documentation](https://docs.ccr.buffalo.edu/en/latest/policies/software) for information about what software is provided by CCR, instructions for requesting software installations, and details on what restrictions or limitations are enforced.  
 
 ## Installing Software Yourself   
 
