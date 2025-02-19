@@ -2,7 +2,7 @@
 easyblock = 'PythonBundle'
 
 name = 'humann'
-version = '3.6'
+version = '3.9'
 
 homepage = 'http://huttenhower.sph.harvard.edu/humann'
 
@@ -32,7 +32,7 @@ exts_list = [
 	],
         'patches': ['%(name)s-3.6_config_path.patch'],
         'checksums': [
-	    'addce81db58bacfdd5465423455d25e385aa8dd14349253c3a7054bf7d3747dc',  # humann-3.6.tar.gz
+	    'd018ddbbe45f5e3e11080620b4ae5f1737ba213d2c8cecdc8237859f853b2287',  # humann-3.9.tar.gz
 	    '6b3509608d8c9abf976b9c5d0c5715fdc700d03ee388c7997c3f37373fa58b56',  # humann-3.6_config_path.patch
 	],
         'postinstallcmds': ['cp humann/tools/create-user-config-file "%(installdir)s/bin/" && chmod 755 "%(installdir)s/bin/create-user-config-file"'],
