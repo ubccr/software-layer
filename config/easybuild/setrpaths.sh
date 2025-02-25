@@ -13,12 +13,19 @@ function print_usage {
 function patch_rpath {
 	local filename=${1?No filename given}
 	local rpath=''
+	local march=$(uname -m)
 	local filetype=$(file -b $filename)
+	local ldver=2
+	if [[ "$march" = "aarch64" ]]; then
+	   ldver=1
+	else
+	   march="x86-64"
+	fi
 	local REX_DYNAMIC="^ELF 64-bit LSB.*dynamically linked.*"
-	local REX_SO="^ELF 64-bit LSB shared object.*x86-64.*"
-	local REX_OS_INTERPRETER=".*interpreter /lib64/ld-linux-x86-64.so.2.*"
-	local REX_LINUX_INTERPRETER=".*interpreter.*ld-linux-x86-64.so.2"
-	local REX_LSB_INTERPRETER=".*interpreter.*ld-lsb-x86-64.so.3"
+	local REX_SO="^ELF 64-bit LSB shared object.*${march}.*"
+	local REX_OS_INTERPRETER=".*interpreter /lib64/ld-linux-${march}.so.${ldver}.*"
+	local REX_LINUX_INTERPRETER=".*interpreter.*ld-linux-${march}.so.${ldver}"
+	local REX_LSB_INTERPRETER=".*interpreter.*ld-lsb-${march}.so.3"
 
 	if [[ -n "$EPREFIX" ]]; then
 		PREFIX=$EPREFIX
@@ -30,10 +37,10 @@ function patch_rpath {
 
 	if [[ $filetype =~ $REX_DYNAMIC ]]; then
 		if [[ $filetype =~ $REX_OS_INTERPRETER ]]; then
-			patchelf --set-interpreter "$PREFIX/lib64/ld-linux-x86-64.so.2" "$filename"
+			patchelf --set-interpreter "$PREFIX/lib64/ld-linux-${march}.so.${ldver}" "$filename"
 			rpath='set'
 		elif [[ $ARG_ANY_INTERPRETER -eq 1 && ( $filetype =~ $REX_LINUX_INTERPRETER || $filetype =~ $REX_LSB_INTERPRETER ) ]]; then
-			patchelf --set-interpreter "$PREFIX/lib64/ld-linux-x86-64.so.2" "$filename"
+			patchelf --set-interpreter "$PREFIX/lib64/ld-linux-${march}.so.${ldver}" "$filename"
 			rpath='set'
 		fi
 	fi
@@ -120,6 +127,12 @@ done
 
 if [[ -z "$ARG_PATH" ]]; then
 	print_usage; exit 1
+fi
+
+# Avoid failing to set rpaths when a symlink is provided
+if [[ -L "$ARG_PATH" ]]; then
+	echo "error: $ARG_PATH is a symlink. Please provide a path not a symlink."
+	exit 1
 fi
 
 SAVEIFS=$IFS

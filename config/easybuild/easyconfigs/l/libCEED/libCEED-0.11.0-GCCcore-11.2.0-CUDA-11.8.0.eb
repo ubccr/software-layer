@@ -1,0 +1,38 @@
+easyblock = 'MakeCp'
+
+name = 'libCEED'
+version = '0.11.0'
+versionsuffix = '-CUDA-11.8.0'
+
+homepage = 'https://github.com/CEED/libCEED'
+description = """CEED Library: Code for Efficient Extensible Discretizations"""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/CEED/libCEED/archive/']
+sources = ['v%(version)s/libCEED-%(version)s.tar.gz']
+checksums = [
+    'cf51d034ec26c120ed1ca47cb7142381644e76558fa5922300b06b8dd715b0e4',
+]
+
+dependencies = [
+    ('CUDA', '11.8.0')
+]
+
+buildininstalldir = True
+parallel = 1
+
+buildopts = "OPT='-fPIC -O3 -march=skylake-avx512 -ffp-contract=fast' OPENMP=1 CUDA_DIR=$EBROOTCUDA"
+
+files_to_copy = ['lib', 'include']
+
+sanity_check_paths = {
+    'files': ['include/ceed/ceed.h', 'lib/libceed.so'],
+    'dirs': [],
+}
+
+test_cmd = 'make'
+runtest = 'prove'
+
+moduleclass = 'numlib'

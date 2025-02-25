@@ -1,0 +1,121 @@
+From 3d97fcd0173066d723db07c5a0b7f3153450cc34 Mon Sep 17 00:00:00 2001
+From: odelaneau <olivier.delaneau@gmail.com>
+Date: Mon, 2 Oct 2023 10:52:34 -0400
+Subject: [PATCH] Fix some chrX bugs + Add singleton phasing score
+
+---
+ .../conditioning_set_header.h                 |   3 +++
+ .../conditioning_set_ibd2.cpp                 |   2 +-
+ .../genotype_set/genotype_set_header.h        |   2 +-
+ .../genotype_set/genotype_set_phasing.cpp     |   5 +++--
+ phase_rare/src/phaser/phaser_algorithm.cpp    |   2 +-
+ phase_rare/src/phaser/phaser_initialise.cpp   |   1 +
+ phase_rare/src/phaser/phaser_parameters.cpp   |   2 ++
+ 7 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/phase_rare/src/containers/conditioning_set/conditioning_set_header.h b/phase_rare/src/containers/conditioning_set/conditioning_set_header.h
+index 5a0441f5..956641ef 100644
+--- a/phase_rare/src/containers/conditioning_set/conditioning_set_header.h
++++ b/phase_rare/src/containers/conditioning_set/conditioning_set_header.h
+@@ -82,6 +82,9 @@ class conditioning_set : public haplotype_set {
+ 	//IBD2 protection
+ 	std::vector < std::vector < unsigned int > > IBD2;
+ 
++	//Haploids
++	std::vector < bool > haploids;
++
+ 	//CONSTRUCTOR/DESTRUCTOR
+ 	conditioning_set();
+ 	~conditioning_set();
+diff --git a/phase_rare/src/containers/conditioning_set/conditioning_set_ibd2.cpp b/phase_rare/src/containers/conditioning_set/conditioning_set_ibd2.cpp
+index 081c52f5..34eec6a3 100644
+--- a/phase_rare/src/containers/conditioning_set/conditioning_set_ibd2.cpp
++++ b/phase_rare/src/containers/conditioning_set/conditioning_set_ibd2.cpp
+@@ -70,7 +70,7 @@ void conditioning_set::scanIBD2(variant_map & V) {
+ 						//int disc = 0;
+ 						//for (int hh = div ; hh <= l ; hh ++) disc += ((Hvar.get(hh, 2*ind1+0)+Hvar.get(hh, 2*ind1+1)) - (Hvar.get(hh, 2*ind0+0)+Hvar.get(hh, 2*ind0+1)));
+ 						//cout << "IBD2: " << ind0 << " " << ind1 << " " << lengthMatchCM << " " << lengthMatchBP << " " << lengthMatchCT << " " << disc << endl;
+-						IBD2[min(ind0, ind1)].push_back(max(ind0, ind1));
++						if (!haploids[ind0] && !haploids[ind1]) IBD2[min(ind0, ind1)].push_back(max(ind0, ind1));
+ 					}
+ 				} else break;
+ 			}
+diff --git a/phase_rare/src/containers/genotype_set/genotype_set_header.h b/phase_rare/src/containers/genotype_set/genotype_set_header.h
+index e508aaa1..e0aa6658 100644
+--- a/phase_rare/src/containers/genotype_set/genotype_set_header.h
++++ b/phase_rare/src/containers/genotype_set/genotype_set_header.h
+@@ -87,7 +87,7 @@ class genotype_set {
+ 	//IMPUTE
+ 	void imputeMonomorphic();
+ 	void phaseLiAndStephens(unsigned int, unsigned int, aligned_vector32 < float > &, aligned_vector32 < float > &, std::vector < unsigned int > &, float);
+-	void phaseCoalescentViterbi(unsigned int, std::vector < int > &, std::vector < int > &, hmm_parameters &);
++	void phaseCoalescentViterbi(unsigned int, std::vector < int > &, std::vector < int > &, hmm_parameters &, bool);
+ 	void phasePedigrees(std::string fped);
+ 
+ };
+diff --git a/phase_rare/src/containers/genotype_set/genotype_set_phasing.cpp b/phase_rare/src/containers/genotype_set/genotype_set_phasing.cpp
+index e30209b0..bdc7ba57 100644
+--- a/phase_rare/src/containers/genotype_set/genotype_set_phasing.cpp
++++ b/phase_rare/src/containers/genotype_set/genotype_set_phasing.cpp
+@@ -73,7 +73,7 @@ void genotype_set::phaseLiAndStephens(unsigned int vr, unsigned int hap, aligned
+ 	}
+ }
+ 
+-void genotype_set::phaseCoalescentViterbi(unsigned int ind, vector < int > & pathH0, vector < int > & pathH1, hmm_parameters & M) {
++void genotype_set::phaseCoalescentViterbi(unsigned int ind, vector < int > & pathH0, vector < int > & pathH1, hmm_parameters & M, bool score_singletons) {
+ 	 //
+ 	 vector < int > starts0, ends0, starts1, ends1;
+ 	 starts0.push_back(0);
+@@ -130,7 +130,8 @@ void genotype_set::phaseCoalescentViterbi(unsigned int ind, vector < int > & pat
+ 			}
+ 
+ 			//GRind_genotypes[ind][vr].prob = max(w0, w1) / (w0+w1);
+-			GRind_genotypes[ind][vr].prob = 0.5f;
++			if (score_singletons) GRind_genotypes[ind][vr].prob = max(w0, w1) / (w0+w1);
++			else GRind_genotypes[ind][vr].prob = 0.5f;
+ 		}
+ 	}
+ }
+diff --git a/phase_rare/src/phaser/phaser_algorithm.cpp b/phase_rare/src/phaser/phaser_algorithm.cpp
+index 723fb678..d03f26f1 100644
+--- a/phase_rare/src/phaser/phaser_algorithm.cpp
++++ b/phase_rare/src/phaser/phaser_algorithm.cpp
+@@ -64,7 +64,7 @@ void phaser::hmmcompute(int id_job, int id_thread) {
+ 	thread_hmms[id_thread]->backward(cevents, path1);
+ 
+ 	//Phase remaining unphased using viterbi [singletons, etc ...]
+-	G.phaseCoalescentViterbi(id_job, path0, path1, M);
++	G.phaseCoalescentViterbi(id_job, path0, path1, M, options.count("score-singletons"));
+ }
+ 
+ void phaser::phase() {
+diff --git a/phase_rare/src/phaser/phaser_initialise.cpp b/phase_rare/src/phaser/phaser_initialise.cpp
+index 628a943d..0c9fc836 100644
+--- a/phase_rare/src/phaser/phaser_initialise.cpp
++++ b/phase_rare/src/phaser/phaser_initialise.cpp
+@@ -56,6 +56,7 @@ void phaser::read_files_and_initialise() {
+ 	//step4: Read haploids
+ 	if (options.count("haploids")) G.mapHaploidsAndResetHets(options["haploids"].as < string > ());
+ 	else G.haploids = std::vector < bool > (G.n_samples, false);
++	H.haploids = G.haploids;
+ 
+ 	//step5: Read pedigrees and solve
+ 	if (options.count("pedigree")) G.phasePedigrees(options["pedigree"].as < string > ());
+diff --git a/phase_rare/src/phaser/phaser_parameters.cpp b/phase_rare/src/phaser/phaser_parameters.cpp
+index b94ad935..a6db9066 100644
+--- a/phase_rare/src/phaser/phaser_parameters.cpp
++++ b/phase_rare/src/phaser/phaser_parameters.cpp
+@@ -59,6 +59,7 @@ void phaser::declare_options() {
+ 	bpo::options_description opt_output ("Output files");
+ 	opt_output.add_options()
+ 			("output", bpo::value< string >(), "Phased haplotypes (at common AND rare variants)")
++			("score-singletons", "Score singleton phasing between 0.5 and 1.0 (experimental)");
+ 			("log", bpo::value< string >(), "Log file");
+ 
+ 	descriptions.add(opt_base).add(opt_input).add(opt_pbwt).add(opt_hmm).add(opt_output);
+@@ -126,4 +127,5 @@ void phaser::verbose_options() {
+ 	vrb.bullet("PBWT    : [depth = " + stb.str(options["pbwt-depth-common"].as < int > ()) + "," + stb.str(options["pbwt-depth-rare"].as < int > ()) + " / modulo = " + stb.str(options["pbwt-modulo"].as < double > ()) + " / mac = " + stb.str(options["pbwt-mac"].as < int > ()) + " / mdr = " + stb.str(options["pbwt-mdr"].as < double > ()) + "]");
+ 	if (options.count("map")) vrb.bullet("HMM     : [Ne = " + stb.str(options["effective-size"].as < int > ()) + " / Recombination rates given by genetic map]");
+ 	else vrb.bullet("HMM     : [Ne = " + stb.str(options["effective-size"].as < int > ()) + " / Constant recombination rate of 1cM per Mb]");
++	if (options.count("score-singletons")) vrb.bullet("HMM     : [Score singleton phasing]");
+ }

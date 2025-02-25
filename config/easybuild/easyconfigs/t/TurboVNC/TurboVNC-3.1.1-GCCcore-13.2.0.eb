@@ -1,0 +1,56 @@
+easyblock = 'CMakeMake'
+
+name = 'TurboVNC'
+version = '3.1.1'
+
+homepage = 'https://www.turbovnc.org'
+description = """TurboVNC is a derivative of VNC (Virtual Network Computing) that is tuned to provide
+ peak performance for 3D and video workloads."""
+
+toolchain = {'name': 'GCCcore', 'version': '13.2.0'}
+
+source_urls = ['https://github.com/TurboVNC/turbovnc/releases/download/%(version)s/']
+sources = [SOURCELOWER_TAR_GZ]
+checksums = ['3530a4ab7dfe36be7aa1bd9da6e9cf048be9f585b1940949d3c286ce53ec2b30']
+
+builddependencies = [
+    ('binutils', '2.38'),
+    ('CMake', '3.27.6'),
+]
+
+dependencies = [
+    ('Java', '11', '', SYSTEM),
+    ('X11', '20231019'),
+    ('pixman', '0.42.2'),
+    ('libjpeg-turbo', '3.0.1'),
+    ('Mesa', '23.1.9'),
+    ('libGLU', '9.0.3'),
+    ('libglvnd', '1.7.0'),
+    ('OpenSSL', '3', '', SYSTEM),
+]
+
+osdependencies = [
+    ('pam-devel', 'libpam0g-dev'),
+]
+
+configopts = ""
+configopts = "-G'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DCMAKE_JAVA_COMPILE_FLAGS='-target 1.8 -source 1.8 -Xlint:all,-serial,-unchecked,-rawtypes' -DPYTHON_EXECUTABLE=$EPREFIX/usr/bin/python3 -DTVNC_SYSTEMX11=1 -DTVNC_SYSTEMLIBS=1 "
+configopts += "-DXKB_BASE_DIRECTORY=$EBROOTX11/share/X11/xkb "
+configopts += "-DXKB_DFLT_RULES=base "
+
+# if installdir starts with /opt, i.e. /opt/xxx, CMake will set SYSCONFDIR to /etc/opt/xxx instead of /opt/xxx/etc
+# https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
+# the solution is to define CMAKE_INSTALL_SYSCONFDIR explicitly
+configopts += "-DCMAKE_INSTALL_SYSCONFDIR=%(installdir)s/etc "
+
+# remove etc/turbovncserver-security.conf, to avoid errors like:
+# (EE) Fatal server error:
+# (EE) ERROR: .../TurboVNC/2.2.3-GCCcore-8.2.0/etc/turbovncserver-security.conf must be owned by you or by root
+postinstallcmds = ["rm -rf %(installdir)s/etc/turbovncserver-security.conf"]
+
+sanity_check_paths = {
+    'files': ['bin/vncserver', 'bin/vncpasswd', 'bin/Xvnc'],
+    'dirs': [],
+}
+
+moduleclass = 'vis'

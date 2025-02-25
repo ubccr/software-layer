@@ -1,0 +1,26 @@
+easyblock = 'MakeCp'
+
+name = 'fqtrim'
+version = '0.9.7'
+
+homepage = 'http://ccb.jhu.edu/software/fqtrim/'
+description = """fqtrim is a versatile stand-alone utility that can be used to trim adapters, poly-A tails,
+ terminal unknown bases (Ns) and low quality 3' regions in reads from high-throughput next-generation sequencing
+ machines."""
+
+toolchain = {'name': 'intel', 'version': '2022.00'}
+
+source_urls = ['http://ccb.jhu.edu/software/fqtrim/dl/']
+sources = [SOURCE_TAR_GZ]
+checksums = ['4951538f69dde14a23fc4841ff020434d26eb9622c4e06b43c068c702aa3d0d6']
+
+buildopts = 'release CC="$CXX" LINKER="$CXX"'
+
+files_to_copy = [(['fqtrim'], 'bin')]
+
+sanity_check_paths = {
+    'files': ['bin/fqtrim'],
+    'dirs': [],
+}
+
+moduleclass = 'bio'

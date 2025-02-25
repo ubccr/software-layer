@@ -30,7 +30,6 @@ CCR users should submit build requests for staff to install software using [GitH
 **Bug Reports:**  
 If you experience an issue with an installed module on CCR's systems, please submit a bug report.  Bug reports should only be submitted for problems with the software installation or the Easybuild system itself.    If you need assistance with using a particular software module, running jobs, or anything else related to CCR's systems, please submit a [help request](https://www.buffalo.edu/ccr/support.html) using our ticketing system.  
 
-
 ## See Also
 
 The config files and scripts in this repo were heavily adopted from [EESSI](https://github.com/EESSI) 

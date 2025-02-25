@@ -1,0 +1,44 @@
+easyblock = 'MesonNinja'
+
+name = 'libvips'
+version = '8.15.0'
+
+homepage = 'https://libvips.github.io/libvips/'
+description = """libvips is a demand-driven, horizontally threaded image processing library."""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+github_account = 'libvips'
+source_urls = ['https://github.com/libvips/libvips/releases/download/v%(version)s']
+sources = ['vips-%(version)s.tar.xz']
+checksums = ['d33f81c6ab4bd1faeedc36dc32f880b19e9d5ff69b502e59d175332dfb8f63f1']
+
+builddependencies = [
+    ('binutils', '2.37'),
+    ('Meson', '0.58.2'),
+    ('Ninja', '1.10.2'),
+    ('pkg-config', '0.29.2'),
+]
+
+dependencies = [
+    ('libpng', '1.6.37'),
+    ('libjpeg-turbo', '2.0.6'),
+    ('LibTIFF', '4.3.0'),
+    ('giflib', '5.2.1'),
+    ('FFTW', '3.3.10'),
+    ('GLib', '2.69.1'),
+    ('expat', '2.4.1'),
+    ('librsvg', '2.52.8'),
+    ('ImageMagick', '7.1.0-4'),
+    ('OpenSlide', '3.4.1', '-largefiles'),
+]
+
+configopts = '--buildtype=release '
+
+sanity_check_paths = {
+    'files': ['bin/vips', 'bin/vipsthumbnail',
+              'lib/libvips.%s' % SHLIB_EXT],
+    'dirs': ['include/vips']
+}
+
+moduleclass = 'vis'

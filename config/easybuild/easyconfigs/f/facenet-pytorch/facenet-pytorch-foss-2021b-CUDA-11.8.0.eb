@@ -1,0 +1,29 @@
+easyblock = 'PythonBundle'
+
+name = 'facenet-pytorch'
+version = '2.5.3'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/timesler/facenet-pytorch'
+description = "Pretrained Pytorch face detection (MTCNN) and facial recognition (InceptionResnet) models"
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('SciPy-bundle', '2021.10'),
+    ('PyTorch', '1.13.1', '-CUDA-%(cudaver)s'),
+    ('torchvision', '0.14.1', '-CUDA-%(cudaver)s'),
+]
+
+exts_list = [
+    ('facenet-pytorch', version, {
+        'checksums': ['98cc5b42a48f837c023eb92f2a571cd4ac6a46687c5e71b9e99b491087273e2b'],
+    }),
+]
+
+sanity_pip_check = True,
+use_pip = True
+
+moduleclass = 'ai'

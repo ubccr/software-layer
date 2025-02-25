@@ -1,0 +1,100 @@
+easyblock = 'PythonBundle'
+
+name = 'cobaya'
+version = '3.4.1'
+
+homepage = 'https://github.com/CobayaSampler/cobaya'
+description = """
+Code for Bayesian Analysis
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('PyYAML', '5.4.1'),
+    ('matplotlib', '3.5.2'),
+    ('sympy', '1.9'),
+    ('CLASSY', '3.2.1'),
+    ('plc', '3.0.1'),
+    ('SciPy-bundle', '2021.10'),
+]
+
+exts_list = [
+    # Need newer version of setuptools to support pyproject.toml
+    ('setuptools', '68.2.2', {
+        'checksums': ['4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87'],
+    }),
+    ('portalocker', '2.7.0', {
+        'checksums': ['032e81d534a88ec1736d03f780ba073f047a06c478b06e2937486f334e955c51'],
+    }),
+    ('getdist', '1.4.5', {
+        'checksums': ['e65ae5019f7ea7b0c8eebfffb06e738a53f3b2242278d8d24925635633044500'],
+    }),
+    ('Py-BOBYQA', '1.4', {
+        'checksums': ['71090cad226e25192c797abd63cdba4c6f1c45114328b1a30619eb541d8e132a'],
+        'modulename': 'pybobyqa',
+    }),
+    ('fuzzywuzzy', '0.18.0', {
+        'checksums': ['45016e92264780e58972dca1b3d939ac864b78437422beecebb3095f8efd00e8'],
+    }),
+    ('tqdm', '4.64.1', {
+        'checksums': ['5f4f682a004951c1b450bc753c710e9280c5746ce6ffedee253ddbcbf54cf1e4'],
+    }),
+    ('dill', '0.3.7', {
+        'checksums': ['cc1c8b182eb3013e24bd475ff2e9295af86c1a38eb1aff128dac8962a9ce3c03'],
+    }),
+    ('camb', '1.5.2', {
+        'checksums': ['35095e306907237bc5c16a7dbd57895169a14b7b32864353348f391c240622d2'],
+    }),
+    ('cobaya', version, {
+        'checksums': ['e70fdd039342c2b671450b689ca4fe25155569274bb13d13133b0cf5819b435d'],
+    }),
+    ('planckpr4lensing', '1.0.2', {
+        'source_urls': ['https://github.com/carronj/planck_PR4_lensing/archive/'],
+        'sources': [{'download_filename': '7019ffa.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['230a4431b892c2f4f5722c8ab977bf667ad01bc76026bd8a4264d55a36000402'],
+    }),
+    ('planck_2020_lollipop', '4.1.0', {
+        'checksums': ['556fdeef46cc9b61cd579e31a2b00fafe13c4a43d8fa5d0a5d4ea61b6f631450'],
+    }),
+    ('planck_2020_hillipop', '4.2.1', {
+        'checksums': ['1b821cc81111955c4a9f60e5f8797d2c6729db0b5f8dbd1d0c4dd0536386e60f'],
+    }),
+    ('pyactlike', '0.1', {
+        'source_urls': ['https://github.com/ACTCollaboration/pyactlike/archive/'],
+        'sources': [{'download_filename': '1cac8c5.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['ce8efdc97b8a6f5a194b18f6ac0f0a1ff8858e36278b9184a0a1dd6c03ee84c5'],
+    }),
+    ('act_dr6_lenslike', '1.0.5', {
+        'checksums': ['d5fef9f982d14df87236458e0881948707dc1d54c5d8f17c29848cd230d54c57'],
+    }),
+    ('spt_likelihoods', '1.0', {
+        'source_urls': ['https://github.com/xgarrido/spt_likelihoods/archive/'],
+        'sources': [{'download_filename': '3ba1bc0.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['1ae17577dc273cb536d505e88172c6f595977511e1c9c7a2d5a090b88196bc21'],
+        'modulename': 'spt_hiell_2020',
+    }),
+    ('cobaya_mock_cmb', '0.1.0', {
+        'source_urls': ['https://github.com/misharash/cobaya_mock_cmb/archive/'],
+        'sources': [{'download_filename': '5208aac.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['7d9edfe818a6463b87a4e224c373e434e5e8ffcb15f4a6940379812d40655859'],
+    }),
+    ('pyWMAP', '0.1.0', {
+        'source_urls': ['https://github.com/HTJense/pyWMAP/archive/'],
+        'sources': [{'download_filename': 'eb75c96.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['da574145873841ffa77b8e189b91f8321ec92d0bee249cc62f979d2e73fdff0c'],
+        'modulename': 'wmaplike',
+    }),
+    ('hdlike', '1.0', {
+        'source_urls': ['https://github.com/CMB-HD/hdlike/archive/'],
+        'sources': [{'download_filename': 'd1c3d02.tar.gz', 'filename': SOURCE_TAR_GZ}],
+        'checksums': ['0d0816ee68c9377f3cde91d0e8081c53f3c441dc69ec1a9a81dc15ccb879b398'],
+        'modulename': 'wmaplike',
+    }),
+]
+
+sanity_pip_check = True
+use_pip = True
+
+moduleclass = 'math'

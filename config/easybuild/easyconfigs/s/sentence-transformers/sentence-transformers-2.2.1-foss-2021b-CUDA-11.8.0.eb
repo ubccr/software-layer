@@ -1,0 +1,33 @@
+easyblock = 'PythonBundle'
+
+name = 'sentence-transformers'
+version = '2.2.1'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://github.com/UKPLab/sentence-transformers/'
+description = "Multilingual Sentence & Image Embeddings with BERT"
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('Python', '3.9.6'),
+    ('scikit-learn', '1.0.2'),
+    ('SciPy-bundle', '2021.10'),
+    ('PyTorch', '1.13.1', '-CUDA-%(cudaver)s'),
+    ('torchvision', '0.14.1', '-CUDA-%(cudaver)s'),
+    ('Transformers', '4.21.1'),
+    ('SentencePiece', '0.1.97'),
+    ('NLTK', '3.7'),
+]
+
+exts_list = [
+    (name, version, {
+        'checksums': ['097011ceb88e0cd96c37bbdc7f905032821e5de1cead18ec78e550ef525c0df7'],
+    }),
+]
+
+sanity_pip_check = True,
+use_pip = True
+
+moduleclass = 'ai'

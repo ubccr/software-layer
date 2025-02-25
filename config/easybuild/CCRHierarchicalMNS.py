@@ -36,7 +36,7 @@ from easybuild.toolchains.gcccore import GCCcore
 from easybuild.tools.build_log import EasyBuildError
 from easybuild.tools.module_naming_scheme.mns import ModuleNamingScheme
 from easybuild.tools.module_naming_scheme.toolchain import det_toolchain_compilers, det_toolchain_mpi
-
+from easybuild.tools import LooseVersion
 
 CORE = 'Core'
 COMPILER = 'Compiler'
@@ -174,10 +174,15 @@ class CCRHierarchicalMNS(ModuleNamingScheme):
 
         if os.getenv('CCR_ARCH') is None:
             raise EasyBuildError("Need to set architecture to determine module path in $CCR_ARCH")
-        if subdir != CORE and not subdir.startswith(os.path.join('CUDA', 'cuda')):
+
+        if LooseVersion(os.getenv('CCR_VERSION')) < LooseVersion('2024.04'):
+            if subdir != CORE and not subdir.startswith(os.path.join('CUDA', 'cuda')):
+                subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
+            elif tc_comp_name == GCCCORE.lower():
+                subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
+        elif ec['name'] != "EasyBuild":
             subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
-        elif tc_comp_name == GCCCORE.lower():
-            subdir = os.path.join(os.getenv('CCR_ARCH'), subdir)
+
         return subdir
 
     def det_module_symlink_paths(self, ec):

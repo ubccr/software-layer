@@ -1,0 +1,25 @@
+easyblock = 'CMakeMake'
+name = 'statchemlib'
+version = '600356b'
+
+homepage = 'https://github.com/chopralab/statchemlib'
+description = """software for protein-ligang binding"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/chopralab/statchemlib/archive']
+sources = [{'download_filename': '%(version)s.tar.gz', 'filename': SOURCE_TAR_GZ}]
+checksums = [
+    '1c793e190d2f68186d121f11c8184cd036dedbd79382d4b34467812132d3ac4d',
+]
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('GSL', '2.7'),
+    ('Boost', '1.77.0'),
+    ('OpenMM', '8.0.0', '-CUDA-11.8.0'),
+]
+
+moduleclass = 'bio'

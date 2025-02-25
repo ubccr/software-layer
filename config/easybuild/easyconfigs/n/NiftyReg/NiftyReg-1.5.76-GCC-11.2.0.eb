@@ -1,0 +1,39 @@
+easyblock = 'CMakeMake'
+
+name = 'NiftyReg'
+version = '1.5.76'
+local_commit = '6db8b16'
+
+homepage = 'https://github.com/KCL-BMEIS/niftyreg'
+description = """tools to perform rigid, affine and non-linear registration of nifti or analyse images as well as utilities"""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/KCL-BMEIS/niftyreg/archive/']
+sources = [{'download_filename': '%s.tar.gz' % local_commit, 'filename': SOURCE_TAR_GZ}]
+checksums = ['d675709ddbc844931a11362ef9a9a368505e85d023c11cad189f10c5fa609995']
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+    ('Doxygen', '1.9.1'),
+    ('Catch2', '3.4.0'),
+]
+
+dependencies = [
+    ('zlib', '1.2.11'),
+    ('libpng', '1.6.37'),
+]
+
+preconfigopts = 'CATCH2_ROOT=$EBROOTCATCH2 '
+configopts = '-DCMAKE_BUILD_TYPE=Release -DUSE_SSE=ON -DUSE_CUDA=OFF -DUSE_OPENMP=ON -DBUILD_ALL_DEP=ON -DBUILD_TESTING=ON '
+
+test_cmd = 'ctest'
+runtest = '-V'
+
+sanity_check_paths = {
+    'files': ['bin/reg_f3d'],
+    'dirs': ['include'],
+}
+
+moduleclass = 'bio'

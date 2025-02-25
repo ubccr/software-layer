@@ -1,0 +1,52 @@
+easyblock = 'CMakeMake'
+
+name = 'dcm2niix'
+version = '1.0.20230411'
+
+homepage = 'https://github.com/rordenlab/dcm2niix'
+description = """dcm2niix is designed to convert neuroimaging data from the DICOM format to the NIfTI format."""
+
+toolchain = {'name': 'GCCcore', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/rordenlab/dcm2niix/archive/']
+sources = ['v%(version)s.tar.gz']
+patches = ['dcm2niix-1.0.20230411_setuptools_fix.patch']
+checksums = [
+    '990368e627a7d972a607ef965161e4ab0ddc5b0be35d659c1ce387c8ddae8301',
+    'ccaf819ba2d6517b17f121b9e162f633592634131b3c2c124e726bec4d36741b',
+]
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+]
+
+dependencies = [
+    ('Python', '3.9.6'),
+    ('scikit-build', '0.15.0'),
+    ('zlib', '1.2.11'),
+    ('pigz', '2.6'),
+    ('OpenJPEG', '2.4.0'),
+    ('CharLS', '2.4.2'),
+]
+
+configopts = '-DUSE_JPEGLS=ON -DUSE_OPENJPEG=ON -DOpenJPEG_DIR=$EBROOTOPENJPEG -DBATCH_VERSION=ON '
+
+# required to install the python API
+postinstallcmds = ['cd %(builddir)s/%(name)s-%(version)s &&  python -m pip install --prefix=%(installdir)s --verbose  --no-deps  --ignore-installed  --no-index  --no-build-isolation  .']
+
+sanity_check_paths = {
+    'files': ['bin/dcm2niix'],
+    'dirs': [''],
+}
+
+sanity_check_commands = [
+    'dcm2niix -h',
+    'PYTHONPATH="%(installdir)s/lib/python%(pyshortver)s/site-packages:$PYTHONPATH" python -c "import dcm2niix"',
+]
+
+modextrapaths = {
+    'PYTHONPATH': 'lib/python%(pyshortver)s/site-packages',
+}
+
+moduleclass = 'bio'

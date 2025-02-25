@@ -1,0 +1,47 @@
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2012-2014 Uni.Lu/LCSB, NTUA
+# Authors::   Fotis Georgatos <fotis@cern.ch>
+# License::   MIT/GPL
+# $Id$
+#
+# This work implements a part of the HPCBIOS project and is a component of the policy:
+# http://hpcbios.readthedocs.org/en/latest/HPCBIOS_2012-90.html
+##
+
+easyblock = 'ConfigureMake'
+
+name = 'mc'
+version = '4.8.30'
+
+homepage = 'https://www.midnight-commander.org/'
+description = """GNU Midnight Commander is a visual file manager"""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+
+sources = ['%(version)s.tar.gz']
+source_urls = ['https://github.com/MidnightCommander/mc/archive/']
+checksums = [
+    '6f17de6c380ad4e8b71b31c3e9e3a6bae8cb05f08d42d8896dd26e269ceeb387'
+]
+
+dependencies = [
+    ('GLib', '2.69.1'),
+    ('S-Lang', '2.3.3'),
+]
+
+builddependencies = [
+    ('pkg-config', '0.29.2'),
+    ('Automake', '1.15'),
+    ('Autotools', '20220317'),
+]
+
+preconfigopts = './autogen.sh && '
+
+sanity_check_paths = {
+    'files': ['bin/mc'],
+    'dirs': []
+}
+
+moduleclass = 'tools'

@@ -1,0 +1,165 @@
+--- shapeit5-5.1.1/switch/makefile.orig	2024-09-30 13:14:40.385450581 -0400
++++ shapeit5-5.1.1/switch/makefile	2024-09-30 13:14:46.174676500 -0400
+@@ -7,7 +7,8 @@
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+ 
+ #COMPILER & LINKER FLAGS
+-CXXFLAG=-O3 -mavx2 -mfma
++#CXXFLAG=-O3 -mavx2 -mfma
++CXXFLAG=-O3
+ LDFLAG=-O3
+ 
+ #COMMIT TRACING
+@@ -119,9 +120,19 @@
+ static_exe_robin_desktop: BOOST_LIB_PO=$(HTSSRC)/boost/lib/libboost_program_options.a
+ static_exe_robin_desktop: $(EXEFILE)
+ 
++# EasyBuild
++easybuild: HTSSRC="$(EBROOTHTSLIB)/"
++easybuild: HTSLIB_INC="$(HTSSRC)/include/htslib"
++easybuild: HTSLIB_LIB="$(HTSSRC)/lib/libhts.a"
++easybuild: BOOST_INC="$(EBROOTBOOST)/include"
++easybuild: BOOST_LIB_IO="$(EBROOTBOOST)/lib/libboost_iostreams.a"
++easybuild: BOOST_LIB_PO="$(EBROOTBOOST)/lib/libboost_program_options.a"
++easybuild: $(EXEFILE)
++
+ 
+ #COMPILATION RULES
+-all: desktop
++#all: desktop
++all: easybuild
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ $(HTSLIB_LIB) $(BOOST_LIB_IO) $(BOOST_LIB_PO) -o $@ $(DYN_LIBS)
+--- shapeit5-5.1.1/simulate/makefile.orig	2024-09-30 13:14:40.383450503 -0400
++++ shapeit5-5.1.1/simulate/makefile	2024-09-30 13:14:46.174676500 -0400
+@@ -7,7 +7,8 @@
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+ 
+ #COMPILER & LINKER FLAGS
+-CXXFLAG=-O3 -mavx2 -mfma
++#CXXFLAG=-O3 -mavx2 -mfma
++CXXFLAG=-O3
+ LDFLAG=-O3
+ 
+ #COMMIT TRACING
+@@ -121,9 +122,19 @@
+ static_exe_robin_desktop: BOOST_LIB_PO=$(HTSSRC)/boost/lib/libboost_program_options.a
+ static_exe_robin_desktop: $(EXEFILE)
+ 
++# EasyBuild
++easybuild: HTSSRC="$(EBROOTHTSLIB)/"
++easybuild: HTSLIB_INC="$(HTSSRC)/include/htslib"
++easybuild: HTSLIB_LIB="$(HTSSRC)/lib/libhts.a"
++easybuild: BOOST_INC="$(EBROOTBOOST)/include"
++easybuild: BOOST_LIB_IO="$(EBROOTBOOST)/lib/libboost_iostreams.a"
++easybuild: BOOST_LIB_PO="$(EBROOTBOOST)/lib/libboost_program_options.a"
++easybuild: $(EXEFILE)
++
+ 
+ #COMPILATION RULES
+-all: desktop
++#all: desktop
++all: easybuild
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ $(HTSLIB_LIB) $(BOOST_LIB_IO) $(BOOST_LIB_PO) -o $@ $(DYN_LIBS)
+--- shapeit5-5.1.1/ligate/makefile.orig	2024-09-30 13:14:40.377450269 -0400
++++ shapeit5-5.1.1/ligate/makefile	2024-09-30 13:14:46.174676500 -0400
+@@ -7,7 +7,8 @@
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+ 
+ #COMPILER & LINKER FLAGS
+-CXXFLAG=-O3 -mavx2 -mfma
++#CXXFLAG=-O3 -mavx2 -mfma
++CXXFLAG=-O3
+ LDFLAG=-O3
+ 
+ #COMMIT TRACING
+@@ -119,9 +120,19 @@
+ static_exe_robin_desktop: BOOST_LIB_PO=$(HTSSRC)/boost/lib/libboost_program_options.a
+ static_exe_robin_desktop: $(EXEFILE)
+ 
++# EasyBuild
++easybuild: HTSSRC="$(EBROOTHTSLIB)/"
++easybuild: HTSLIB_INC="$(HTSSRC)/include/htslib"
++easybuild: HTSLIB_LIB="$(HTSSRC)/lib/libhts.a"
++easybuild: BOOST_INC="$(EBROOTBOOST)/include"
++easybuild: BOOST_LIB_IO="$(EBROOTBOOST)/lib/libboost_iostreams.a"
++easybuild: BOOST_LIB_PO="$(EBROOTBOOST)/lib/libboost_program_options.a"
++easybuild: $(EXEFILE)
++
+ 
+ #COMPILATION RULES
+-all: desktop
++#all: desktop
++all: easybuild
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ $(HTSLIB_LIB) $(BOOST_LIB_IO) $(BOOST_LIB_PO) -o $@ $(DYN_LIBS)
+--- shapeit5-5.1.1/phase_rare/makefile.orig	2024-09-30 13:14:40.381450425 -0400
++++ shapeit5-5.1.1/phase_rare/makefile	2024-09-30 13:14:46.175676539 -0400
+@@ -7,7 +7,8 @@
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+ 
+ #COMPILER & LINKER FLAGS
+-CXXFLAG=-O3 -mavx2 -mfma
++#CXXFLAG=-O3 -mavx2 -mfma
++CXXFLAG=-O3
+ LDFLAG=-O3
+ 
+ #COMMIT TRACING
+@@ -121,9 +122,19 @@
+ static_exe_robin_desktop: BOOST_LIB_PO=$(HTSSRC)/boost/lib/libboost_program_options.a
+ static_exe_robin_desktop: $(EXEFILE)
+ 
++# EasyBuild
++easybuild: HTSSRC="$(EBROOTHTSLIB)/"
++easybuild: HTSLIB_INC="$(HTSSRC)/include/htslib"
++easybuild: HTSLIB_LIB="$(HTSSRC)/lib/libhts.a"
++easybuild: BOOST_INC="$(EBROOTBOOST)/include"
++easybuild: BOOST_LIB_IO="$(EBROOTBOOST)/lib/libboost_iostreams.a"
++easybuild: BOOST_LIB_PO="$(EBROOTBOOST)/lib/libboost_program_options.a"
++easybuild: $(EXEFILE)
++
+ 
+ #COMPILATION RULES
+-all: desktop
++#all: desktop
++all: easybuild
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ $(HTSLIB_LIB) $(BOOST_LIB_IO) $(BOOST_LIB_PO) -o $@ $(DYN_LIBS)
+--- shapeit5-5.1.1/phase_common/makefile.orig	2024-09-30 13:14:40.379450347 -0400
++++ shapeit5-5.1.1/phase_common/makefile	2024-09-30 13:14:46.175676539 -0400
+@@ -7,7 +7,8 @@
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+ 
+ #COMPILER & LINKER FLAGS
+-CXXFLAG=-O3 -mavx2 -mfma
++#CXXFLAG=-O3 -mavx2 -mfma
++CXXFLAG=-O3
+ LDFLAG=-O3
+ 
+ #COMMIT TRACING
+@@ -121,9 +122,19 @@
+ static_exe_robin_desktop: BOOST_LIB_PO=$(HTSSRC)/boost/lib/libboost_program_options.a
+ static_exe_robin_desktop: $(EXEFILE)
+ 
++# EasyBuild
++easybuild: HTSSRC="$(EBROOTHTSLIB)/"
++easybuild: HTSLIB_INC="$(HTSSRC)/include/htslib"
++easybuild: HTSLIB_LIB="$(HTSSRC)/lib/libhts.a"
++easybuild: BOOST_INC="$(EBROOTBOOST)/include"
++easybuild: BOOST_LIB_IO="$(EBROOTBOOST)/lib/libboost_iostreams.a"
++easybuild: BOOST_LIB_PO="$(EBROOTBOOST)/lib/libboost_program_options.a"
++easybuild: $(EXEFILE)
++
+ 
+ #COMPILATION RULES
+-all: desktop
++#all: desktop
++all: easybuild
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ $(HTSLIB_LIB) $(BOOST_LIB_IO) $(BOOST_LIB_PO) -o $@ $(DYN_LIBS)

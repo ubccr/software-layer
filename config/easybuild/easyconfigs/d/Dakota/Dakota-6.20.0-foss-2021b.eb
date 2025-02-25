@@ -1,0 +1,91 @@
+# /!\ IMPORTANT: you need at least 8 cores to complete successfully the tests
+# Author: Jir Furst <jiri.furst@gmail.com>
+# Based on Dakota 6.15 easyconfig by Sebastien Varrette (Falkor)
+# (mdj) adapted for 6.18, added h5py and rpath hacks, 6.20 include Queso
+easyblock = 'CMakeMake'
+
+name = 'Dakota'
+version = '6.20.0'
+
+homepage = "https://dakota.sandia.gov/"
+description = """
+ The Dakota project delivers both state-of-the-art research and robust, usable
+ software for optimization and UQ. Broadly, the Dakota software's advanced
+ parametric analyses enable design exploration, model calibration, risk
+ analysis, and quantification of margins and uncertainty with computational
+ models.
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+# Disable architecture optimization, otherwise the basic tests fail - should check this at some point (mdj)
+toolchainopts = {'pic': True, 'usempi': True, 'optarch': False}
+
+# now on github, update location and sha256
+#source_urls = ['https://dakota.sandia.gov/sites/default/files/distributions/public/']
+# https://github.com/snl-dakota/dakota/releases/download/v6.18.0/dakota-6.18.0-public-src-cli.tar.gz
+#   looks like 6.18 has fixed the import boost issue and patch is no longer applicable
+#   but it picks up a new patch (grr) for what appears to be a simple syntax bug
+#   6.20 isnan bug fixed
+source_urls = ['https://github.com/snl-dakota/dakota/releases/download/v%(version)s/']
+sources = ["%(namelower)s-%(version_major_minor)s.0-public-src-cli.tar.gz"]
+patches = []
+checksums = [
+    '44432d30a8df226cbe9c9d2507a2634b543559a195d0b3b63e9d7f6179098d4a',  # dakota-6.20.0-public-src-cli.tar.gz
+]
+
+dependencies = [
+    ('Boost',    '1.77.0'),
+    ('Perl',     '5.34.0'),
+    ('Python',   '3.9.6'),
+    ('HDF5',     '1.12.1'),
+    ('GSL',      '2.7'),
+    ('h5py', 	 '3.6.0'),
+]
+
+builddependencies = [
+    ('CMake', '3.21.1')
+]
+
+separate_build_dir = True
+build_shared_libs = True
+
+# disable GUI
+configopts = "-DHAVE_X_GRAPHICS=OFF "
+# set other dependencies
+configopts += "-DBLAS_LIBS=${EBROOTFLEXIBLAS}/lib/libflexiblas.%s " % SHLIB_EXT
+configopts += "-DLAPACK_LIBS=${EBROOTFLEXIBLAS}/lib/libflexiblas.%s " % SHLIB_EXT
+configopts += "-DDAKOTA_HAVE_MPI=ON "
+configopts += "-DBoost_NO_SYSTEM_PATHS=ON "
+configopts += "-DDAKOTA_HAVE_HDF5=ON "
+configopts += "-DDAKOTA_HAVE_GSL=ON "
+# queso not included by default
+configopts += "-DHAVE_QUESO:BOOL=ON -DDAKOTA_HAVE_GSL:BOOL=ON "
+# this one appears to be new, and will break the tests if it gets turned on somehow
+configopts += "-DCMAKE_SKIP_RPATH=FALSE "
+# (mdj) this one turns off their extension that copies all the dependent libs into the dakota dirs
+configopts += "-DDAKOTA_INSTALL_DYNAMIC_DEPS=OFF "
+# (mdj) this should not be necessary but seems to be anyway
+#configopts += 'LDFLAGS="-Wl,-rpath=$EBROOTGCCCORE/lib64 -Wl,-rpath=$EBROOTBOOST/lib -Wl,-rpath=$EBROOTHDF5/lib -Wl,-rpath=$EBROOTGSL/lib -Wl,-rpath=$EBROOTFLEXIBLAS/lib -Wl,-rpath=$EBROOTSZIP/lib"'
+configopts += "-DCMAKE_BUILD_RPATH=$ENV{EBROOTGCCCORE}/lib64:$ENV{EBROOTBOOST}/lib:$ENV{EBROOTHDF5}/lib:$ENV{EBROOTGSL}/lib:$ENV{EBROOTFLEXIBLAS}/lib:$ENV{EBROOTSZIP}/lib "
+configopts += "-DCMAKE_INSTALL_RPATH=$ENV{EBROOTGCCCORE}/lib64:$ENV{EBROOTBOOST}/lib:$ENV{EBROOTHDF5}/lib:$ENV{EBROOTGSL}/lib:$ENV{EBROOTFLEXIBLAS}/lib:$ENV{EBROOTSZIP}/lib "
+# this should avoid the need for duplication above, but does not
+#configopts += "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE "
+
+runtest = ' test ARGS="-L AcceptanceTest -j %(parallel)s" '
+
+# Run install step in parallel
+installopts = ' -j %(parallel)s '
+
+sanity_check_paths = {
+    'files': ["bin/dakota"],
+    'dirs': []
+}
+
+sanity_check_commands = [
+    "dakota -v",
+    "dakota -h",
+]
+
+modextrapaths = {'PYTHONPATH': 'share/dakota/Python'}
+
+moduleclass = 'math'

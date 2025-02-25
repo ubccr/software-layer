@@ -1,0 +1,23 @@
+name = 'Mathematica'
+version = '13.3.1'
+
+homepage = 'https://www.wolfram.com/mathematica'
+description = """Mathematica is a computational software program used in many scientific, engineering, mathematical
+and computing fields."""
+
+toolchain = SYSTEM
+
+local_gccver = '11.2.0'
+builddependencies = [
+    ('GCCcore', local_gccver),
+    ('freetype', '2.11.0', '', ('GCCcore', local_gccver)),
+    ('fontconfig', '2.13.94', '', ('GCCcore', local_gccver)),
+    ('X11', '20210802', '', ('GCCcore', local_gccver)),
+]
+
+sources = ['Mathematica_%(version)s_LINUX.sh']
+checksums = ['d37478b34e5f9937199e564831223ac652c4479f0c22871ca02af6ec5f015ce9']
+
+license_server = 'cld-license1.cbls.ccr.buffalo.edu'
+
+moduleclass = 'math'

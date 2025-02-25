@@ -1,0 +1,32 @@
+easyblock = 'MakeCp'
+
+name = 'VAST-Preload'
+version = '1.0'
+local_commit = 'b8fd24b'
+
+homepage = 'https://github.com/vast-data/vast-preload-lib'
+description = """VAST LD_PRELOAD library to inject O_DIRECT into file I/O"""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+toolchainopts = {'pic': True}
+
+source_urls = ['https://github.com/vast-data/vast-preload-lib/archive/']
+sources = [{'download_filename': '%s.tar.gz' % local_commit, 'filename': SOURCE_TAR_GZ}]
+checksums = [
+    '8ab4d6ae5c0515406dae8794f83e9ffaab0b8f4aa1acc643444e8c34cc0d3044',
+]
+
+dependencies = [
+    ('Boost', '1.77.0')
+]
+
+files_to_copy = ['bin', 'test']
+
+sanity_check_paths = {
+    'files': ['bin/libvastpreload.so', 'bin/libvastpreload-unstripped.so'],
+    'dirs': [],
+}
+
+modloadmsg = "NOTE: to use set these env variables:\n\nLD_PRELOAD=$EBROOTVASTMINPRELOAD/bin/libvastpreload.so LD_VAST_PATHFILE=/path/to/vastpreload.paths ./myapp\n\n"
+
+moduleclass = 'tools'

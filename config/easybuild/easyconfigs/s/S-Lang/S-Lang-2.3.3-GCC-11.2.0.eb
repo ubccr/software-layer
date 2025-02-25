@@ -1,0 +1,25 @@
+easyblock = 'ConfigureMake'
+
+name = 'S-Lang'
+version = '2.3.3'
+
+homepage = 'http://www.jedsoft.org/slang/'
+description = """S-Lang is a multi-platform programmer's library designed to allow
+ a developer to create robust multi-platform software. It provides facilities
+ required by interactive applications such as display/screen management, keyboard
+ input, keymaps, and so on."""
+
+toolchain = {'name': 'GCC', 'version': '11.2.0'}
+
+sources = ['slang-%(version)s.tar.bz2']
+source_urls = ['http://www.jedsoft.org/releases/slang/']
+checksums = [
+    'f9145054ae131973c61208ea82486d5dd10e3c5cdad23b7c4a0617743c8f5a18'
+]
+
+sanity_check_paths = {
+    'files': ['include/slang.h', 'bin/slsh', 'lib/libslang.%s' % SHLIB_EXT],
+    'dirs': [],
+}
+
+moduleclass = 'devel'

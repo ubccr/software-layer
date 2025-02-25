@@ -1,0 +1,70 @@
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Based on the GROMACS easybulid with the following Copyright and Authors
+# 
+# Copyright:: Copyright 2012-2016 University of Luxembourg / LCSB, Cyprus Institute / CaSToRC,
+#                                 Ghent University / The Francis Crick Institute
+# Authors::
+# * Wiktor Jurkowski <wiktor.jurkowski@gmail.com>
+# * Fotis Georgatos <fotis@cern.ch>
+# * George Tsouloupas <g.tsouloupas@cyi.ac.cy>
+# * Kenneth Hoste <kenneth.hoste@ugent.be>
+# * Adam Huffman <adam.huffman@crick.ac.uk>
+# * Ake Sandgren <ake.sandgren@hpc2n.umu.se>
+# * J. Sassmannshausen <Crick HPC team>
+# * Dugan Witherick <dugan.witherick@warwick.ac.uk>
+# * Christoph Siegert <christoph.siegert@uni-leipzig.de>
+# License::   MIT/GPL
+
+easyblock = 'CMakeMake'
+
+name = 'GROMACS-SWAXS'
+version = '2022'
+versionsuffix = '-CUDA-%(cudaver)s'
+
+homepage = 'https://cbjh.gitlab.io/gromacs-swaxs-docs/index.html'
+description = """
+GROMACS-SWAXS, a modified GROMACS version for:
+Predictions of small-angle X-ray and neutron scattering (SAXS/SANS) curves from explicit-solvent MD simulations,
+Structure refinement of proteins or soft-matter complexes against SAXS/SANS curves
+
+This is a GPU enabled build, containing both MPI and threadMPI binaries.
+"""
+
+toolchain = {'name': 'foss', 'version': '2021b'}
+toolchainopts = {'openmp': True, 'usempi': True, 'cstd': 'c++17'}
+
+source_urls = [
+    'https://gitlab.com/cbjh/gromacs-swaxs/-/archive/release-%(version)s.swaxs/',
+]
+sources = [
+    '%(namelower)s-%(version)s.tar.gz',
+]
+checksums = [
+    {'%(namelower)s-%(version)s.tar.gz': 'c5a453fead97ee473caac86d8b5d0f229289906b8f3b3590aa5cb6af69ac407f'},
+]
+
+builddependencies = [
+    ('CMake', '3.22.1'),
+    ('scikit-build', '0.11.1'),
+]
+
+dependencies = [
+    ('CUDA', '11.8.0', '', SYSTEM),
+    ('UCX-CUDA', '1.11.2', versionsuffix),
+    ('Perl', '5.34.0'),
+    ('networkx', '2.8.4'),
+    ('FFTW', '3.3.10'),
+]
+
+separate_build_dir = True
+
+configopts = '-DCMAKE_INSTALL_PREFIX="%(installdir)s" '
+configopts += '-DGMX_THREAD_MPI=ON '
+configopts += '-DGMX_GPU=cuda '
+configopts += '-S "%(start_dir)s" '
+configopts += '-B "%(builddir)s/easybuild_obj" '
+
+fix_perl_shebang_for = [ 'bin/*.pl' ]
+
+moduleclass = 'bio'

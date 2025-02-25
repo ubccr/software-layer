@@ -1,0 +1,11 @@
+--- RepeatMasker/configure.orig	2023-03-24 12:53:27.000000000 -0400
++++ RepeatMasker/configure	2024-01-22 16:03:35.011118393 -0500
+@@ -368,7 +368,7 @@
+ 
+ defined(my $pid = fork) or die "Couldn't fork: $!";
+ if (!$pid) { # Child
+-  system("$rmLocation/famdb.py -i $rmLocation/Libraries/RepeatMaskerLib.h5 families --descendants 1 --curated --format fasta_name --include-class-in-name > $rmLocation/Libraries/RepeatMasker.lib");
++  system("$rmLocation/famdb.py -i $LIBDIR/RepeatMaskerLib.h5 families --descendants 1 --curated --format fasta_name --include-class-in-name > $LIBDIR/RepeatMasker.lib");
+   exit;
+ } else { # Parent
+   while (! waitpid($pid, WNOHANG)) {

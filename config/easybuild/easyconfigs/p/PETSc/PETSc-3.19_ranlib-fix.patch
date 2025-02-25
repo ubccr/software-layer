@@ -1,0 +1,12 @@
+diff -ru petsc-3.19.6/config/BuildSystem/config/setCompilers.py petsc-3.19.6-fixed/config/BuildSystem/config/setCompilers.py
+--- petsc-3.19.6/config/BuildSystem/config/setCompilers.py	2023-07-31 11:00:55.000000000 -0400
++++ petsc-3.19.6-fixed/config/BuildSystem/config/setCompilers.py	2023-10-06 07:50:50.713730452 -0400
+@@ -2181,7 +2181,7 @@
+       path = os.path.join(os.getcwd(),'lib','petsc','bin')
+       war  = os.path.join(path,'win_lib')
+       yield (war,self.getArchiverFlags(war),'true')
+-    yield ('ar',self.getArchiverFlags('ar'),'ranlib -c')
++    #yield ('ar',self.getArchiverFlags('ar'),'ranlib -c')
+     yield ('ar',self.getArchiverFlags('ar'),'ranlib')
+     yield ('ar',self.getArchiverFlags('ar'),'true')
+     # IBM with 64-bit pointers

@@ -1,0 +1,49 @@
+# This file is an EasyBuild reciPY as per https://easybuilders.github.io/easybuild/
+
+easyblock = "CMakeMake"
+
+name = 'HyPhy'
+version = '2.5.65'
+
+homepage = 'https://veg.github.io/hyphy-site/'
+description = """HyPhy (Hypothesis Testing using Phylogenies) is an open-source software package 
+ for the analysis of genetic sequences (in particular the inference of natural selection) 
+ using techniques in phylogenetics, molecular evolution, and machine learning"""
+
+toolchain = {'name': 'gompi', 'version': '2021b'}
+toolchainopts = {'openmp': True, 'usempi': True}
+
+source_urls = ['https://github.com/veg/hyphy/archive/']
+sources = ['%(version)s.tar.gz']
+checksums = ['6f7f16239b59249ae307755265bcad027754283b20af4b43ab97e059d217ef89']
+
+builddependencies = [('CMake', '3.22.1')]
+
+dependencies = [
+    ('cURL', '7.78.0'),
+]
+
+buildopts = [
+    'hyphy',
+    'HYPHYMPI',
+]
+
+# Use the current build cycle HyPhy binary with the unit test script
+test_cmd = "cd \"%(start_dir)s\" && if test -e '%(builddir)s/easybuild_obj/HYPHYMP' ;\
+ then \
+   cp '%(builddir)s/easybuild_obj/HYPHYMP' 'HYPHYMP' ;\
+ else \
+   echo -e '#!/bin/env bash' > 'HYPHYMP' ;\
+   echo \"export PSM3_MULTI_EP=1\" >> 'HYPHYMP' ;\
+   echo \"mpirun --verbose --mca btl self,vader --mca orte_base_help_aggregate 0 --np %(parallel)s \\\"%(builddir)s/easybuild_obj/HYPHYMPI\\\" \$*\" >> 'HYPHYMP' ;\
+   chmod 755 'HYPHYMP' ;\
+   cat 'HYPHYMP' ;\
+   fi && "
+runtest = './run_unit_tests.sh'
+
+sanity_check_paths = {
+    'files': ['bin/hyphy', 'bin/HYPHYMPI'],
+    'dirs': [],
+}
+
+moduleclass = 'bio'
