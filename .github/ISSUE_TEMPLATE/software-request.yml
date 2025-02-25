@@ -1,0 +1,58 @@
+name: Software Request
+description: Refer to the README file in this repo that contains info on CCR's software policy, restrictions and limitations. Please complete a new request for each software package.
+title: "Software Name: "
+labels: ["build-request"]
+body:
+  - type: input
+    id: lastname
+    attributes:
+      label: Requestor Last Name
+      description: Please enter your last name here so that we may lookup your CCR account.  This is a public repository so don't provide more than this.
+    validations:
+      required: true
+  - type: input
+    id: researchgroup
+    attributes:
+      label: Research Group
+      description: Please provide the last name of the faculty member for whom you're working for, if different than above.
+    validations:
+      required: true
+  - type: textarea
+    id: others
+    attributes:
+      label: Additional Interest
+      description: If you're aware of other research groups that are interested in using this software, please share that here.
+  - type: textarea
+    id: description
+    attributes:
+      label: Application Information
+      description: Provide link to software website and any other information you have about the software.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version would you prefer we install?  If no preference or there's only 1 version, enter N/A
+    validations:
+      required: true
+  - type: dropdown
+    id: softwarerelease
+    attributes:
+      label: Software Release Version
+      description: Which software release would you prefer this being released under?  
+      multiple: true
+      options:
+        - ccrsoft/2023.01
+        - ccrsoft/2024.04
+        - No preference
+    validations:
+      required: true
+  - type: textarea
+    id: info
+    attributes:
+      label: Additional information
+      description: If you have any additional information to share about this request, enter it here.  Please do not provide any personal or account related information.
+  - type: markdown
+    attributes:
+      value: "Thank you for submitting an installation request. This submission will create an open issue in the repository which we'll use to communicate with you."
