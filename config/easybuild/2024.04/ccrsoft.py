@@ -58,7 +58,7 @@ CHANGES = {
     },
     'OpenMPI': {
         'builddependencies': ({'x86_64': [('opa-psm2', '12.0.1')]}.get(os.getenv('CCR_CPU_FAMILY'), []), Op.APPEND_LIST),
-        'preconfigopts': ('LDFLAGS="-L/usr/lib/x86_64-linux-gnu/slurm" ', Op.APPEND),
+        'preconfigopts': ('LDFLAGS="-L/usr/lib/$(arch)-linux-gnu/slurm" ', Op.APPEND),
         'configopts': ('--with-slurm --with-pmi=/opt/software/slurm --with-hwloc=external ', Op.PREPEND),
         # See: https://github.com/easybuilders/easybuild-easyconfigs/issues/20233
         'modluafooter': ('setenv("OMPI_MCA_btl", "^ofi")\nsetenv("OMPI_MCA_mtl", "^ofi")', Op.APPEND),
