@@ -56,12 +56,20 @@ CHANGES = {
     'EasyBuild': {
         'modluafooter': ('prepend_path("PATH", pathJoin(os.getenv("CCR_INIT_DIR"), "easybuild/bin"))', Op.REPLACE),
     },
+    "PMIx": {
+        'configopts': (' --with-munge=$EPREFIX/usr ', Op.PREPEND),
+    },
     'OpenMPI': {
+        'dependencies': (('Java', '11.0.20'), Op.APPEND_LIST),
         'builddependencies': ({'x86_64': [('opa-psm2', '12.0.1')]}.get(os.getenv('CCR_CPU_FAMILY'), []), Op.APPEND_LIST),
-        'preconfigopts': ('LDFLAGS="-L/usr/lib/x86_64-linux-gnu/slurm" ', Op.APPEND),
-        'configopts': ('--with-slurm --with-pmi=/opt/software/slurm --with-hwloc=external ', Op.PREPEND),
+        'configopts': (
+            '--with-slurm --with-pmix=external --with-libevent=external --with-hwloc=external --without-verbs ' +
+            '--enable-mca-no-build=btl-uct ' +
+            '--enable-mpi-java --with-jdk-bindir="${EBROOTJAVA}/bin" --with-jdk-headers="${EBROOTJAVA}/include" ',
+            Op.PREPEND),
+
         # See: https://github.com/easybuilders/easybuild-easyconfigs/issues/20233
-        'modluafooter': ('setenv("OMPI_MCA_btl", "^ofi")\nsetenv("OMPI_MCA_mtl", "^ofi")', Op.APPEND),
+        'modluafooter': ('setenv("OMPI_MCA_btl", "^ofi,openib")\nsetenv("OMPI_MCA_mtl", "^ofi")', Op.APPEND),
     },
     'UCX': {
         'configopts': ('--with-rdmacm=$EPREFIX/usr --with-verbs=$EPREFIX/usr ', Op.PREPEND),
