@@ -1,0 +1,27 @@
+easyblock = 'CmdCp'
+
+name = 'lpsolve'
+version = '5.5.2.11'
+
+homepage = 'https://sourceforge.net/projects/lpsolve/'
+description = "Mixed Integer Linear Programming (MILP) solver"
+
+toolchain = {'name': 'GCC', 'version': '13.2.0'}
+
+source_urls = [SOURCEFORGE_SOURCE]
+sources = ['lp_solve_%(version)s_source.tar.gz']
+checksums = ['6d4abff5cc6aaa933ae8e6c17a226df0fc0b671c438f69715d41d09fe81f902f']
+
+start_dir = '%(name)s%(version_major)s%(version_minor)s'
+files_to_copy = [
+    (['bin/ux64/liblpsolve%(version_major)s%(version_minor)s.a', 'bin/ux64/liblpsolve%(version_major)s%(version_minor)s.so'], 'lib'),
+    (['../lp*.h'], 'include'),
+]
+cmds_map = [('.*', 'sed -i "s/^c=.*/c=\'$CC\'/g" ccc && sed -i "s/^opts=.*/opts=\'$CFLAGS\'/g" ccc && sh ccc')]
+
+sanity_check_paths = {
+    'files': ['lib/liblpsolve%(version_major)s%(version_minor)s.a', 'lib/liblpsolve%(version_major)s%(version_minor)s.so'],
+    'dirs': ['include'],
+}
+
+moduleclass = 'math'
