@@ -1,0 +1,2 @@
+#!/bin/sh
+JAVA_HOME="INSTALLDIR" INSTALLDIR/bin/wrapped/nextflow-VERSION-dist "$@"

@@ -1,0 +1,65 @@
+easyblock = 'Binary'
+
+name = 'Nextflow'
+version = '25.10.2'
+
+# Support for Java versions prior to 17 was dropped as of Nextflow
+# version 24.11.0-edge
+# To avoid any possible clash with the Java module, we install a local binary
+# JDK tarball from https://github.com/adoptium for newer versions of Mextflow
+local_java_version = '25.0.1_8'
+
+homepage = 'https://www.nextflow.io/'
+description = """Nextflow is a reactive workflow framework and a programming DSL
+ that eases writing computational pipelines with complex data"""
+
+toolchain = SYSTEM
+
+local_java_major_version = ''.join(local_java_version.split('.')[:1])
+local_archs = {'x86_64': 'x64', 'aarch64': 'aarch64'}
+
+source_urls = [
+    'https://github.com/nextflow-io/nextflow/releases/download/v%(version)s/',
+    'https://github.com/adoptium/temurin%s-binaries/releases/download/jdk-%s' % ( local_java_major_version , local_java_version.replace('_', '%2B') ),
+]
+sources = [
+    {
+        'filename': 'nextflow-%(version)s-dist',
+        'extract_cmd': 'mkdir -p %(builddir)s/bin/wrapped && cp %s %(builddir)s/bin/wrapped',
+    },
+    {
+        'filename': 'OpenJDK%sU-jdk_%s_linux_hotspot_%s.tar.gz' % ( local_java_major_version, local_archs[ARCH], local_java_version ),
+        'extract_cmd': 'tar --strip-components=1 -C %(builddir)s/ -xvzf %s',
+    },
+]
+patches = [('nextflow.wrapper', '%(builddir)s/bin/')]
+checksums = [
+    {'nextflow-%(version)s-dist': '59c6f48fce6139157b2e8a28fdca8166bc502a22d9ef1a0a70065ecc9c3ae4a3'},
+    {
+        'OpenJDK25U-jdk_x64_linux_hotspot_%s.tar.gz' % local_java_version : '8daf77d1aacffe38c9889689bc224a13557de77559d9a5bb91991e6a298baa0d',
+        'OpenJDK25U-jdk_aarch64_linux_hotspot_%s.tar.gz' %  local_java_version  : '5c83b7d2121ed482fd06831a1eba1633dbab818aba6addddf48e075b97e6e9b8',
+    },
+    {'nextflow.wrapper': 'f56b02e7586151f7d5fb5fd5b5affb036e3e47c60db848c787efbe36192ef736'},
+]
+
+extract_sources = True
+
+install_cmds = [
+    "chmod +x %(builddir)s/bin/wrapped/nextflow-%(version)s-dist && sed -i '/self-update/a #     This install is on a read only CVMFS filesystem so \\\"self-update\\\" cannot be used\\n      echo \"This installation is on a read only filesystem and cannot be updated with\" >&2\\n      echo \"the \\\\\"self-update\\\\\" option\" >&2\\n      echo \"Please open a support ticket if you need a need a newer version of Nextflow\" >&2\\n      exit 1' %(builddir)s/bin/wrapped/nextflow-%(version)s-dist",
+    "sed -i -e 's|VERSION|%(version)s|' -e 's|INSTALLDIR|%(installdir)s|g' %(builddir)s/bin/nextflow.wrapper && mv %(builddir)s/bin/nextflow.wrapper %(builddir)s/bin/nextflow && chmod +x %(builddir)s/bin/nextflow",
+    "cp -r %(builddir)s/* %(installdir)s/",
+]
+
+prepend_to_path = '[bin]'
+
+sanity_check_paths = {
+    'files': ['bin/wrapped/nextflow-%(version)s-dist', 'bin/nextflow', 'bin/java'],
+    'dirs': ['bin', 'bin/wrapped', 'lib']
+}
+
+sanity_check_commands = [
+    "nextflow -v",
+    "nextflow help",
+]
+
+moduleclass = 'tools'
