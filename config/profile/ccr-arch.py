@@ -13,7 +13,7 @@ MICRO_ARCH_MAP_LEGACY = [
 MICRO_ARCH_MAP = [
 	('x86_64_v4', 'x86-64-v4'),
 	('x86_64_v3', 'x86-64-v3'),
-	('neoverse_v2', 'neoverse-v2'),
+	('cortex_a72', 'neoverse-v2'),
 ]
 
 def host_arch():
