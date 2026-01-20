@@ -24,3 +24,61 @@ easyconfigs:
   - code-server-4.90.2.eb
   - Julia-1.10.4-linux-x86_64.eb
   - scikit-learn-1.4.0-gfbf-2023b.eb
+  - BBMap-39.01-GCC-12.2.0.eb:
+      options:
+        try-toolchain-version: '13.2.0'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - BBMap-39.01-GCC-13.2.0.eb:
+  - BLAST+-2.14.1-gompi-2023a.eb:
+      options:
+        try-toolchain-version: '2023b'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - BLAST+-2.14.1-gompi-2023b.eb:
+  - BamTools-2.5.2-GCC-12.3.0.eb:
+      options:
+        try-toolchain-version: '13.2.0'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - BamTools-2.5.2-GCC-13.2.0.eb:
+  - DendroPy-4.6.1-GCCcore-12.3.0.eb:
+      options:
+        try-toolchain-version: '13.2.0'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - DendroPy-4.6.1-GCCcore-13.2.0.eb:
+  - lpsolve-5.5.2.11-GCC-12.2.0.eb:
+      options:
+        try-toolchain-version: '13.2.0'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - lpsolve-5.5.2.11-GCC-13.2.0.eb:
+  - AUGUSTUS-3.5.0-foss-2023b.eb:
+  - MetaEuk-7-GCC-13.2.0.eb:
+  - miniprot-0.13-GCCcore-12.3.0.eb:
+      options:
+        try-toolchain-version: '13.2.0'
+        try-software-version: '0.14'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - miniprot-0.14-GCCcore-13.2.0.eb:
+      options:
+        inject-checksums: 'sha256'
+  - miniprot-0.14-GCCcore-13.2.0.eb:
+  - prodigal-2.6.3-GCCcore-12.3.0.eb:
+      options:
+        try-toolchain-version: '13.2.0'
+        experimental:
+        try-update-deps:
+        copy-ec:
+  - prodigal-2.6.3-GCCcore-13.2.0.eb:
+  - SEPP-4.5.5-foss-2023b.eb:
+  - BUSCO-5.8.3-foss-2023b.eb:
+
